@@ -1,5 +1,5 @@
-import { mustacheRegex, template } from "../data/chatCustomizerData";
-
+import { template } from "../data/template";
+import { mustacheRegex } from "../data/regex";
 type Values = Record<string, any>;
 
 const getColorWithAlpha = (color: string, opacity: number | string) => {

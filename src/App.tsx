@@ -1,6 +1,6 @@
 import './App.css'
 import { useState } from 'react'
-import { HomePage } from './pages/HomePage'
+import { StreamerProfilePage } from './pages/HomePage'
 import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     return <ChatCustomizerPage onBackHome={() => setScreen('home')} />
   }
 
-  return <HomePage  onOpenChat={() => setScreen('chat')} />
+  return <StreamerProfilePage  onOpenChat={() => setScreen('chat')} />
 }
 
 export default App

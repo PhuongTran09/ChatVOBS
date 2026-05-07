@@ -1,174 +1,426 @@
-.chat-customizer-page {
-  padding: 24px;
-  max-width: 1240px;
-  margin: 0 auto;
-  color: #111827;
+/* =========================================
+   VARIABLES & GLOBAL TYPOGRAPHY (CYBERPUNK THEME)
+========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  --bg-dark: #050508;
+  --glass-bg: rgba(10, 15, 25, 0.85);
+  --glass-border: rgba(0, 255, 255, 0.2); /* Viền Cyan mờ */
+  --glass-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.05);
+
+  --text-main: #e0e0e0;
+  --text-muted: #8892b0;
+
+  --neon-cyan: #0ff;
+  --neon-magenta: #f0f;
+  --neon-green: #0f0;
+  --neon-red: #f00;
+
+  --primary-color: var(--neon-cyan);
+  --primary-hover: #fff;
+
+  --radius-lg: 8px; /* Giảm độ bo tròn để hợp vibe Cyberpunk */
+  --radius-md: 4px;
+  --radius-sm: 2px;
+
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-main: 'Inter', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
 }
 
-.chat-customizer-page .page-header {
+.chat-customizer-page {
+  font-family: var(--font-main);
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: var(--text-main);
+  background-color: var(--bg-dark);
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  min-height: 100vh;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulseRed {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255, 0, 0, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+}
+
+.slide-down { animation: slideDown 0.6s ease-out forwards; }
+.slide-right { animation: slideRight 0.6s ease-out forwards; animation-delay: 0.1s; opacity: 0; }
+.slide-left { animation: slideLeft 0.6s ease-out forwards; animation-delay: 0.2s; opacity: 0; }
+
+/* =========================================
+   COMPONENTS & DARK GLASSMORPHISM
+========================================= */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+  position: relative;
+}
+
+/* Góc viền trang trí kiểu viễn tưởng */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 20px; height: 20px;
+  border-top: 2px solid var(--neon-cyan);
+  border-left: 2px solid var(--neon-cyan);
+  pointer-events: none;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+.page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 24px;
+  padding: 16px 24px;
 }
 
-.chat-customizer-page .back-button {
-  padding: 10px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 9999px;
-  background: #ffffff;
-  color: #111827;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+/* Badges & Indicators */
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.badge-primary {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+}
+
+.badge-secondary {
+  background: rgba(255, 0, 255, 0.1);
+  color: var(--neon-magenta);
+  border: 1px solid var(--neon-magenta);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.live-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--neon-red);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-red);
+}
+
+.status-dot.green {
+  background-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+.pulse-anim { animation: pulseRed 2s infinite; }
+.status-dot.green.pulse-anim { animation: pulseGreen 2s infinite; }
+
+/* Buttons */
+.btn-icon,
+.btn-primary,
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: var(--transition);
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
-.chat-customizer-page .back-button:hover {
-  background: #f8fafc;
-  transform: translateY(-1px);
+.btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+  color: var(--text-main);
 }
 
-.chat-customizer-page .page-grid {
+.btn-icon:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.btn-primary {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.btn-primary:hover {
+  background: #fff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+}
+
+/* =========================================
+   LAYOUT GRID
+========================================= */
+.page-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
   gap: 24px;
+  align-items: start;
 }
 
-.chat-customizer-page .customizer-panel,
-.chat-customizer-page .preview-panel > div {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-}
-
-.chat-customizer-page .customizer-panel {
-  max-height: calc(100vh - 120px);
-  overflow: auto;
-}
-
-.chat-customizer-page .control-group + .control-group {
-  margin-top: 24px;
-}
-
-.chat-customizer-page .control-group h3 {
-  margin: 0 0 14px;
-  font-size: 1rem;
-  color: #0f172a;
-  letter-spacing: -0.03em;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 10px;
-}
-
-.chat-customizer-page .group-controls {
-  display: grid;
-  gap: 14px;
-}
-
-.chat-customizer-page .control-item {
-  display: grid;
-  gap: 8px;
-  font-size: 0.95rem;
-}
-
-.chat-customizer-page .control-item .control-label {
-  color: #334155;
-  font-weight: 600;
-}
-
-.chat-customizer-page .control-item .control-input {
-  display: grid;
-  gap: 8px;
-}
-
-.chat-customizer-page .control-input input,
-.chat-customizer-page .control-input select {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
-  background: #f8fafc;
-  color: #0f172a;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.chat-customizer-page .control-input input:focus,
-.chat-customizer-page .control-input select:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
-}
-
-.chat-customizer-page .control-input input[type='checkbox'] {
-  width: auto;
-  height: auto;
+/* =========================================
+   LEFT PANEL (CONTROLS)
+========================================= */
+.customizer-panel {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
   padding: 0;
-  transform: scale(1.1);
+  overflow: hidden;
 }
 
-.chat-customizer-page .control-input input[type='range'] {
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+.panel-content {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.control-group + .control-group {
+  margin-top: 32px;
+}
+
+.group-heading h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--neon-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px dashed rgba(255, 0, 255, 0.3);
+  padding-bottom: 8px;
+}
+
+.group-controls,
+.color-group,
+.checkbox-group {
+  display: grid;
+  gap: 16px;
+}
+
+/* =========================================
+   INPUTS 
+========================================= */
+.control-input input,
+.control-input select {
   width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition);
 }
 
-.chat-customizer-page .preview-panel {
+.control-input input:focus,
+.control-input select:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.control-input input[type='range'] {
+  accent-color: var(--neon-cyan);
+}
+
+/* =========================================
+   RIGHT PANEL (PREVIEWS)
+========================================= */
+.preview-panel {
   display: grid;
   gap: 24px;
 }
 
-.chat-customizer-page .preview-card h3,
-.chat-customizer-page .css-card h3 {
-  margin: 0 0 16px;
-  font-size: 1rem;
-  color: #0f172a;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.chat-customizer-page .chat-preview {
-  min-height: 420px;
-  background: #0f172a;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  overflow: auto;
-  padding: 16px;
+.card-header h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-.chat-customizer-page .css-output {
+.chat-preview {
+  min-height: 400px;
+  background: #000;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+/* TERMINAL CODE OUTPUT */
+.css-output {
   width: 100%;
   min-height: 260px;
   resize: vertical;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background: #0f172a;
-  color: #e2e8f0;
-  padding: 16px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-size: 0.92rem;
-  line-height: 1.5;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+  background: #000;
+  color: var(--neon-green); /* Đổi màu code sang xanh lá hacker */
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.chat-customizer-page .play-animation {
-  margin-top: 16px;
-  padding: 12px 16px;
-  color: #ffffff;
-  background: #2563eb;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 600;
+.css-output:focus {
+  outline: none;
+  border-color: var(--neon-green);
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
-.chat-customizer-page .play-animation:hover {
-  background: #1d4ed8;
+/* SCROLLBAR CYBERPUNK */
+.custom-scrollbar::-webkit-scrollbar,
+.chat-preview::-webkit-scrollbar,
+.css-output::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.chat-preview::-webkit-scrollbar-track,
+.css-output::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.chat-preview::-webkit-scrollbar-thumb,
+.css-output::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 0; /* Xóa bo tròn cho ngầu */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.chat-preview::-webkit-scrollbar-thumb:hover,
+.css-output::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
 }
 
 @media (max-width: 980px) {
-  .chat-customizer-page .page-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chat-customizer-page .customizer-panel {
-    max-height: none;
-  }
+  .page-grid { grid-template-columns: 1fr; }
+  .customizer-panel { position: static; max-height: none; }
 }

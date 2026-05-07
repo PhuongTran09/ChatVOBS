@@ -24,6 +24,7 @@ export interface CheckboxControl extends ControlBase {
 
 export interface ColorRangeControl extends ControlBase {
   type: "color-range";
+
   rangeId: string;
   rangeValue?: string;
 }
@@ -40,5 +41,10 @@ export type ControlItem =
 
 export interface FieldGroup {
   title: string;
-  controls: ControlItem[];
+
+  controls?: ControlItem[];
+
+  checkboxes?: CheckboxControl[];
+
+  colors?: (ValueControl | ColorRangeControl)[];
 }

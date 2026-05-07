@@ -1,0 +1,228 @@
+/* =========================================
+   FORM CONTROLS & INPUTS (CYBERPUNK)
+========================================= */
+.control-item {
+  padding-top: 5px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--neon-cyan); /* Màu chữ neon */
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.control-input-wrapper {
+  position: relative;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 4px 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #334155;
+  border-radius: var(--radius-sm); /* Viền sắc nét, ít bo tròn */
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+  appearance: none;
+}
+
+.modern-input:focus {
+  background: #000;
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.25), inset 0 0 8px rgba(255, 0, 255, 0.1);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--neon-cyan); /* Mũi tên màu cyan */
+}
+
+/* =========================================
+   TOGGLE SWITCH (CYBERPUNK STYLE)
+========================================= */
+.toggle-item {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.toggle-item:hover .control-label {
+  color: #fff;
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 20px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 2px; /* Công tắc vuông vức */
+  transition: var(--transition);
+}
+
+.toggle-switch.checked {
+  background-color: rgba(0, 255, 255, 0.2);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #555;
+  border-radius: 2px; /* Cục trượt vuông vức */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-switch.checked .toggle-slider {
+  transform: translateX(24px);
+  background-color: var(--neon-cyan);
+  box-shadow: 0 0 8px var(--neon-cyan);
+}
+
+/* =========================================
+   COLOR PICKER & RANGE SLIDER
+========================================= */
+.color-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+}
+
+/* Custom Color Picker Square */
+.color-picker-wrapper {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px; /* Trả về dạng hình vuông thay vì tròn */
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #334155;
+  flex-shrink: 0;
+}
+
+.color-picker-wrapper:hover {
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 0 1px var(--neon-cyan);
+}
+
+.modern-color-picker {
+  position: absolute;
+  top: -10px; left: -10px;
+  width: 48px; height: 48px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Thanh trượt Range Cyberpunk */
+.modern-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex-grow: 1;
+  height: 4px; /* Thanh trượt mỏng hơn */
+  background: #1e293b;
+  border-radius: 0;
+  outline: none;
+}
+
+.modern-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 20px; /* Dạng khối chữ nhật dọc */
+  border-radius: 2px;
+  background: var(--neon-magenta);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+  transition: var(--transition);
+}
+
+.modern-range::-webkit-slider-thumb:hover {
+  background: #fff;
+  box-shadow: 0 0 15px var(--neon-magenta);
+}
+
+.modern-range::-moz-range-thumb {
+  width: 12px;
+  height: 20px;
+  border: none;
+  border-radius: 2px;
+  background: var(--neon-magenta);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+  transition: var(--transition);
+}
+
+.modern-range::-moz-range-thumb:hover {
+  background: #fff;
+  box-shadow: 0 0 15px var(--neon-magenta);
+}
+
+.range-value {
+  min-width: 46px;
+  text-align: right;
+  font-family: var(--font-mono);
+  color: var(--neon-green); /* Số hiển thị màu xanh lá */
+  font-size: 0.9rem;
+}
+
+/* =========================================
+   GRID SYSTEM
+========================================= */
+.group-controls,
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  align-items: end;
+}
+
+.color-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.control-item {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .group-controls,
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+}
