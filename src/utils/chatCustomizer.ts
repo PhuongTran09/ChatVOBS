@@ -63,14 +63,42 @@ export function createChatCustomizerHelpers(values: Values) {
       return "";
     },
 
+    "show-outlines-val": () => (isChecked("show-outlines") ? "1" : "0"),
+
     "show-avatars": (id?: string) =>
       !isChecked(id!) ? "display: none !important;" : "",
 
+    "show-avatars-val": () => (isChecked("show-avatars") ? "1" : "0"),
+
     "show-timestamps": (id?: string) =>
-      isChecked(id!) ? "display: inline !important;" : "",
+      !isChecked(id!) ? "display: none !important;" : "display: inline !important;",
+
+    "show-timestamps-val": () => (isChecked("show-timestamps") ? "1" : "0"),
 
     "show-badges": (id?: string) =>
       !isChecked(id!) ? "display: none !important;" : "",
+
+    "show-badges-val": () => (isChecked("show-badges") ? "1" : "0"),
+
+    "show-colon-val": () => (isChecked("show-colon") ? "1" : "0"),
+
+    "message-newline-val": () => (isChecked("message-newline") ? "1" : "0"),
+
+    "use-gradient-backgrounds-val": () => (isChecked("use-gradient-backgrounds") ? "1" : "0"),
+
+    "show-fan-funding-background-val": () => (isChecked("show-fan-funding-background") ? "1" : "0"),
+
+    "show-ticker-val": () => (isChecked("show-ticker") ? "1" : "0"),
+
+    "show-everything-val": () => (isChecked("show-everything") ? "1" : "0"),
+
+    "animation-in-val": () => (isChecked("animation-in") ? "1" : "0"),
+
+    "animation-out-val": () => (isChecked("animation-out") ? "1" : "0"),
+
+    "animation-slide-val": () => (isChecked("animation-slide") ? "1" : "0"),
+
+    "animation-reverse-val": () => (isChecked("animation-reverse") ? "1" : "0"),
 
     "show-colon": () => {
       if (isChecked("show-colon")) {
@@ -91,13 +119,33 @@ export function createChatCustomizerHelpers(values: Values) {
       ].join("\n");
     },
 
-    "author-line-height": (id?: string) => {
-      const value = getValue(id!);
+    "author-line-height-css": () => {
+      const value = getValue("author-line-height");
       return Number(value) === 0 ? "20px" : `${value}px`;
     },
 
-    "message-line-height": (id?: string) => {
-      const value = getValue(id!);
+    "message-line-height-css": () => {
+      const value = getValue("message-line-height");
+      return Number(value) === 0 ? "normal" : `${value}px`;
+    },
+
+    "timestamp-line-height-css": () => {
+      const value = getValue("timestamp-line-height");
+      return Number(value) === 0 ? "16px" : `${value}px`;
+    },
+
+    "fan-funding-first-line-line-height-css": () => {
+      const value = getValue("fan-funding-first-line-line-height");
+      return Number(value) === 0 ? "normal" : `${value}px`;
+    },
+
+    "fan-funding-second-line-line-height-css": () => {
+      const value = getValue("fan-funding-second-line-line-height");
+      return Number(value) === 0 ? "normal" : `${value}px`;
+    },
+
+    "super-chat-content-line-height-css": () => {
+      const value = getValue("super-chat-content-line-height");
       return Number(value) === 0 ? "normal" : `${value}px`;
     },
 
@@ -137,16 +185,59 @@ export function createChatCustomizerHelpers(values: Values) {
 
     "badge-background-color": () => "#f2f2f2",
 
-    "message-background-base": () => getValue("message-background-color"),
+    "message-background-base": () =>
+      getColorWithAlpha(
+        getValue("message-background-color"),
+        getValue("message-background-opacity")
+      ),
+
+    "message-bg-color-css": () =>
+      getColorWithAlpha(
+        getValue("message-background-color"),
+        getValue("message-background-opacity")
+      ),
+
+    "author-bg-color-css": () =>
+      getColorWithAlpha(
+        getValue("author-background-color"),
+        getValue("author-background-opacity")
+      ),
+
+    "author-owner-bg-color-css": () =>
+      getColorWithAlpha(
+        getValue("author-owner-background-color"),
+        getValue("author-owner-background-opacity")
+      ),
+
+    "author-moderator-bg-color-css": () =>
+      getColorWithAlpha(
+        getValue("author-moderator-background-color"),
+        getValue("author-moderator-background-opacity")
+      ),
+
+    "author-member-bg-color-css": () =>
+      getColorWithAlpha(
+        getValue("author-member-background-color"),
+        getValue("author-member-background-opacity")
+      ),
 
     "owner-message-background-base": () =>
-      getValue("owner-message-background-color"),
+      getColorWithAlpha(
+        getValue("owner-message-background-color"),
+        getValue("owner-message-background-opacity")
+      ),
 
     "moderator-message-background-base": () =>
-      getValue("moderator-message-background-color"),
+      getColorWithAlpha(
+        getValue("moderator-message-background-color"),
+        getValue("moderator-message-background-opacity")
+      ),
 
     "member-message-background-base": () =>
-      getValue("member-message-background-color"),
+      getColorWithAlpha(
+        getValue("member-message-background-color"),
+        getValue("member-message-background-opacity")
+      ),
 
     "background-owner": () =>
       isChecked("use-gradient-backgrounds")
@@ -246,4 +337,101 @@ export function createChatCustomizerHelpers(values: Values) {
   };
 
   return { callbacks, isChecked, generateStyle };
+}
+
+export function parseCssToValues(css: string, currentValues: Values): Values {
+  const newValues = { ...currentValues };
+
+  // Parse ALL CSS Variables in :root or :host
+  const rootMatch = css.match(/:root\s*{([^}]+)}/i) || css.match(/:host\s*{([^}]+)}/i);
+  if (rootMatch) {
+    const vars = rootMatch[1];
+    
+    // 1. Parse Simple Variables (--color-*, --outline-size, etc.)
+    const varLines = vars.split(';').map(line => line.trim()).filter(line => line.includes(':'));
+    
+    varLines.forEach(line => {
+      const parts = line.split(':');
+      const name = parts[0].trim();
+      const val = parts.slice(1).join(':').trim();
+      
+      // Map --sw-* to boolean checkboxes
+      if (name.startsWith('--sw-')) {
+        const id = name.replace('--sw-', '');
+        newValues[id] = val === '1';
+        return;
+      }
+
+      // Map --color-* (excluding RGBA computed ones)
+      const colorMap: Record<string, string> = {
+        "--color-white": "message-color",
+        "--color-message-text": "message-text-color",
+        "--color-black": "outline-color",
+        "--color-timestamp": "timestamp-color",
+        "--color-owner-badge": "author-owner-color",
+        "--color-moderator-badge": "author-moderator-color",
+        "--color-member-badge": "author-member-color",
+        "--color-channel-name": "author-color",
+        "--content-border-color": "content-border-color",
+        "--avatar-border-color": "avatar-border-color",
+        "--author-border-color": "author-border-color",
+        "--message-border-color": "message-border-color",
+        "--outline-color-val": "outline-color",
+      };
+      if (colorMap[name]) {
+        newValues[colorMap[name]] = val;
+        return;
+      }
+
+      // Map RGBA variables back to Hex + Opacity
+      const rgbaMatch = val.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/i);
+      if (rgbaMatch) {
+        const rgbaVarMap: Record<string, [string, string]> = {
+          "--message-bg-color": ["message-background-color", "message-background-opacity"],
+          "--author-bg-color": ["author-background-color", "author-background-opacity"],
+          "--author-owner-bg-color": ["author-owner-background-color", "author-owner-background-opacity"],
+          "--author-moderator-bg-color": ["author-moderator-background-color", "author-moderator-background-opacity"],
+          "--author-member-bg-color": ["author-member-background-color", "author-member-background-opacity"],
+          "--color-transparent": ["background-color", "background-opacity"],
+          "--color-owner-accent": ["owner-message-background-color", "owner-message-background-opacity"],
+          "--color-moderator-accent": ["moderator-message-background-color", "moderator-message-background-opacity"],
+          "--color-member-light": ["member-message-background-color", "member-message-background-opacity"],
+        };
+        if (rgbaVarMap[name]) {
+          const [colorId, opacityId] = rgbaVarMap[name];
+          const r = parseInt(rgbaMatch[1]).toString(16).padStart(2, '0');
+          const g = parseInt(rgbaMatch[2]).toString(16).padStart(2, '0');
+          const b = parseInt(rgbaMatch[3]).toString(16).padStart(2, '0');
+          newValues[colorId] = `#${r}${g}${b}`;
+          newValues[opacityId] = rgbaMatch[4];
+          return;
+        }
+      }
+
+      // Map Numeric/Size Variables
+      const sizeMatch = val.match(/^(\d+)px$/);
+      if (sizeMatch) {
+        const id = name.replace(/^--/, '');
+        newValues[id] = sizeMatch[1];
+        return;
+      }
+
+      // Map Line Heights
+      if (name.endsWith('-line-height-val')) {
+        const id = name.replace('-line-height-val', '').replace(/^--/, '') + '-line-height';
+        newValues[id] = val.replace('px', '');
+        if (val === 'normal') newValues[id] = '0';
+        return;
+      }
+
+      // Map Fonts
+      if (name.endsWith('-font-family')) {
+        const id = name.replace(/^--/, '');
+        newValues[id] = val.replace(/["']/g, '');
+        return;
+      }
+    });
+  }
+
+  return newValues;
 }

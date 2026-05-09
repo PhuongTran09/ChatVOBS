@@ -23,7 +23,7 @@
 
 .modern-input {
   width: 100%;
-  padding: 4px 14px;
+  padding: 8px 14px;
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid #334155;
   border-radius: var(--radius-sm); /* Viền sắc nét, ít bo tròn */
@@ -32,22 +32,42 @@
   font-size: 0.9rem;
   outline: none;
   transition: var(--transition);
-  appearance: none;
+  appearance: none; /* Ẩn toàn bộ mũi tên mặc định */
+}
+
+/* Tùy chỉnh nút tăng giảm cho input type="number" */
+.modern-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5l-5 5h10l-5-5z' fill='%230ff'/%3E%3Cpath d='M12 19l5-5H7l5 5z' fill='%230ff'/%3E%3C/svg%3E");
+  background-position: center right 4px;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: all 0.2s;
+  opacity: 0.8;
+}
+
+.modern-input::-webkit-inner-spin-button:hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--neon-cyan));
+}
+
+.modern-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hỗ trợ Firefox */
+.modern-input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .modern-input:focus {
   background: #000;
   border-color: var(--neon-magenta);
   box-shadow: 0 0 12px rgba(255, 0, 255, 0.25), inset 0 0 8px rgba(255, 0, 255, 0.1);
-}
-
-.select-arrow {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--neon-cyan); /* Mũi tên màu cyan */
 }
 
 /* =========================================
@@ -115,12 +135,14 @@
 .color-range-inputs {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   background: rgba(0, 0, 0, 0.5);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border: 1px solid #334155;
 }
+
 
 /* Custom Color Picker Square */
 .color-picker-wrapper {

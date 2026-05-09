@@ -15,8 +15,16 @@ export function useChatPreview(
   const cssOutput = useMemo(() => generateStyle(values), [values]);
 
   useEffect(() => {
+    // Chuyển đổi selector cho phù hợp với Shadow DOM
+    const processedCss = cssOutput
+      .replace(/:root/g, ":host")
+      .replace(/body/g, ".shadow-root-container");
+
     const exampleStyle =
-      cssOutput + "#fakebody {" + callbacks["root-transparent"]() + "}";
+      processedCss +
+      ":host { background-color: " +
+      callbacks["root-transparent"]() +
+      " !important; }";
 
     const isAnimationUpdate =
       lastChangedId.includes("animation") || animationTick > 0;

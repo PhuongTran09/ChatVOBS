@@ -148,19 +148,70 @@ export function StreamerProfilePage({
         {/* LIVE FEED */}
         <div className="cyber-terminal">
           <div className="term-head head-green">
-            <span>LIVE_FEED.exe</span>
+            <span>MUSIC_CHILL.exe</span>
             <div className="term-controls">
               <span className="ctrl minimize" />
               <span className="ctrl maximize" />
               <span className="ctrl close" />
             </div>
           </div>
-          <div className="term-body">
-            <p className="sys-text">{'>'} INITIATING LIVE FEED...</p>
-            <p><span className="user-hl">@alex_dev</span> donate 50.000đ: "Giao diện đẹp quá ad ơi!"</p>
-            <p><span className="user-hl">@coder_noob</span> đăng ký Hội viên</p>
-            <p><span className="user-hl">@sarah_lee</span> superchat $5.00: "Hướng dẫn API đi anh"</p>
-            <p className="sys-text">{'>'} WAITING FOR NEW EVENTS...</p>
+          <div className="term-body music-player-body">
+            <div className="music-main">
+              <div className="disc-container">
+                <div className="music-disc">
+                  <div className="disc-inner">
+                    <div className="disc-label">
+                      <div className="disc-dot" />
+                    </div>
+                  </div>
+                </div>
+                <div className="disc-arm" />
+              </div>
+              <div className="music-info">
+                <p className="song-title">Rainy Night in Tokyo</p>
+                <p className="song-artist">Lofi Girl / Chillhop</p>
+                <div className="music-progress">
+                  <div className="progress-bar">
+                    <div className="progress-fill" />
+                  </div>
+                  <div className="time-info">
+                    <span>01:45</span>
+                    <span>03:20</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="music-controls">
+              <button className="m-btn">{'<<'}</button>
+              <button className="m-btn play-btn">PAUSE</button>
+              <button className="m-btn">{'>>'}</button>
+              <div className="volume-slider">
+                <span>VOL</span>
+                <div className="vol-bar"><div className="vol-fill" /></div>
+              </div>
+            </div>
+            <div className="music-list custom-scrollbar">
+              <div className="song-item active">
+                <span className="status-icon">â–¶</span>
+                <span className="s-name">Rainy Night in Tokyo</span>
+                <span className="s-time">03:20</span>
+              </div>
+              <div className="song-item">
+                <span className="status-icon"> </span>
+                <span className="s-name">Cyberpunk City Lights</span>
+                <span className="s-time">04:15</span>
+              </div>
+              <div className="song-item">
+                <span className="status-icon"> </span>
+                <span className="s-name">Neon Dreams (Slowed)</span>
+                <span className="s-time">02:50</span>
+              </div>
+              <div className="song-item">
+                <span className="status-icon"> </span>
+                <span className="s-name">Midnight Protocol</span>
+                <span className="s-time">03:45</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -181,6 +232,152 @@ export function StreamerProfilePage({
             <p>2. Copy đường dẫn CSS sinh ra.</p>
             <p>3. Thêm Browser Source vào OBS, dán link YouTube Chat và chèn CSS vào "Custom CSS".</p>
             <p className="blink-cursor">_</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================= */}
+      {/* PHOTO GALLERY */}
+      {/* ================================================= */}
+      <section className="cyber-section" id="gallery">
+        <div className="section-head">
+          <span className="badge badge-secondary">SNAPSHOTS</span>
+          <h2>[ SYSTEM_GALLERY.img ]</h2>
+        </div>
+        <div className="gallery-viewport">
+          <div className="gallery-track">
+            {/* Original Items */}
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/1/400/300" alt="Review 1" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">CHAT_THEME_01.PNG</span>
+                <span className="file-date">10.05.2026</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/2/400/300" alt="Review 2" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">NEON_PREVIEW.PNG</span>
+                <span className="file-date">09.05.2026</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/3/400/300" alt="Review 3" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">GLASS_EFFECT.PNG</span>
+                <span className="file-date">08.05.2026</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/4/400/300" alt="Review 4" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">SETUP_OBS.PNG</span>
+                <span className="file-date">07.05.2026</span>
+              </div>
+            </div>
+            {/* Duplicated Items for Seamless Loop */}
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/1/400/300" alt="Review 1" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">CHAT_THEME_01.PNG</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/2/400/300" alt="Review 2" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">NEON_PREVIEW.PNG</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/3/400/300" alt="Review 3" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">GLASS_EFFECT.PNG</span>
+              </div>
+            </div>
+            <div className="gallery-item">
+              <div className="img-frame">
+                <img src="https://picsum.photos/id/4/400/300" alt="Review 4" />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">SETUP_OBS.PNG</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================= */}
+      {/* SCHEDULE & SOCIAL */}
+      {/* ================================================= */}
+      <section className="cyber-grid-2-1" id="social-schedule">
+        {/* STREAM SCHEDULE */}
+        <div className="cyber-panel schedule-panel">
+          <div className="panel-head">
+            <span className="blink-dot green" />
+            <strong>[SYSTEM_SCHEDULE.log]</strong>
+          </div>
+          <div className="panel-body">
+            <div className="schedule-table">
+              <div className="sched-row">
+                <span className="day">MON-WED</span>
+                <span className="task">CODE & CHILL</span>
+                <span className="time">21:00</span>
+              </div>
+              <div className="sched-row highlight">
+                <span className="day">THU-FRI</span>
+                <span className="task">GAMING NIGHT</span>
+                <span className="time">22:30</span>
+              </div>
+              <div className="sched-row">
+                <span className="day">SATURDAY</span>
+                <span className="task">COMMUNITY DAY</span>
+                <span className="time">14:00</span>
+              </div>
+              <div className="sched-row">
+                <span className="day">SUNDAY</span>
+                <span className="task">SYSTEM REBOOT</span>
+                <span className="time">OFFLINE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* DISCORD PROMO */}
+        <div className="cyber-panel discord-panel">
+          <div className="panel-head">
+            <strong>[JOIN_COMMUNITY]</strong>
+          </div>
+          <div className="panel-body discord-content">
+            <div className="discord-logo-wrap">
+              <svg className="discord-icon" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.39,80.21a105.73,105.73,0,0,0,32.21,16.15c2.45-3.35,4.63-6.9,6.51-10.63a67.06,67.06,0,0,1-10.41-5c.87-.64,1.71-1.31,2.53-2a82.5,82.5,0,0,0,51.84,0c.81.69,1.66,1.36,2.53,2a67.1,67.1,0,0,1-10.41,5c1.88,3.73,4.06,7.28,6.51,10.63a105.4,105.4,0,0,0,32.24-16.15C129.58,51,123.46,27.35,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.92,53.9,53,48.74,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.43-12.74S96.11,45.92,96.11,53,91,65.69,82.69,65.69Z" />
+              </svg>
+            </div>
+            <h3>SERVER DISCORD</h3>
+            <p>Nơi giao lưu, chia sẻ kinh nghiệm về stream và code.</p>
+            <button className="cyber-btn primary-cyan discord-btn">JOIN NOW</button>
           </div>
         </div>
       </section>

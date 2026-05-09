@@ -34,9 +34,16 @@ export const fields: FieldGroup[] = [
     title: "Channel names",
     controls: [
       { id: "author-font-family", label: "Font", type: "select", value: "Changa One", options: fonts },
+      { id: "author-owner-font-family", label: "Owner Font", type: "select", value: "Changa One", options: fonts },
+      { id: "author-moderator-font-family", label: "Moderator Font", type: "select", value: "Changa One", options: fonts },
+      { id: "author-member-font-family", label: "Sponsor Font", type: "select", value: "Changa One", options: fonts },
       { id: "author-font-size", label: "Font size", type: "number", value: "20" },
       { id: "author-line-height", label: "Line height (0 for default)", type: "number", value: "0" },
       { id: "author-color", label: "Color", type: "color", value: "#cccccc" },
+      { id: "author-owner-color", label: "Owner color", type: "color", value: "#ffd600" },
+      { id: "author-moderator-color", label: "Moderator color", type: "color", value: "#5e84f1" },
+      { id: "author-member-color", label: "Sponsor color", type: "color", value: "#0f9d58" },
+      
       { id: "author-padding", label: "Padding", type: "number", value: "0" },
       { id: "author-border-size", label: "Border size", type: "number", value: "0" },
       { id: "author-border-color", label: "Border color", type: "color", value: "#ffffff" },
@@ -45,9 +52,6 @@ export const fields: FieldGroup[] = [
       { id: "author-margin-right", label: "Margin right", type: "number", value: "0" },
       { id: "author-margin-bottom", label: "Margin bottom", type: "number", value: "0" },
       { id: "author-margin-left", label: "Margin left", type: "number", value: "0" },
-      { id: "author-owner-color", label: "Owner color", type: "color", value: "#ffd600" },
-      { id: "author-moderator-color", label: "Moderator color", type: "color", value: "#5e84f1" },
-      { id: "author-member-color", label: "Sponsor color", type: "color", value: "#0f9d58" },
     ],
     checkboxes: [
       { id: "show-badges", label: "Show badges", type: "checkbox", checked: false },
@@ -62,7 +66,12 @@ export const fields: FieldGroup[] = [
     ],
 
     colors: [
-      { id: "message-color", label: "Color", type: "color", value: "#ffffff" },
+      { id: "message-background-color", label: "Message background color", type: "color-range", value: "#cccccc", rangeId: "message-background-opacity", rangeValue: "0" },
+      { id: "owner-message-background-color", label: "Owner message background color", type: "color-range", value: "#ffd600", rangeId: "owner-message-background-opacity", rangeValue: "0" },
+      { id: "moderator-message-background-color", label: "Moderator message background color", type: "color-range", value: "#5e84f1", rangeId: "moderator-message-background-opacity", rangeValue: "0" },
+      { id: "member-message-background-color", label: "Sponsor message background color", type: "color-range", value: "#0f9d58", rangeId: "member-message-background-opacity", rangeValue: "0" },
+      
+      { id: "message-color", label: "Fallback/Paid text color", type: "color", value: "#ffffff" },
       { id: "message-text-color", label: "Message text color", type: "color", value: "#ffffff" },
       { id: "message-border-color", label: "Message border color", type: "color", value: "#ffffff" },
       { id: "content-border-color", label: "Content border color", type: "color", value: "#ffffff" },
@@ -113,14 +122,10 @@ export const fields: FieldGroup[] = [
 
     colors: [
       { id: "background-color", label: "Background color", type: "color-range", value: "#000000", rangeId: "background-opacity", rangeValue: "0" },
-
-      { id: "message-background-color", label: "Message background color", type: "color-range", value: "#cccccc", rangeId: "message-background-opacity", rangeValue: "0" },
-
-      { id: "owner-message-background-color", label: "Owner message background color", type: "color-range", value: "#ffd600", rangeId: "owner-message-background-opacity", rangeValue: "0" },
-
-      { id: "moderator-message-background-color", label: "Moderator message background color", type: "color-range", value: "#5e84f1", rangeId: "moderator-message-background-opacity", rangeValue: "0" },
-
-      { id: "member-message-background-color", label: "Sponsor message background color", type: "color-range", value: "#0f9d58", rangeId: "member-message-background-opacity", rangeValue: "0" },
+      { id: "author-background-color", label: "Channel name background", type: "color-range", value: "#ffffff", rangeId: "author-background-opacity", rangeValue: "0" },
+      { id: "author-owner-background-color", label: "Owner channel name background", type: "color-range", value: "#ffd600", rangeId: "author-owner-background-opacity", rangeValue: "0" },
+      { id: "author-moderator-background-color", label: "Moderator channel name background", type: "color-range", value: "#5e84f1", rangeId: "author-moderator-background-opacity", rangeValue: "0" },
+      { id: "author-member-background-color", label: "Sponsor channel name background", type: "color-range", value: "#0f9d58", rangeId: "author-member-background-opacity", rangeValue: "0" },
     ],
   },
   {
