@@ -1,0 +1,65 @@
+.reboot-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+}
+
+.reboot-content {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.reboot-glitch {
+  font-size: 1.5rem;
+  color: var(--green);
+  margin-bottom: 20px;
+  position: relative;
+  text-shadow: 0 0 10px var(--green);
+}
+
+.reboot-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(0, 255, 0, 0.1);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reboot-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 15px var(--green);
+  animation: rebootProgress 1.2s ease-in-out forwards;
+}
+
+.reboot-logs {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--green);
+  opacity: 0.8;
+}
+
+.log-entry {
+  margin: 5px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--green);
+  animation: typing 0.5s steps(30, end) forwards, blink-caret 0.5s step-end infinite;
+}
+
+.log-entry.delay-1 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
+.log-entry.delay-2 { animation-delay: 0.8s; opacity: 0; animation-fill-mode: forwards; }

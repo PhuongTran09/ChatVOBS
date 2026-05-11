@@ -1,0 +1,98 @@
+.cyber-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.toggle-label {
+  color: var(--text-dim);
+  transition: all 0.3s;
+  letter-spacing: 1px;
+}
+
+.toggle-label.active {
+  color: #fff;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.cyber-toggle {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #333;
+  border-radius: 12px;
+  transition: all 0.3s;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.cyber-toggle.checked .toggle-track {
+  border-color: var(--active-color);
+  background: var(--active-dim);
+  box-shadow: inset 0 0 10px var(--active-dim), 0 0 10px var(--active-dim);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #444;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.cyber-toggle.checked .toggle-thumb {
+  transform: translateX(26px);
+  background: var(--active-color);
+  box-shadow: 0 0 15px var(--active-color);
+}
+
+.thumb-inner {
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Colors */
+.color-cyan {
+  --active-color: var(--cyan);
+  --active-dim: var(--cyan-dim);
+}
+
+.color-magenta {
+  --active-color: var(--magenta);
+  --active-dim: var(--magenta-dim);
+}
+
+.color-green {
+  --active-color: var(--green);
+  --active-dim: rgba(0, 255, 0, 0.2);
+}
+
+/* Glitch Effect on Hover */
+.cyber-toggle:hover .toggle-thumb {
+  filter: brightness(1.2);
+}
+
+.cyber-toggle:active .toggle-thumb {
+  width: 22px;
+}

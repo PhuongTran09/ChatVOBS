@@ -1,0 +1,13 @@
+.cyber-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-height: 380px;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .cyber-split {
+    grid-template-columns: 1fr;
+  }
+}

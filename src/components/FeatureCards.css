@@ -1,0 +1,67 @@
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.cyber-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--cyan-dim);
+  padding: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cyber-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--cyan);
+  box-shadow: 0 10px 30px var(--cyan-dim);
+  animation: neonPulseCyan 1.5s infinite alternate;
+}
+
+.cyber-card.card-magenta {
+  border-color: var(--magenta-dim);
+}
+.cyber-card.card-magenta:hover {
+  border-color: var(--magenta);
+  box-shadow: 0 10px 30px var(--magenta-dim);
+  animation: neonPulseMagenta 1.5s infinite alternate;
+}
+
+.cyber-card.card-green {
+  border-color: rgba(0, 255, 0, 0.2);
+}
+.cyber-card.card-green:hover {
+  border-color: var(--green);
+  box-shadow: 0 10px 30px rgba(0, 255, 0, 0.2);
+  animation: neonPulseGreen 1.5s infinite alternate;
+}
+
+.cyber-card h3 {
+  color: var(--cyan);
+  margin-top: 0;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+
+.cyber-card:hover h3 {
+  text-shadow: 0 0 12px var(--cyan);
+  color: #fff;
+}
+
+.cyber-card.card-magenta h3 { color: var(--magenta); }
+.cyber-card.card-magenta:hover h3 { text-shadow: 0 0 12px var(--magenta); color: #fff; }
+
+.cyber-card.card-green h3 { color: var(--green); }
+.cyber-card.card-green:hover h3 { text-shadow: 0 0 12px var(--green); color: #fff; }
+
+.cyber-card p {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+  transition: all 0.3s;
+}
+
+.cyber-card:hover p {
+  color: var(--text-main);
+}

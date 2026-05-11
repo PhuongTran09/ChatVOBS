@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  --bg-dark: #050508;
+  --glass-bg: rgba(10, 15, 25, 0.85);
+  --glass-border: rgba(0, 255, 255, 0.2); /* Viền Cyan mờ */
+  --glass-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.05);
+
+  --text-main: #e0e0e0;
+  --text-muted: #8892b0;
+
+  --neon-cyan: #0ff;
+  --neon-magenta: #f0f;
+  --neon-green: #0f0;
+  --neon-red: #f00;
+
+  --primary-color: var(--neon-cyan);
+  --primary-hover: #fff;
+
+  --radius-lg: 8px; /* Giảm độ bo tròn để hợp vibe Cyberpunk */
+  --radius-md: 4px;
+  --radius-sm: 2px;
+
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-main: 'Inter', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+}
+
+.chat-customizer-page {
+  font-family: var(--font-main);
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: var(--text-main);
+  background-color: var(--bg-dark);
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  min-height: 100vh;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulseRed {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255, 0, 0, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 255, 0, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+}
+
+@keyframes glassIn {
+  0% { 
+    transform: scale(1.2) translateY(-20px) perspective(1000px) rotateX(10deg); 
+    filter: blur(20px) brightness(2); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: scale(1) translateY(0) perspective(1000px) rotateX(0); 
+    filter: blur(0) brightness(1); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassOut {
+  0% { 
+    transform: scale(1) translateY(0) perspective(1000px) rotateX(0); 
+    filter: blur(0) brightness(1); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: scale(0.8) translateY(20px) perspective(1000px) rotateX(-10deg); 
+    filter: blur(20px) brightness(2); 
+    opacity: 0; 
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.glass-in { animation: glassIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.glass-out { animation: glassOut 0.4s cubic-bezier(0.5, 0, 0.7, 0.4) both; }
+.fade-in { animation: fadeIn 0.3s ease-out both; }
+.fade-out { animation: fadeOut 0.4s ease-out both; }
+.fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+.slide-right { animation: slideRight 0.6s ease-out forwards; animation-delay: 0.1s; opacity: 0; }
+.slide-left { animation: slideLeft 0.6s ease-out forwards; animation-delay: 0.2s; opacity: 0; }
+
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+  position: relative;
+}
+
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 20px; height: 20px;
+  border-top: 2px solid var(--neon-cyan);
+  border-left: 2px solid var(--neon-cyan);
+  pointer-events: none;
+}
+
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.badge-primary {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+}
+
+.badge-secondary {
+  background: rgba(255, 0, 255, 0.1);
+  color: var(--neon-magenta);
+  border: 1px solid var(--neon-magenta);
+}
+
+
+.btn-icon,
+.btn-primary,
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--glass-border);
+  color: var(--text-main);
+}
+
+.btn-icon:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.btn-primary {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.btn-primary:hover {
+  background: #fff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--neon-magenta);
+  color: var(--neon-magenta);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+}
+
+/* =========================================
+   LAYOUT GRID
+========================================= */
+.page-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+
+.control-input input,
+.control-input select {
+  width: 100%;
+  padding: 4px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.control-input input:focus,
+.control-input select:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.control-input input[type='range'] {
+  accent-color: var(--neon-cyan);
+}
+
+/* SCROLLBAR CYBERPUNK */
+.custom-scrollbar::-webkit-scrollbar,
+.chat-preview::-webkit-scrollbar,
+.css-output::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.chat-preview::-webkit-scrollbar-track,
+.css-output::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.chat-preview::-webkit-scrollbar-thumb,
+.css-output::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 0; /* Xóa bo tròn cho ngầu */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.chat-preview::-webkit-scrollbar-thumb:hover,
+.css-output::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+@media (max-width: 980px) {
+  .page-grid { grid-template-columns: 1fr; }
+}

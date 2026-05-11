@@ -1,0 +1,132 @@
+.cyber-terminal {
+  background: #000;
+  border: 1px solid #333;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease-out, opacity 0.3s ease, border-color 0.4s;
+  user-select: none;
+}
+
+.cyber-terminal:hover {
+  border-color: var(--green);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+}
+
+.cyber-terminal#obs-setup:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px var(--cyan-dim);
+}
+
+.cyber-terminal.dragging {
+  transition: none;
+  opacity: 0.9;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--cyan-dim);
+  cursor: grabbing;
+  z-index: 100 !important;
+}
+
+.cyber-terminal.minimized {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.cyber-terminal.minimized .term-body {
+  display: none;
+}
+
+.cyber-terminal.maximized {
+  border-color: var(--magenta);
+  box-shadow: 0 0 20px var(--magenta-dim);
+}
+
+.cyber-terminal.active {
+  border-color: var(--cyan);
+  box-shadow: 0 0 25px var(--cyan-dim), inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-terminal.active.head-green {
+  border-color: var(--green);
+  box-shadow: 0 0 25px rgba(0, 255, 0, 0.3);
+}
+
+.term-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 8px 15px;
+  border-bottom: 1px solid #333;
+  font-size: 0.85rem;
+  transition: all 0.3s;
+  cursor: grab;
+}
+
+.term-head:active {
+  cursor: grabbing;
+}
+
+.cyber-terminal:hover .term-head {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.term-head.head-green { color: var(--green); border-bottom-color: var(--green); }
+.term-head.head-cyan { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+.term-controls {
+  display: flex;
+  height: 100%;
+}
+
+.ctrl {
+  width: 32px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.ctrl:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ctrl.minimize::after {
+  content: "";
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+}
+
+.ctrl.maximize::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border: 1px solid currentColor;
+}
+
+.maximized .ctrl.maximize::after {
+  box-shadow: 2px -2px 0 -1px #000, 2px -2px 0 0px currentColor;
+}
+
+.ctrl.close:hover {
+  background: #e81123 !important;
+  color: #fff !important;
+}
+
+.ctrl.close::before,
+.ctrl.close::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+}
+
+.ctrl.close::before { transform: rotate(45deg); }
+.ctrl.close::after { transform: rotate(-45deg); }
+
+.term-body {
+  padding: 15px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}

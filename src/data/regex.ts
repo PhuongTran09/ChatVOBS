@@ -1,0 +1,1 @@
+export const mustacheRegex = /{{(.*?)}}/g;

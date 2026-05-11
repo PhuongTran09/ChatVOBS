@@ -1,0 +1,253 @@
+/* =========================================
+   FORM CONTROLS & INPUTS (CYBERPUNK)
+========================================= */
+.control-item {
+  padding-top: 5px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--neon-cyan); /* Màu chữ neon */
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.control-input-wrapper {
+  position: relative;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #334155;
+  border-radius: var(--radius-sm); /* Viền sắc nét, ít bo tròn */
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+  appearance: none; /* Ẩn toàn bộ mũi tên mặc định */
+}
+
+/* Tùy chỉnh nút tăng giảm cho input type="number" */
+.modern-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 5l-5 5h10l-5-5z' fill='%230ff'/%3E%3Cpath d='M12 19l5-5H7l5 5z' fill='%230ff'/%3E%3C/svg%3E");
+  background-position: center right 4px;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: all 0.2s;
+  opacity: 0.8;
+}
+
+.modern-input::-webkit-inner-spin-button:hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--neon-cyan));
+}
+
+.modern-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hỗ trợ Firefox */
+.modern-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.modern-input:focus {
+  background: #000;
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.25), inset 0 0 8px rgba(255, 0, 255, 0.1);
+}
+
+/* =========================================
+   TOGGLE SWITCH (CYBERPUNK STYLE)
+========================================= */
+.toggle-item {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+.toggle-item:hover .control-label {
+  color: #fff;
+  text-shadow: 0 0 8px var(--neon-cyan);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 42px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-switch.checked {
+  background-color: rgba(0, 255, 255, 0.1);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2), inset 0 0 5px rgba(0, 255, 255, 0.1);
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #475569;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch.checked .toggle-slider {
+  transform: translateX(22px);
+  background-color: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* =========================================
+   COLOR PICKER & RANGE SLIDER
+========================================= */
+.color-range-inputs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+}
+
+
+/* Custom Color Picker Square */
+.color-picker-wrapper {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px; /* Trả về dạng hình vuông thay vì tròn */
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #334155;
+  flex-shrink: 0;
+}
+
+.color-picker-wrapper:hover {
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 0 1px var(--neon-cyan);
+}
+
+.modern-color-picker {
+  position: absolute;
+  top: -10px; left: -10px;
+  width: 48px; height: 48px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Thanh trượt Range Cyberpunk */
+.modern-range {
+  -webkit-appearance: none;
+  appearance: none;
+  flex-grow: 1;
+  height: 4px; /* Thanh trượt mỏng hơn */
+  background: #1e293b;
+  border-radius: 0;
+  outline: none;
+}
+
+.modern-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 20px; /* Dạng khối chữ nhật dọc */
+  border-radius: 2px;
+  background: var(--neon-magenta);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+  transition: var(--transition);
+}
+
+.modern-range::-webkit-slider-thumb:hover {
+  background: #fff;
+  box-shadow: 0 0 15px var(--neon-magenta);
+}
+
+.modern-range::-moz-range-thumb {
+  width: 12px;
+  height: 20px;
+  border: none;
+  border-radius: 2px;
+  background: var(--neon-magenta);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+  transition: var(--transition);
+}
+
+.modern-range::-moz-range-thumb:hover {
+  background: #fff;
+  box-shadow: 0 0 15px var(--neon-magenta);
+}
+
+.range-value {
+  min-width: 46px;
+  text-align: right;
+  font-family: var(--font-mono);
+  color: var(--neon-green); /* Số hiển thị màu xanh lá */
+  font-size: 0.9rem;
+}
+
+/* =========================================
+   GRID SYSTEM
+========================================= */
+.group-controls,
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  align-items: end;
+}
+
+.color-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.control-item {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .group-controls,
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+}

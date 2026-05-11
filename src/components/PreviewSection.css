@@ -1,0 +1,83 @@
+.preview-panel {
+  display: grid;
+  gap: 24px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chat-preview {
+  min-height: 400px;
+  background: #000;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+.css-output {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  border-radius: var(--radius-md);
+  border: 1px solid #334155;
+  background: #000;
+  color: var(--neon-green);
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.css-output:focus {
+  outline: none;
+  border-color: var(--neon-green);
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
+.pulse-anim {
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(0, 255, 0, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+  }
+}
