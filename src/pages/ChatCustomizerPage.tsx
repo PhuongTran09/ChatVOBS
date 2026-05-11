@@ -21,6 +21,7 @@ export function ChatCustomizerPage({
 }) {
   const [values, setValues] = useState<Values>(initialValues);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [importCss, setImportCss] = useState("");
 
   const { callbacks, isChecked, generateStyle } = createChatCustomizerHelpers(values);
@@ -40,12 +41,20 @@ export function ChatCustomizerPage({
     setLastChangedId(id);
   };
 
+  const closeModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsImportModalOpen(false);
+      setIsClosing(false);
+    }, 400);
+  };
+
   const handleImportCss = () => {
     if (!importCss.trim()) return;
     try {
       const parsedValues = parseCssToValues(importCss, values);
       setValues(parsedValues);
-      setIsImportModalOpen(false);
+      closeModal();
       setImportCss("");
     } catch (error) {
       alert("Lỗi khi đọc CSS. Vui lòng kiểm tra lại định dạng!");
@@ -157,7 +166,10 @@ export function ChatCustomizerPage({
               <span className="badge badge-primary">CSS OUTPUT</span>
               <button
                 className="btn-secondary copy-button"
-                onClick={() => navigator.clipboard.writeText(cssOutput)}
+                onClick={() => {
+                   navigator.clipboard.writeText(cssOutput);
+                   alert("Đã copy CSS vào bộ nhớ tạm!");
+                }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -179,11 +191,11 @@ export function ChatCustomizerPage({
 
       {/* Modal Import CSS */}
       {isImportModalOpen && (
-        <div className="modal-overlay fade-in" onClick={() => setIsImportModalOpen(false)}>
-          <div className="modal-content glass-card slide-up" onClick={(e) => e.stopPropagation()}>
+        <div className={`modal-overlay ${isClosing ? 'fade-out' : 'fade-in'}`} onClick={closeModal}>
+          <div className={`modal-content glass-card ${isClosing ? 'glass-out' : 'glass-in'}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Import Custom CSS</h3>
-              <button className="btn-close" onClick={() => setIsImportModalOpen(false)}>×</button>
+              <button className="btn-close" onClick={closeModal}>×</button>
             </div>
             <div className="modal-body">
               <p>Dán đoạn code CSS đã lưu của bạn vào đây để khôi phục các cài đặt.</p>
@@ -196,7 +208,7 @@ export function ChatCustomizerPage({
               />
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setIsImportModalOpen(false)}>Hủy</button>
+              <button className="btn-secondary" onClick={closeModal}>Hủy</button>
               <button className="btn-primary" onClick={handleImportCss}>Áp dụng</button>
             </div>
           </div>
