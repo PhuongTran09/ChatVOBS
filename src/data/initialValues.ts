@@ -1,9 +1,8 @@
 import { fields } from "./fields";
+import type { CustomizerValues } from "../types/customizer";
 
-type Values = Record<string, any>;
-
-export const initialValues: Values = fields.reduce(
-  (result: Values, group) => {
+export const initialValues: CustomizerValues = fields.reduce(
+  (result: CustomizerValues, group) => {
 
     group.controls?.forEach((control) => {
       if (control.type === "checkbox") {
@@ -34,5 +33,5 @@ export const initialValues: Values = fields.reduce(
 
     return result;
   },
-  {} as Values
+  {} as CustomizerValues
 );

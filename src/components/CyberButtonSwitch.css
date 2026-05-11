@@ -1,0 +1,116 @@
+.cyber-btn-group {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #333;
+  border-radius: 4px;
+  position: relative;
+}
+
+.cyber-switch-btn {
+  position: relative;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: var(--text-dim);
+  padding: 8px 16px;
+  min-width: 80px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 0 #000;
+  top: -2px;
+}
+
+.cyber-switch-btn:hover {
+  background: #222;
+  color: #fff;
+  border-color: #444;
+}
+
+.cyber-switch-btn.active {
+  background: var(--active-dim);
+  color: #fff;
+  border-color: var(--active-color);
+  box-shadow: 0 0px 0 #000;
+  top: 1px;
+  text-shadow: 0 0 8px var(--active-color);
+}
+
+.btn-indicator {
+  width: 100%;
+  height: 2px;
+  background: #333;
+  transition: all 0.3s;
+}
+
+.cyber-switch-btn.active .btn-indicator {
+  background: var(--active-color);
+  box-shadow: 0 0 10px var(--active-color);
+}
+
+.btn-index {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 8px;
+  color: #555;
+}
+
+.cyber-switch-btn.active .btn-index {
+  color: var(--active-color);
+}
+
+/* Size variants */
+.size-small .cyber-btn-group {
+  gap: 4px;
+  padding: 2px;
+}
+
+.size-small .cyber-switch-btn {
+  padding: 4px 10px;
+  min-width: 50px;
+  font-size: 0.65rem;
+  gap: 2px;
+}
+
+.size-small .btn-index {
+  display: none;
+}
+
+.size-small .btn-indicator {
+  height: 1px;
+}
+
+/* Colors */
+.color-cyan {
+  --active-color: var(--cyan);
+  --active-dim: rgba(0, 255, 255, 0.15);
+}
+
+.color-magenta {
+  --active-color: var(--magenta);
+  --active-dim: rgba(255, 0, 255, 0.15);
+}
+
+.color-green {
+  --active-color: var(--green);
+  --active-dim: rgba(0, 255, 0, 0.15);
+}
+
+/* Animation nhấp nháy khi active */
+.cyber-switch-btn.active .btn-indicator {
+  animation: powerPulse 2s infinite;
+}
+
+@keyframes powerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

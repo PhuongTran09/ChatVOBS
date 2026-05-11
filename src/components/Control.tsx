@@ -1,3 +1,4 @@
+import type { CustomizerValues } from "../types/customizer";
 import type {
   ControlItem,
   SelectControl,
@@ -6,12 +7,10 @@ import type {
 } from "../types/customizer";
 import './Control.css';
 
-type Values = Record<string, any>;
-
 interface ControlProps {
   control: ControlItem;
-  values: Values;
-  setValue: (id: string, value: any) => void;
+  values: CustomizerValues;
+  setValue: (id: string, value: string | number | boolean) => void;
 }
 
 export function Control({ control, values, setValue }: ControlProps) {
@@ -24,7 +23,7 @@ export function Control({ control, values, setValue }: ControlProps) {
           <select
             id={c.id}
             className="modern-input"
-            value={values[c.id]}
+            value={String(values[c.id] ?? '')}
             onChange={(e) => setValue(c.id, e.target.value)}
           >
             {(c.options ?? []).map((opt) => (
@@ -71,7 +70,7 @@ export function Control({ control, values, setValue }: ControlProps) {
               id={c.id}
               type="color"
               className="modern-color-picker"
-              value={values[c.id]}
+              value={String(values[c.id] ?? '')}
               onChange={(e) => setValue(c.id, e.target.value)}
             />
           </div>
@@ -83,7 +82,7 @@ export function Control({ control, values, setValue }: ControlProps) {
             min="0"
             max="1"
             step="0.01"
-            value={values[c.rangeId]}
+            value={Number(values[c.rangeId] ?? 0)}
             onChange={(e) => setValue(c.rangeId, e.target.value)}
           />
 
@@ -101,7 +100,7 @@ export function Control({ control, values, setValue }: ControlProps) {
         id={control.id}
         type={control.type}
         className="modern-input"
-        value={values[control.id]}
+        value={String(values[control.id] ?? '')}
         onChange={(e) => setValue(control.id, e.target.value)}
       />
     </div>

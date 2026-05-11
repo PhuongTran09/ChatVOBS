@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-
-type Values = Record<string, any>;
+import type { CustomizerValues } from "../types/customizer";
 
 export function useChatPreview(
-  values: Values,
-  generateStyle: (v: Values) => string,
+  values: CustomizerValues,
+  generateStyle: (v: CustomizerValues) => string,
   callbacks: Record<string, (id?: string) => string>,
   isChecked: (id: string) => boolean
 ) {
@@ -12,7 +11,7 @@ export function useChatPreview(
   const [previewStyle, setPreviewStyle] = useState("");
   const [animationTick, setAnimationTick] = useState(0);
 
-  const cssOutput = useMemo(() => generateStyle(values), [values]);
+  const cssOutput = useMemo(() => generateStyle(values), [values, generateStyle]);
 
   useEffect(() => {
     // Chuyển đổi selector cho phù hợp với Shadow DOM
@@ -20,10 +19,12 @@ export function useChatPreview(
       .replace(/:root/g, ":host")
       .replace(/body/g, ".shadow-root-container");
 
+    const rootTransparent = callbacks["root-transparent"]();
+
     const exampleStyle =
       processedCss +
       ":host { background-color: " +
-      callbacks["root-transparent"]() +
+      rootTransparent +
       " !important; }";
 
     const isAnimationUpdate =
@@ -32,11 +33,7 @@ export function useChatPreview(
     let timeoutId: number | undefined;
 
     if (isAnimationUpdate) {
-      let style = "";
-
-      if (isChecked("animation-in")) {
-        style = ""; // m thay bằng logic animation thật
-      }
+      const style = ""; // placeholder
 
       setPreviewStyle(
         exampleStyle +
@@ -69,7 +66,7 @@ export function useChatPreview(
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [cssOutput, lastChangedId, animationTick]);
+  }, [cssOutput, lastChangedId, animationTick, callbacks, isChecked]);
 
   return {
     cssOutput,

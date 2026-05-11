@@ -1,6 +1,6 @@
 import { template } from "../data/template";
 import { mustacheRegex } from "../data/regex";
-type Values = Record<string, any>;
+import type { CustomizerValues } from "../types/customizer";
 
 const getColorWithAlpha = (color: string, opacity: number | string) => {
   const c = color.substring(1);
@@ -10,10 +10,10 @@ const getColorWithAlpha = (color: string, opacity: number | string) => {
   )},${parseInt(c.substring(4, 6), 16)},${opacity})`;
 };
 
-export function createChatCustomizerHelpers(values: Values) {
+export function createChatCustomizerHelpers(values: CustomizerValues) {
   let currentValues = values;
 
-  const getValue = (id: string): any => {
+  const getValue = (id: string): string | number | boolean => {
     if (Object.prototype.hasOwnProperty.call(currentValues, id)) {
       return currentValues[id];
     }
@@ -47,8 +47,8 @@ export function createChatCustomizerHelpers(values: Values) {
   const callbacks: Record<string, (id?: string) => string> = {
     "show-outlines": (id?: string) => {
       if (isChecked(id!)) {
-        const size = getValue("outline-size");
-        if (size == 0) {
+        const size = Number(getValue("outline-size"));
+        if (size === 0) {
           return "";
         }
 
@@ -173,70 +173,70 @@ export function createChatCustomizerHelpers(values: Values) {
 
     "background-color": () =>
       `background-color: ${getColorWithAlpha(
-        getValue("background-color"),
-        getValue("background-opacity")
+        String(getValue("background-color")),
+        String(getValue("background-opacity"))
       )};`,
 
     "root-transparent": () =>
       getColorWithAlpha(
-        getValue("background-color"),
-        getValue("background-opacity")
+        String(getValue("background-color")),
+        String(getValue("background-opacity"))
       ),
 
     "badge-background-color": () => "#f2f2f2",
 
     "message-background-base": () =>
       getColorWithAlpha(
-        getValue("message-background-color"),
-        getValue("message-background-opacity")
+        String(getValue("message-background-color")),
+        String(getValue("message-background-opacity"))
       ),
 
     "message-bg-color-css": () =>
       getColorWithAlpha(
-        getValue("message-background-color"),
-        getValue("message-background-opacity")
+        String(getValue("message-background-color")),
+        String(getValue("message-background-opacity"))
       ),
 
     "author-bg-color-css": () =>
       getColorWithAlpha(
-        getValue("author-background-color"),
-        getValue("author-background-opacity")
+        String(getValue("author-background-color")),
+        String(getValue("author-background-opacity"))
       ),
 
     "author-owner-bg-color-css": () =>
       getColorWithAlpha(
-        getValue("author-owner-background-color"),
-        getValue("author-owner-background-opacity")
+        String(getValue("author-owner-background-color")),
+        String(getValue("author-owner-background-opacity"))
       ),
 
     "author-moderator-bg-color-css": () =>
       getColorWithAlpha(
-        getValue("author-moderator-background-color"),
-        getValue("author-moderator-background-opacity")
+        String(getValue("author-moderator-background-color")),
+        String(getValue("author-moderator-background-opacity"))
       ),
 
     "author-member-bg-color-css": () =>
       getColorWithAlpha(
-        getValue("author-member-background-color"),
-        getValue("author-member-background-opacity")
+        String(getValue("author-member-background-color")),
+        String(getValue("author-member-background-opacity"))
       ),
 
     "owner-message-background-base": () =>
       getColorWithAlpha(
-        getValue("owner-message-background-color"),
-        getValue("owner-message-background-opacity")
+        String(getValue("owner-message-background-color")),
+        String(getValue("owner-message-background-opacity"))
       ),
 
     "moderator-message-background-base": () =>
       getColorWithAlpha(
-        getValue("moderator-message-background-color"),
-        getValue("moderator-message-background-opacity")
+        String(getValue("moderator-message-background-color")),
+        String(getValue("moderator-message-background-opacity"))
       ),
 
     "member-message-background-base": () =>
       getColorWithAlpha(
-        getValue("member-message-background-color"),
-        getValue("member-message-background-opacity")
+        String(getValue("member-message-background-color")),
+        String(getValue("member-message-background-opacity"))
       ),
 
     "background-owner": () =>
@@ -326,20 +326,20 @@ export function createChatCustomizerHelpers(values: Values) {
     },
   };
 
-  const generateStyle = (values: Values) => {
+  const generateStyle = (values: CustomizerValues) => {
     currentValues = values;
 
     return template.replace(mustacheRegex, (match) => {
       const id = match.substring(2, match.length - 2);
       if (callbacks[id]) return callbacks[id](id);
-      return getValue(id);
+      return String(getValue(id));
     });
   };
 
   return { callbacks, isChecked, generateStyle };
 }
 
-export function parseCssToValues(css: string, currentValues: Values): Values {
+export function parseCssToValues(css: string, currentValues: CustomizerValues): CustomizerValues {
   const newValues = { ...currentValues };
 
   // Parse ALL CSS Variables in :root or :host

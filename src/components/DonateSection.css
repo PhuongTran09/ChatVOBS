@@ -1,0 +1,204 @@
+/* =========================================
+   DONATE SECTION (SINGLE ITEM WITH TOGGLE)
+========================================= */
+.donate-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.donate-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 30px;
+  padding: 30px 80px 30px 30px;
+  width: 100%;
+  max-width: 800px;
+  border: 1px solid var(--cyan-dim);
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.donate-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--cyan);
+  box-shadow: 0 0 15px var(--cyan);
+}
+
+.donate-card.method-wescan::before {
+  background: var(--magenta);
+  box-shadow: 0 0 15px var(--magenta);
+}
+
+.donate-card.method-wescan {
+  border-color: var(--magenta-dim);
+}
+
+.method-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.donate-method-tag {
+  padding: 4px 12px;
+  border: 1px solid;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.method-status {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.donate-info .sys-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #ccc;
+  text-transform: none;
+}
+
+.donate-actions {
+  margin-bottom: 25px;
+}
+
+.donate-msg {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid var(--text-dim);
+}
+
+.msg-tag {
+  color: var(--cyan);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.donate-msg p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-transform: none;
+}
+
+.donate-qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-container {
+  padding: 10px;
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+}
+
+.qr-frame {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  overflow: hidden;
+}
+
+.qr-frame img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.scan-line-anim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: scanLine 3s linear infinite;
+  z-index: 2;
+}
+
+.method-wescan .scan-line-anim {
+  background: var(--magenta);
+  box-shadow: 0 0 10px var(--magenta);
+}
+
+.qr-label {
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: #000;
+  font-weight: 800;
+}
+
+.donate-next-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 5;
+}
+
+.donate-next-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--cyan);
+}
+
+.method-wescan .donate-next-btn:hover {
+  background: rgba(255, 0, 255, 0.1);
+  color: var(--magenta);
+}
+
+.donate-next-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.next-label {
+  writing-mode: vertical-lr;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .donate-card {
+    grid-template-columns: 1fr;
+    padding-right: 70px;
+  }
+  .donate-qr-wrapper {
+    order: -1;
+  }
+}

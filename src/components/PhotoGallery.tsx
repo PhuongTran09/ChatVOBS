@@ -1,0 +1,63 @@
+import React from 'react';
+import './PhotoGallery.css';
+
+interface GalleryItem {
+  id: number;
+  src: string;
+  thumb: string;
+  name: string;
+  date?: string;
+}
+
+interface PhotoGalleryProps {
+  galleryItems: GalleryItem[];
+  setSelectedImage: (image: { src: string; name: string } | null) => void;
+}
+
+export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryProps) {
+  return (
+    <section className="cyber-section" id="gallery">
+      <div className="section-head">
+        <span className="badge badge-secondary">SNAPSHOTS</span>
+        <h2>[ SYSTEM_GALLERY.img ]</h2>
+      </div>
+      <div className="gallery-viewport">
+        <div className="gallery-track">
+          {/* Original Items */}
+          {galleryItems.map((item) => (
+            <div 
+              className="gallery-item" 
+              key={item.id}
+              onClick={() => setSelectedImage({ src: item.src, name: item.name })}
+            >
+              <div className="img-frame">
+                <img src={item.thumb} alt={item.name} />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">{item.name}</span>
+                <span className="file-date">{item.date}</span>
+              </div>
+            </div>
+          ))}
+          {/* Duplicated Items for Seamless Loop */}
+          {galleryItems.map((item) => (
+            <div 
+              className="gallery-item" 
+              key={`dup-${item.id}`}
+              onClick={() => setSelectedImage({ src: item.src, name: item.name })}
+            >
+              <div className="img-frame">
+                <img src={item.thumb} alt={item.name} />
+                <div className="scanline" />
+              </div>
+              <div className="img-meta">
+                <span className="file-name">{item.name}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

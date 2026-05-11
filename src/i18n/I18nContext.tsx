@@ -37,11 +37,7 @@ function formatMessage(
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('en')
-
-  useEffect(() => {
-    setLocale(detectLocale())
-  }, [])
+  const [locale, setLocale] = useState<Locale>(detectLocale)
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, locale)

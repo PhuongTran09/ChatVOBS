@@ -1,0 +1,252 @@
+.music-player-body {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.music-main {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.disc-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.music-disc {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  border-radius: 50%;
+  border: 4px solid #222;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--green);
+  animation: rotateDisc 5s linear infinite, neonPulseGreen 2s infinite alternate;
+  background-image: repeating-radial-gradient(
+    circle,
+    #111,
+    #111 2px,
+    #222 3px,
+    #111 4px
+  );
+  transition: all 0.3s;
+}
+
+.music-disc:hover {
+  box-shadow: 0 0 30px var(--green);
+  animation-duration: 2s;
+}
+
+.disc-inner {
+  width: 35%;
+  height: 35%;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px var(--green);
+}
+
+.disc-label {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.disc-dot {
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+}
+
+.disc-arm {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  width: 40px;
+  height: 5px;
+  background: #444;
+  transform: rotate(45deg);
+  transform-origin: left center;
+  border-radius: 2px;
+}
+
+.music-info {
+  flex: 1;
+}
+
+.song-title {
+  margin: 0;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 0 0 8px var(--green);
+  transition: all 0.3s;
+}
+
+.song-title:hover {
+  text-shadow: 0 0 20px var(--green);
+}
+
+.song-artist {
+  margin: 2px 0 10px;
+  color: var(--green);
+  font-size: 0.8rem;
+}
+
+.music-progress {
+  width: 100%;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #222;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  width: 55%;
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green);
+  animation: neonPulseGreen 1.5s infinite alternate;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-top: 10px;
+  border-top: 1px dashed #333;
+}
+
+.m-btn {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.m-btn:hover {
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 0 20px var(--green);
+  transform: scale(1.1);
+}
+
+.play-btn {
+  font-weight: bold;
+  padding: 4px 15px;
+  animation: neonPulseGreen 2s infinite alternate;
+}
+
+.volume-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.vol-bar {
+  width: 60px;
+  height: 4px;
+  background: #222;
+}
+
+.vol-fill {
+  width: 75%;
+  height: 100%;
+  background: var(--green);
+  box-shadow: 0 0 5px var(--green);
+}
+
+.music-list {
+  margin-top: 10px;
+  max-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-right: 5px;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 2px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
+}
+
+.song-item:hover {
+  background: rgba(0, 255, 0, 0.08);
+  border-left-color: var(--green);
+  padding-left: 15px;
+}
+
+.song-item.active {
+  background: rgba(0, 255, 0, 0.15);
+  border-left-color: var(--green);
+  color: #fff;
+  text-shadow: 0 0 5px var(--green);
+}
+
+.status-icon {
+  width: 12px;
+  color: var(--green);
+}
+
+.s-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-time {
+  opacity: 0.6;
+  font-size: 0.7rem;
+}
+
+@keyframes rotateDisc {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes neonPulseGreen {
+  from { box-shadow: 0 0 10px var(--green); }
+  to { box-shadow: 0 0 25px var(--green), 0 0 5px #fff; }
+}

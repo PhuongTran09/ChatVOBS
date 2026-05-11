@@ -78,19 +78,21 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
 }
 
 .toggle-item:hover .control-label {
   color: #fff;
-  text-shadow: 0 0 5px var(--neon-cyan);
+  text-shadow: 0 0 8px var(--neon-cyan);
 }
 
 .sr-only {
   position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
@@ -98,18 +100,18 @@
 
 .toggle-switch {
   position: relative;
-  width: 44px;
+  width: 42px;
   height: 20px;
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 2px; /* Công tắc vuông vức */
-  transition: var(--transition);
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toggle-switch.checked {
-  background-color: rgba(0, 255, 255, 0.2);
+  background-color: rgba(0, 255, 255, 0.1);
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2), inset 0 0 5px rgba(0, 255, 255, 0.1);
 }
 
 .toggle-slider {
@@ -118,15 +120,16 @@
   left: 2px;
   width: 14px;
   height: 14px;
-  background-color: #555;
-  border-radius: 2px; /* Cục trượt vuông vức */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #475569;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-switch.checked .toggle-slider {
-  transform: translateX(24px);
+  transform: translateX(22px);
   background-color: var(--neon-cyan);
-  box-shadow: 0 0 8px var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
 }
 
 /* =========================================

@@ -1,0 +1,94 @@
+/* ================================================= */
+/* HEADER & NAVIGATION */
+/* ================================================= */
+.cyber-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px 25px;
+  background: var(--panel-bg);
+  border: 1px solid var(--cyan);
+  box-shadow: inset 0 0 10px var(--cyan-dim), 0 0 10px var(--cyan-dim);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.cyber-header:hover {
+  box-shadow: inset 0 0 20px var(--cyan-dim), 0 0 20px var(--cyan-dim);
+}
+
+.brand-text strong {
+  color: var(--cyan);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  display: block;
+  text-shadow: 0 0 8px var(--cyan);
+}
+
+.brand-text span {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.mode-switch {
+  display: flex;
+  border: 1px solid var(--magenta);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.mode-switch button {
+  background: transparent;
+  color: var(--text-dim);
+  border: none;
+  padding: 8px 16px;
+  transition: all 0.3s;
+}
+
+.mode-switch button.active {
+  color: #fff;
+}
+
+.mode-switch button.magenta-glow.active {
+  background: var(--magenta);
+  box-shadow: 0 0 15px var(--magenta);
+}
+
+.mode-switch button.cyan-glow.active {
+  background: var(--cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--cyan);
+}
+
+.cyber-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.cyber-nav a {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.cyber-nav a:hover {
+  color: var(--cyan);
+  text-shadow: 0 0 15px var(--cyan), 0 0 25px var(--cyan);
+}
+
+.cyber-btn-outline {
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.cyber-btn-outline:hover {
+  background: var(--cyan-dim);
+  box-shadow: 0 0 15px var(--cyan), inset 0 0 10px var(--cyan);
+  text-shadow: 0 0 5px #fff;
+}

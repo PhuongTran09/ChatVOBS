@@ -1,0 +1,115 @@
+/* =========================================
+   PHOTO GALLERY
+========================================= */
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  color: #fff;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+}
+
+.cyber-section:hover .section-head h2 {
+  text-shadow: 0 0 15px #fff;
+}
+
+.gallery-viewport {
+  overflow: hidden;
+  width: 100%;
+  padding: 20px 0;
+  position: relative;
+}
+
+.gallery-track {
+  display: flex;
+  gap: 30px;
+  width: max-content;
+  animation: slideGallery 40s linear infinite;
+}
+
+.gallery-track:hover {
+  animation-play-state: paused;
+}
+
+.gallery-item {
+  width: 320px; /* Cố định chiều rộng để trượt mượt */
+  background: var(--panel-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.img-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.img-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.5) brightness(0.8);
+  transition: all 0.5s;
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.25) 50%
+  ),
+  linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.06),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.06)
+  );
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.img-meta {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.img-meta .file-name {
+  color: var(--cyan);
+}
+
+.gallery-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--magenta);
+  box-shadow: 0 0 15px var(--magenta-dim);
+}
+
+.gallery-item:hover .img-frame img {
+  filter: grayscale(0) brightness(1);
+  transform: scale(1.05);
+}
+
+.gallery-item:hover .file-name {
+  text-shadow: 0 0 5px var(--cyan);
+}

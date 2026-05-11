@@ -1,0 +1,50 @@
+.customizer-panel {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  padding: 0;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.panel-content {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.control-group + .control-group {
+  margin-top: 32px;
+}
+
+.group-heading h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--neon-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px dashed rgba(255, 0, 255, 0.3);
+  padding-bottom: 8px;
+}
+
+.group-controls,
+.color-group,
+.checkbox-group {
+  display: grid;
+  gap: 16px;
+}
+
+.play-animation {
+  margin-top: 24px;
+  width: 100%;
+}

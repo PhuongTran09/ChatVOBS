@@ -39,6 +39,8 @@ export type ControlItem =
   | ColorRangeControl
   | ValueControl;
 
+export type CustomizerValues = Record<string, string | number | boolean>;
+
 export interface FieldGroup {
   title: string;
 
