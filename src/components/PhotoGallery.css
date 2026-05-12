@@ -19,10 +19,11 @@
 }
 
 .gallery-viewport {
-  overflow: hidden;
+  overflow-x: auto;
   width: 100%;
   padding: 20px 0;
   position: relative;
+  -webkit-overflow-scrolling: touch;
 }
 
 .gallery-track {
@@ -32,18 +33,35 @@
   animation: slideGallery 40s linear infinite;
 }
 
-.gallery-track:hover {
+.gallery-viewport:hover .gallery-track,
+.gallery-viewport:active .gallery-track {
   animation-play-state: paused;
 }
 
+@keyframes slideGallery {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 15px)); } /* 15px is half of the gap */
+}
+
 .gallery-item {
-  width: 320px; /* Cố định chiều rộng để trượt mượt */
+  width: 320px;
   background: var(--panel-bg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 10px;
   transition: all 0.3s;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .gallery-item {
+    width: 260px;
+    gap: 15px;
+  }
+  
+  .gallery-viewport {
+    padding: 10px 0;
+  }
 }
 
 .img-frame {

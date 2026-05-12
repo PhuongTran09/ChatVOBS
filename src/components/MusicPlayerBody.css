@@ -224,6 +224,47 @@
   text-shadow: 0 0 5px var(--green);
 }
 
+/* MINIMIZED OVERLAY STYLES */
+.minimized .music-player-body {
+  padding: 8px 12px;
+  gap: 8px;
+  max-width: 300px;
+}
+
+.minimized .music-main {
+  gap: 12px;
+}
+
+.minimized .disc-container {
+  width: 50px;
+  height: 50px;
+}
+
+.minimized .song-title {
+  font-size: 0.85rem;
+}
+
+.minimized .song-artist {
+  display: none;
+}
+
+.minimized .music-progress {
+  display: none;
+}
+
+.minimized .music-controls {
+  padding-top: 5px;
+  gap: 8px;
+}
+
+.minimized .volume-slider {
+  display: none;
+}
+
+.minimized .music-list {
+  display: none;
+}
+
 .status-icon {
   width: 12px;
   color: var(--green);

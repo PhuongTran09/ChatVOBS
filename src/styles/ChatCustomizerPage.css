@@ -22,8 +22,8 @@
   --radius-sm: 2px;
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-main: 'Inter', sans-serif;
-  --font-mono: 'Share Tech Mono', monospace;
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 }
 
 .chat-customizer-page {
@@ -288,4 +288,36 @@
 
 @media (max-width: 980px) {
   .page-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .chat-customizer-page {
+    padding: 12px;
+  }
+
+  .glass-card {
+    padding: 12px;
+  }
+
+  .btn-primary, .btn-secondary, .btn-icon {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .control-input input, .control-input select {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-customizer-page {
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+  }
 }

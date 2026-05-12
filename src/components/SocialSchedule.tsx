@@ -1,38 +1,106 @@
+import { useState } from 'react';
 import './SocialSchedule.css';
 import { useI18n } from '../i18n';
 
 export function SocialSchedule() {
   const { t } = useI18n();
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Hàm lấy ngày trong tuần dựa trên offset
+  const getWeekDates = (offset: number) => {
+    const now = new Date();
+    // Thêm offset tuần (7 ngày mỗi tuần)
+    now.setDate(now.getDate() + offset * 7);
+    
+    const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    
+    const monday = new Date(now.setDate(diff));
+    const dates = [];
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  const weekDates = getWeekDates(weekOffset);
+  const today = new Date();
+  const todayStr = today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  
+  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  const tasks = [
+    { key: 'schedule.task.code', time: '21:00' },
+    { key: 'schedule.task.code', time: '21:00' },
+    { key: 'schedule.task.code', time: '21:00' },
+    { key: 'schedule.task.gaming', time: '22:30', highlight: true },
+    { key: 'schedule.task.gaming', time: '22:30', highlight: true },
+    { key: 'schedule.task.community', time: '14:00' },
+    { key: 'schedule.task.reboot', time: t('schedule.time.offline') },
+  ];
+
+  const handlePrevWeek = () => setWeekOffset(prev => prev - 1);
+  const handleNextWeek = () => setWeekOffset(prev => prev + 1);
+  const handleToday = () => setWeekOffset(0);
+
+  // Hàm format ngày DD/MM
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${day}/${month}`;
+  };
+
+  // Hàm kiểm tra xem một ngày có phải là hôm nay không
+  const checkIsToday = (date: Date) => {
+    const now = new Date();
+    return date.getDate() === now.getDate() &&
+           date.getMonth() === now.getMonth() &&
+           date.getFullYear() === now.getFullYear();
+  };
 
   return (
     <section className="cyber-grid-2-1" id="social-schedule">
       {/* STREAM SCHEDULE */}
       <div className="cyber-panel schedule-panel">
         <div className="panel-head">
-          <span className="blink-dot green" />
-          <strong>{t('schedule.title')}</strong>
+          <div className="head-left">
+            <span className="blink-dot green" />
+            <strong>{t('schedule.title')}</strong>
+          </div>
+          <div className="head-right current-day-tag">
+            <span className="tag-label">TODAY:</span>
+            <span className="tag-value">{todayStr}</span>
+          </div>
         </div>
+        
+        <div className="schedule-controls">
+          <div className="week-navigation">
+            <button className="nav-btn" onClick={handlePrevWeek}>&lt; PREV</button>
+            <button className="nav-btn today-btn" onClick={handleToday}>WEEK {weekOffset === 0 ? 'NOW' : (weekOffset > 0 ? `+${weekOffset}` : weekOffset)}</button>
+            <button className="nav-btn" onClick={handleNextWeek}>NEXT &gt;</button>
+          </div>
+          <div className="week-range">
+            {formatDate(weekDates[0])} - {formatDate(weekDates[6])}
+          </div>
+        </div>
+
         <div className="panel-body">
-          <div className="schedule-table">
-            <div className="sched-row">
-              <span className="day">{t('schedule.mon_wed')}</span>
-              <span className="task">{t('schedule.task.code')}</span>
-              <span className="time">21:00</span>
-            </div>
-            <div className="sched-row highlight">
-              <span className="day">{t('schedule.thu_fri')}</span>
-              <span className="task">{t('schedule.task.gaming')}</span>
-              <span className="time">22:30</span>
-            </div>
-            <div className="sched-row">
-              <span className="day">{t('schedule.sat')}</span>
-              <span className="task">{t('schedule.task.community')}</span>
-              <span className="time">14:00</span>
-            </div>
-            <div className="sched-row">
-              <span className="day">{t('schedule.sun')}</span>
-              <span className="task">{t('schedule.task.reboot')}</span>
-              <span className="time">{t('schedule.time.offline')}</span>
+          <div className="schedule-table-wrapper custom-scrollbar">
+            <div className="schedule-table">
+              {weekDates.map((date, index) => (
+                <div key={index} className={`sched-row ${checkIsToday(date) ? 'highlight' : ''}`}>
+                  <div className="day-info">
+                    <span className="day">{t(`schedule.${dayKeys[index]}`)}</span>
+                    <span className="full-date">
+                      {date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </span>
+                  </div>
+                  <span className="task">{t(tasks[index].key)}</span>
+                  <span className="time">{tasks[index].time}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

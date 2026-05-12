@@ -1,74 +1,209 @@
 .cyber-terminal {
-  background: #000;
-  border: 1px solid #333;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.1s ease-out, opacity 0.3s ease, border-color 0.4s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(5, 5, 8, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+  transition: transform 0.1s ease-out, opacity 0.3s ease, border-color 0.4s, box-shadow 0.4s;
   user-select: none;
+  z-index: 100;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* 3D SIDE SHADOW EFFECT */
+.cyber-terminal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 5px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  transform: skewY(-45deg);
+  transform-origin: left top;
+}
+
+.cyber-terminal::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.4);
+  transform: skewX(-45deg);
+  transform-origin: left top;
 }
 
 .cyber-terminal:hover {
-  border-color: var(--green);
-  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+  border-color: rgba(0, 255, 0, 0.4);
+  box-shadow: 0 15px 50px rgba(0, 255, 0, 0.1);
 }
 
-.cyber-terminal#obs-setup:hover {
-  border-color: var(--cyan);
-  box-shadow: 0 0 30px var(--cyan-dim);
+.cyber-terminal#obs:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 15px 50px rgba(0, 255, 255, 0.1);
+}
+
+/* DECORATIVE ELEMENTS */
+.terminal-glitch-line {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 30%;
+  height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  z-index: 10;
+  opacity: 0.5;
+}
+
+.terminal-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.terminal-corner-top-left {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 15px;
+  height: 15px;
+  border-top: 2px solid var(--cyan);
+  border-left: 2px solid var(--cyan);
+  z-index: 10;
+}
+
+.terminal-corner-bottom-right {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 15px;
+  height: 15px;
+  border-bottom: 2px solid var(--cyan);
+  border-right: 2px solid var(--cyan);
+  z-index: 10;
+}
+
+.active#music .terminal-corner-top-left,
+.active#music .terminal-corner-bottom-right {
+  border-color: var(--green);
 }
 
 .cyber-terminal.dragging {
   transition: none;
-  opacity: 0.9;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--cyan-dim);
-  cursor: grabbing;
-  z-index: 100 !important;
+  opacity: 0.95;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 30px var(--cyan-dim);
+  transform: scale(1.02);
+  z-index: 2000 !important;
 }
 
 .cyber-terminal.minimized {
   height: auto !important;
   min-height: 0 !important;
+  width: auto !important;
+  min-width: 200px;
 }
 
-.cyber-terminal.minimized .term-body {
+.cyber-terminal.minimized:not(#music) .term-body {
   display: none;
 }
 
-.cyber-terminal.maximized {
-  border-color: var(--magenta);
-  box-shadow: 0 0 20px var(--magenta-dim);
-}
-
-.cyber-terminal.active {
-  border-color: var(--cyan);
-  box-shadow: 0 0 25px var(--cyan-dim), inset 0 0 10px rgba(0, 255, 255, 0.1);
-}
-
-.cyber-terminal.active.head-green {
+/* MUSIC OVERLAY MODE */
+.cyber-terminal.minimized#music {
+  width: 300px !important;
   border-color: var(--green);
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+}
+
+.cyber-terminal.minimized.dragging {
+  z-index: 9999 !important;
+}
+
+.cyber-terminal.maximized#music {
+  border-color: var(--green);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3), inset 0 0 15px rgba(0, 255, 0, 0.1);
+}
+
+.cyber-terminal.maximized#obs {
+  border-color: var(--cyan);
+  box-shadow: 0 0 30px var(--cyan-dim), inset 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.cyber-terminal.active#music {
+  border-color: var(--green);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(0, 255, 0, 0.3), 
+    inset 0 0 15px rgba(0, 255, 0, 0.1);
+}
+
+.cyber-terminal.active#obs {
+  border-color: var(--cyan);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 30px var(--cyan-dim), 
+    inset 0 0 15px rgba(0, 255, 255, 0.1);
 }
 
 .term-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0 8px 15px;
-  border-bottom: 1px solid #333;
+  padding: 10px 0 10px 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.85rem;
   transition: all 0.3s;
   cursor: grab;
+  position: relative;
+  z-index: 20;
 }
+
+.head-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.head-dot {
+  width: 8px;
+  height: 8px;
+  background: #444;
+  border-radius: 50%;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+}
+
+.active#music .head-dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.active#obs .head-dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
 
 .term-head:active {
   cursor: grabbing;
 }
 
 .cyber-terminal:hover .term-head {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
 }
 
-.term-head.head-green { color: var(--green); border-bottom-color: var(--green); }
-.term-head.head-cyan { color: var(--cyan); border-bottom-color: var(--cyan); }
+.term-head.head-green { color: var(--green); border-bottom-color: rgba(0, 255, 0, 0.3); }
+.term-head.head-cyan { color: var(--cyan); border-bottom-color: rgba(0, 255, 255, 0.3); }
 
 .term-controls {
   display: flex;
@@ -76,8 +211,8 @@
 }
 
 .ctrl {
-  width: 32px;
-  height: 24px;
+  width: 36px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,8 +234,8 @@
 
 .ctrl.maximize::after {
   content: "";
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border: 1px solid currentColor;
 }
 
@@ -125,8 +260,14 @@
 .ctrl.close::before { transform: rotate(45deg); }
 .ctrl.close::after { transform: rotate(-45deg); }
 
+.terminal-content-wrapper {
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.01), transparent);
+}
+
 .term-body {
-  padding: 15px;
+  padding: 20px;
   font-size: 0.9rem;
   line-height: 1.6;
 }

@@ -49,6 +49,10 @@ export function Hero({ profileMode, onOpenChat }: HeroProps) {
 
       {/* STATUS PANEL */}
       <aside className="cyber-panel status-panel">
+        <div className="panel-scanline" />
+        <div className="panel-corner-tl" />
+        <div className="panel-corner-br" />
+        
         <div className="panel-head">
           <span className="blink-dot" />
           <strong>{t('panel.live')}</strong>

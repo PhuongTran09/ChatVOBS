@@ -11,7 +11,7 @@ export function useTerminals() {
       isMaximized: false,
       pos: { x: 0, y: 0 },
       oldPos: { x: 0, y: 0 },
-      zIndex: 1,
+      zIndex: 100,
     },
     obs: {
       isOpen: true,
@@ -19,7 +19,7 @@ export function useTerminals() {
       isMaximized: false,
       pos: { x: 0, y: 0 },
       oldPos: { x: 0, y: 0 },
-      zIndex: 1,
+      zIndex: 101,
     },
   });
 
@@ -142,14 +142,38 @@ export function useTerminals() {
       setDragging(null);
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (dragging) {
+        const touch = e.touches[0];
+        setTerminals((prev) => ({
+          ...prev,
+          [dragging.id]: {
+            ...prev[dragging.id],
+            pos: {
+              x: touch.clientX - dragging.startX,
+              y: touch.clientY - dragging.startY,
+            },
+          },
+        }));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setDragging(null);
+    };
+
     if (dragging) {
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", handleTouchEnd);
     }
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [dragging]);
 

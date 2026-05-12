@@ -48,3 +48,29 @@
   margin-top: 24px;
   width: 100%;
 }
+
+@media (max-width: 640px) {
+  .panel-header {
+    padding: 10px 12px;
+  }
+  
+  .panel-content {
+    padding: 12px;
+  }
+  
+  .group-heading h3 {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+  }
+  
+  .control-group + .control-group {
+    margin-top: 20px;
+  }
+
+  .group-controls,
+  .color-group,
+  .checkbox-group {
+    gap: 12px;
+  }
+}
