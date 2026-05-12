@@ -1,13 +1,15 @@
-import React from 'react';
+import { useI18n } from '../i18n';
 
 export function ObsSetupBody() {
+  const { t } = useI18n();
+
   return (
     <div className="term-body">
-      <p className="sys-text">{'>'} TÍCH HỢP OBS BROWSER</p>
-      <p>Hướng dẫn cài đặt:</p>
-      <p>1. Click [OPEN CHAT EDITOR] để tùy chỉnh.</p>
-      <p>2. Copy đường dẫn CSS sinh ra.</p>
-      <p>3. Thêm Browser Source vào OBS, dán link YouTube Chat và chèn CSS vào "Custom CSS".</p>
+      <p className="sys-text">{t('obs.body.title')}</p>
+      <p>{t('obs.body.guide')}</p>
+      <p>{t('obs.body.step1')}</p>
+      <p>{t('obs.body.step2')}</p>
+      <p>{t('obs.body.step3')}</p>
       <p className="blink-cursor">_</p>
     </div>
   );

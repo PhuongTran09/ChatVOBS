@@ -1,8 +1,8 @@
-import React from "react";
 import { Terminal } from "./Terminal";
 import { MusicPlayerBody } from "./MusicPlayerBody";
 import { ObsSetupBody } from "./ObsSetupBody";
 import type { TerminalId, TerminalState } from "../types/terminal";
+import type { MouseEvent } from "react";
 import "./TerminalsBand.css";
 
 interface TerminalsBandProps {
@@ -10,13 +10,13 @@ interface TerminalsBandProps {
   activeTerminal: TerminalId | null;
   draggingId: TerminalId | undefined;
   bringToFront: (id: TerminalId) => void;
-  handleMouseDown: (id: TerminalId, e: React.MouseEvent) => void;
+  handleMouseDown: (id: TerminalId, e: MouseEvent) => void;
   toggleMinimize: (id: TerminalId) => void;
   toggleMaximize: (id: TerminalId) => void;
   closeTerminal: (id: TerminalId) => void;
 }
 
-export const TerminalsBand: React.FC<TerminalsBandProps> = ({
+export const TerminalsBand = ({
   terminals,
   activeTerminal,
   draggingId,
@@ -25,7 +25,7 @@ export const TerminalsBand: React.FC<TerminalsBandProps> = ({
   toggleMinimize,
   toggleMaximize,
   closeTerminal,
-}) => {
+}: TerminalsBandProps) => {
   return (
     <section className="cyber-split" id="activity">
       <Terminal

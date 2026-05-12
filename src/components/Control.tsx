@@ -5,6 +5,7 @@ import type {
   CheckboxControl,
   ColorRangeControl,
 } from "../types/customizer";
+import { useI18n } from "../i18n";
 import './Control.css';
 
 interface ControlProps {
@@ -14,11 +15,13 @@ interface ControlProps {
 }
 
 export function Control({ control, values, setValue }: ControlProps) {
+  const { t } = useI18n();
+
   if (control.type === "select") {
     const c = control as SelectControl;
     return (
       <div className="control-item">
-        {c.label && <label className="control-label" htmlFor={c.id}>{c.label}</label>}
+        {c.label && <label className="control-label" htmlFor={c.id}>{t(`field.${c.id}.label`)}</label>}
         <div className="control-input-wrapper">
           <select
             id={c.id}
@@ -43,7 +46,7 @@ export function Control({ control, values, setValue }: ControlProps) {
 
     return (
       <label className="control-item toggle-item" htmlFor={c.id}>
-        {c.label && <span className="control-label">{c.label}</span>}
+        {c.label && <span className="control-label">{t(`field.${c.id}.label`)}</span>}
         <div className={`toggle-switch ${isChecked ? 'checked' : ''}`}>
           <input
             id={c.id}
@@ -63,7 +66,7 @@ export function Control({ control, values, setValue }: ControlProps) {
 
     return (
       <div className="control-item color-range-item">
-        {c.label && <span className="control-label">{c.label}</span>}
+        {c.label && <span className="control-label">{t(`field.${c.id}.label`)}</span>}
         <div className="color-range-inputs">
           <div className="color-picker-wrapper">
             <input
@@ -95,7 +98,7 @@ export function Control({ control, values, setValue }: ControlProps) {
   }
   return (
     <div className="control-item">
-      {control.label && <label className="control-label" htmlFor={control.id}>{control.label}</label>}
+      {control.label && <label className="control-label" htmlFor={control.id}>{t(`field.${control.id}.label`)}</label>}
       <input
         id={control.id}
         type={control.type}

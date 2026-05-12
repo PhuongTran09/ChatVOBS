@@ -1,7 +1,8 @@
-import React from 'react'
+import { useI18n } from '../i18n';
 import './MusicPlayerBody.css'
 
 export function MusicPlayerBody() {
+  const { t } = useI18n();
 
   return (
     <div className="term-body music-player-body">
@@ -32,10 +33,10 @@ export function MusicPlayerBody() {
       </div>
       <div className="music-controls">
         <button className="m-btn">{'<<'}</button>
-        <button className="m-btn play-btn">PAUSE</button>
+        <button className="m-btn play-btn">{t('music.pause')}</button>
         <button className="m-btn">{'>>'}</button>
         <div className="volume-slider">
-          <span>VOL</span>
+          <span>{t('music.vol')}</span>
           <div className="vol-bar"><div className="vol-fill" /></div>
         </div>
       </div>

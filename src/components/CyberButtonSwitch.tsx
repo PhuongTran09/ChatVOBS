@@ -1,4 +1,3 @@
-import React from 'react';
 import './CyberButtonSwitch.css';
 
 interface CyberButtonSwitchProps {
@@ -9,13 +8,13 @@ interface CyberButtonSwitchProps {
   size?: 'normal' | 'small';
 }
 
-export const CyberButtonSwitch: React.FC<CyberButtonSwitchProps> = ({
+export const CyberButtonSwitch = ({
   options,
   value,
   onChange,
   activeColor = 'cyan',
   size = 'normal',
-}) => {
+}: CyberButtonSwitchProps) => {
   return (
     <div className={`cyber-btn-group color-${activeColor} size-${size}`}>
       {options.map((opt, idx) => (

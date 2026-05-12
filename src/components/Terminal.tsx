@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode, MouseEvent } from 'react';
 import type { TerminalId, TerminalState } from '../types/terminal';
 import './Terminals.css';
 
@@ -8,12 +8,12 @@ interface TerminalProps {
   terminalState: TerminalState;
   isActive: boolean;
   isDragging: boolean;
-  onMouseDown: (e: React.MouseEvent) => void;
-  onHeaderMouseDown: (e: React.MouseEvent) => void;
+  onMouseDown: (e: MouseEvent) => void;
+  onHeaderMouseDown: (e: MouseEvent) => void;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
   headClass?: string;
 }
 

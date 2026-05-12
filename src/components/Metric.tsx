@@ -1,4 +1,3 @@
-import React from 'react';
 import './Metric.css';
 
 interface MetricProps {

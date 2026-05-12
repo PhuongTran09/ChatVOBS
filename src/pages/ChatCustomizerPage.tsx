@@ -3,7 +3,6 @@ import { useChatPreview } from "../hooks/useChatPreview";
 import "../styles/ChatCustomizerPage.css";
 
 import type { CustomizerValues } from "../types/customizer";
-import type { I18nContext } from "../i18n/I18nContext";
 import { initialValues } from "../data/initialValues";
 import { createChatCustomizerHelpers, parseCssToValues } from "../utils/chatCustomizer";
 
@@ -24,13 +23,12 @@ export function ChatCustomizerPage({
   const [isClosing, setIsClosing] = useState(false);
   const [importCss, setImportCss] = useState("");
 
-  const { callbacks, isChecked, generateStyle } = createChatCustomizerHelpers(values);
+  const { callbacks, generateStyle } = createChatCustomizerHelpers(values);
 
   const { cssOutput, previewStyle, setLastChangedId, setAnimationTick } = useChatPreview(
     values,
     generateStyle,
-    callbacks,
-    isChecked
+    callbacks
   );
 
   const setValue = (id: string, value: string | number | boolean) => {

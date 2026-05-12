@@ -3,7 +3,10 @@ import { mustacheRegex } from "../data/regex";
 import type { CustomizerValues } from "../types/customizer";
 
 const getColorWithAlpha = (color: string, opacity: number | string) => {
-  const c = color.substring(1);
+  let c = color.substring(1);
+  if (c.length === 3) {
+    c = c.split('').map(char => char + char).join('');
+  }
   return `rgba(${parseInt(c.substring(0, 2), 16)},${parseInt(
     c.substring(2, 4),
     16

@@ -1,4 +1,3 @@
-import React from 'react';
 import './Header.css';
 import { useI18n } from '../i18n';
 
@@ -16,8 +15,8 @@ export function Header({ profileMode, setProfileMode }: HeaderProps) {
     <header className="cyber-header">
       <div className="brand-block">
         <div className="brand-text">
-          <strong>[DEVSTREAMER]</strong>
-          <span>CODE & CHILL</span>
+          <strong>{t('nav.brand')}</strong>
+          <span>{t('nav.tagline')}</span>
         </div>
       </div>
       <nav className="cyber-nav" aria-label="Primary">

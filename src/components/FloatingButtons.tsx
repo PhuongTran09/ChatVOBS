@@ -1,5 +1,5 @@
-import React from 'react';
 import './FloatingButtons.css';
+import { useI18n } from '../i18n';
 
 interface FloatingButtonsProps {
   showScrollTop: boolean;
@@ -14,13 +14,15 @@ export function FloatingButtons({
   isAnyTerminalClosed, 
   reopenTerminals 
 }: FloatingButtonsProps) {
+  const { t } = useI18n();
+
   return (
     <>
       {/* SCROLL TO TOP BUTTON */}
       <button 
         className={`scroll-top-btn ${showScrollTop ? 'visible' : ''}`} 
         onClick={scrollToTop}
-        aria-label="Scroll to top"
+        aria-label={t('floating.scroll_top')}
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="18 13 12 7 6 13"></polyline>
@@ -32,7 +34,7 @@ export function FloatingButtons({
       <button 
         className={`restore-terminals-btn ${isAnyTerminalClosed ? 'visible' : ''}`} 
         onClick={reopenTerminals}
-        aria-label="Restore Terminals"
+        aria-label={t('floating.restore_terminals')}
       >
         <div className="btn-inner">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

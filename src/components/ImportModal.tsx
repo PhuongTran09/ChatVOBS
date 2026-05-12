@@ -1,4 +1,5 @@
-import React from "react";
+import type { MouseEvent } from "react";
+import { useI18n } from "../i18n";
 import "./ImportModal.css";
 
 interface ImportModalProps {
@@ -10,14 +11,15 @@ interface ImportModalProps {
   onImport: () => void;
 }
 
-export const ImportModal: React.FC<ImportModalProps> = ({
+export const ImportModal = ({
   isOpen,
   isClosing,
   importCss,
   setImportCss,
   onClose,
   onImport,
-}) => {
+}: ImportModalProps) => {
+  const { t } = useI18n();
   if (!isOpen) return null;
 
   return (
@@ -29,17 +31,17 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         className={`modal-content glass-card ${
           isClosing ? "glass-out" : "glass-in"
         }`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: MouseEvent) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>Import Custom CSS</h3>
+          <h3>{t('import.title')}</h3>
           <button className="btn-close" onClick={onClose}>
             ×
           </button>
         </div>
         <div className="modal-body">
           <p>
-            Dán đoạn code CSS đã lưu của bạn vào đây để khôi phục các cài đặt.
+            {t('import.description')}
           </p>
           <textarea
             className="modern-input custom-scrollbar"
@@ -51,10 +53,10 @@ export const ImportModal: React.FC<ImportModalProps> = ({
         </div>
         <div className="modal-footer">
           <button className="btn-secondary" onClick={onClose}>
-            Hủy
+            {t('import.cancel')}
           </button>
           <button className="btn-primary" onClick={onImport}>
-            Áp dụng
+            {t('import.apply')}
           </button>
         </div>
       </div>

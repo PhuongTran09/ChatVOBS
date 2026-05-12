@@ -1,4 +1,4 @@
-import React from "react";
+import { useI18n } from "../i18n";
 import "./CustomizerHeader.css";
 
 interface CustomizerHeaderProps {
@@ -6,10 +6,12 @@ interface CustomizerHeaderProps {
   onImportClick: () => void;
 }
 
-export const CustomizerHeader: React.FC<CustomizerHeaderProps> = ({
+export const CustomizerHeader = ({
   onBackHome,
   onImportClick,
-}) => {
+}: CustomizerHeaderProps) => {
+  const { t } = useI18n();
+
   return (
     <header className="page-header glass-card slide-down">
       <div className="header-left">
@@ -26,10 +28,10 @@ export const CustomizerHeader: React.FC<CustomizerHeaderProps> = ({
           >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          <span>Back</span>
+          <span>{t('customizer.back')}</span>
         </button>
         <div className="header-titles">
-          <h1 className="page-title">Chat Live Customizer</h1>
+          <h1 className="page-title">{t('customizer.title')}</h1>
         </div>
       </div>
       <div className="header-actions">
@@ -48,7 +50,7 @@ export const CustomizerHeader: React.FC<CustomizerHeaderProps> = ({
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" x2="12" y1="3" y2="15" />
           </svg>
-          <span>Import CSS</span>
+          <span>{t('customizer.import')}</span>
         </button>
       </div>
     </header>
