@@ -7,7 +7,7 @@ export function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
   
   const mousePos = useRef({ x: 0, y: 0 });
-  const currentPos = useRef({ x: 0, y: 0 });
+  // const currentPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
