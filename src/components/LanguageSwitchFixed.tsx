@@ -1,9 +1,8 @@
-import React from 'react';
 import { useI18n } from '../i18n';
 import { CyberButtonSwitch } from './CyberButtonSwitch';
 import './LanguageSwitchFixed.css';
 
-export const LanguageSwitchFixed: React.FC = () => {
+export const LanguageSwitchFixed = () => {
   const { locale, toggleLocale } = useI18n();
 
   return (

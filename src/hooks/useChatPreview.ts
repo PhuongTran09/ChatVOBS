@@ -4,16 +4,29 @@ import type { CustomizerValues } from "../types/customizer";
 export function useChatPreview(
   values: CustomizerValues,
   generateStyle: (v: CustomizerValues) => string,
-  callbacks: Record<string, (id?: string) => string>,
-  isChecked: (id: string) => boolean
+  callbacks: Record<string, (id?: string) => string>
 ) {
   const [lastChangedId, setLastChangedId] = useState("");
-  const [previewStyle, setPreviewStyle] = useState("");
   const [animationTick, setAnimationTick] = useState(0);
+  const [isResetting, setIsResetting] = useState(false);
+  const [prevDeps, setPrevDeps] = useState({ lastChangedId, animationTick });
+
+  // Adjust state when dependencies change during render to avoid cascading renders in useEffect
+  if (
+    lastChangedId !== prevDeps.lastChangedId ||
+    animationTick !== prevDeps.animationTick
+  ) {
+    setPrevDeps({ lastChangedId, animationTick });
+    const isAnimationUpdate =
+      lastChangedId.includes("animation") || animationTick > 0;
+    if (isAnimationUpdate) {
+      setIsResetting(true);
+    }
+  }
 
   const cssOutput = useMemo(() => generateStyle(values), [values, generateStyle]);
 
-  useEffect(() => {
+  const basePreviewStyle = useMemo(() => {
     // Chuyển đổi selector cho phù hợp với Shadow DOM
     const processedCss = cssOutput
       .replace(/:root/g, ":host")
@@ -21,52 +34,40 @@ export function useChatPreview(
 
     const rootTransparent = callbacks["root-transparent"]();
 
-    const exampleStyle =
+    return (
       processedCss +
       ":host { background-color: " +
       rootTransparent +
-      " !important; }";
+      " !important; }"
+    );
+  }, [cssOutput, callbacks]);
 
+  useEffect(() => {
+    if (isResetting) {
+      const timeoutId = window.setTimeout(() => {
+        setIsResetting(false);
+      }, 10);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isResetting]);
+
+  const previewStyle = useMemo(() => {
     const isAnimationUpdate =
       lastChangedId.includes("animation") || animationTick > 0;
 
-    let timeoutId: number | undefined;
+    const animationOverride =
+      !isAnimationUpdate || isResetting
+        ? "animation: none !important;"
+        : "animation-delay: 200ms;";
 
-    if (isAnimationUpdate) {
-      const style = ""; // placeholder
-
-      setPreviewStyle(
-        exampleStyle +
-          `yt-live-chat-text-message-renderer,
-           yt-live-chat-legacy-paid-message-renderer {
-             animation: none !important;
-             ${style}
-           }`
-      );
-
-      timeoutId = window.setTimeout(() => {
-        setPreviewStyle(
-          exampleStyle +
-            `yt-live-chat-text-message-renderer,
-             yt-live-chat-legacy-paid-message-renderer {
-               animation-delay: 200ms;
-             }`
-        );
-      }, 1);
-    } else {
-      setPreviewStyle(
-        exampleStyle +
-          `yt-live-chat-text-message-renderer,
-           yt-live-chat-legacy-paid-message-renderer {
-             animation: none !important;
-           }`
-      );
-    }
-
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [cssOutput, lastChangedId, animationTick, callbacks, isChecked]);
+    return (
+      basePreviewStyle +
+      `yt-live-chat-text-message-renderer,
+       yt-live-chat-legacy-paid-message-renderer {
+         ${animationOverride}
+       }`
+    );
+  }, [basePreviewStyle, isResetting, lastChangedId, animationTick]);
 
   return {
     cssOutput,

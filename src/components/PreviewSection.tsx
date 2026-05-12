@@ -1,6 +1,6 @@
-import React from "react";
 import { ShadowPreview } from "./ShadowPreview";
-import { exampleMarkup } from "../data/exampleMarkup";
+import { getExampleMarkup } from "../data/exampleMarkup";
+import { useI18n } from "../i18n";
 import "./PreviewSection.css";
 
 interface PreviewSectionProps {
@@ -8,39 +8,41 @@ interface PreviewSectionProps {
   cssOutput: string;
 }
 
-export const PreviewSection: React.FC<PreviewSectionProps> = ({
+export const PreviewSection = ({
   combinedCss,
   cssOutput,
-}) => {
+}: PreviewSectionProps) => {
+  const { t } = useI18n();
+
   return (
     <div className="preview-panel slide-left">
       <section className="preview-card glass-card">
         <div className="card-header">
           <div className="header-titles">
-            <span className="badge badge-primary">PREVIEW EXAMPLE</span>
+            <span className="badge badge-primary">{t('preview.example')}</span>
           </div>
           <div className="live-indicator">
             <span className="status-dot green pulse-anim" />
-            Active
+            {t('preview.active')}
           </div>
         </div>
 
         <ShadowPreview
           id="fakebody"
           className="chat-preview"
-          htmlContent={exampleMarkup}
+          htmlContent={getExampleMarkup(t)}
           cssContent={combinedCss}
         />
       </section>
 
       <section className="css-card glass-card">
         <div className="card-header">
-          <span className="badge badge-primary">CSS OUTPUT</span>
+          <span className="badge badge-primary">{t('preview.css_output')}</span>
           <button
             className="btn-secondary copy-button"
             onClick={() => {
               navigator.clipboard.writeText(cssOutput);
-              alert("Đã copy CSS vào bộ nhớ tạm!");
+              alert(t('preview.copied_msg'));
             }}
           >
             <svg
@@ -56,7 +58,7 @@ export const PreviewSection: React.FC<PreviewSectionProps> = ({
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
             </svg>
-            Copy CSS
+            {t('preview.copy_css')}
           </button>
         </div>
 

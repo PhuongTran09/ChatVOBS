@@ -1,5 +1,5 @@
-import React from 'react';
 import './SystemOverlays.css';
+import { useI18n } from '../i18n';
 
 interface SystemOverlaysProps {
   isInitialLoading: boolean;
@@ -7,21 +7,23 @@ interface SystemOverlaysProps {
 }
 
 export function SystemOverlays({ isInitialLoading, isRebooting }: SystemOverlaysProps) {
+  const { t } = useI18n();
+
   return (
     <>
       {/* INITIAL SYSTEM BOOT OVERLAY */}
       {isInitialLoading && (
         <div className="reboot-overlay initial-boot">
           <div className="reboot-content">
-            <div className="reboot-glitch" data-text="BOOTING_SYSTEM...">BOOTING_SYSTEM...</div>
+            <div className="reboot-glitch" data-text={t('system.booting')}>{t('system.booting')}</div>
             <div className="reboot-bar">
               <div className="reboot-fill" style={{ animationDuration: '2.5s' }}></div>
             </div>
             <div className="reboot-logs">
-              <p className="log-entry">{'>'} INITIALIZING CORE...</p>
-              <p className="log-entry delay-1" style={{ animationDelay: '0.6s' }}>{'>'} LOADING OVERLAYS...</p>
-              <p className="log-entry delay-2" style={{ animationDelay: '1.2s' }}>{'>'} ESTABLISHING CONNECTION...</p>
-              <p className="log-entry" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>{'>'} SYSTEM READY.</p>
+              <p className="log-entry">{t('system.initializing')}</p>
+              <p className="log-entry delay-1" style={{ animationDelay: '0.6s' }}>{t('system.loading_overlays')}</p>
+              <p className="log-entry delay-2" style={{ animationDelay: '1.2s' }}>{t('system.establishing')}</p>
+              <p className="log-entry" style={{ animationDelay: '1.8s', opacity: 0, animationFillMode: 'forwards' }}>{t('system.ready')}</p>
             </div>
           </div>
         </div>
@@ -31,14 +33,14 @@ export function SystemOverlays({ isInitialLoading, isRebooting }: SystemOverlays
       {isRebooting && (
         <div className="reboot-overlay">
           <div className="reboot-content">
-            <div className="reboot-glitch" data-text="SYSTEM_REBOOTING...">SYSTEM_REBOOTING...</div>
+            <div className="reboot-glitch" data-text={t('system.rebooting')}>{t('system.rebooting')}</div>
             <div className="reboot-bar">
               <div className="reboot-fill"></div>
             </div>
             <div className="reboot-logs">
-              <p className="log-entry">{'>'} LOADING KERNEL...</p>
-              <p className="log-entry delay-1">{'>'} MOUNTING FILE SYSTEMS...</p>
-              <p className="log-entry delay-2">{'>'} STARTING CYBER_CORE.EXE...</p>
+              <p className="log-entry">{t('system.loading_kernel')}</p>
+              <p className="log-entry delay-1">{t('system.mounting')}</p>
+              <p className="log-entry delay-2">{t('system.starting_core')}</p>
             </div>
           </div>
         </div>

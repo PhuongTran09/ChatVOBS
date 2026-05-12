@@ -1,4 +1,3 @@
-import React from 'react';
 import { Metric } from './Metric';
 import './Hero.css';
 import { useI18n } from '../i18n';
@@ -42,9 +41,9 @@ export function Hero({ profileMode, onOpenChat }: HeroProps) {
         </div>
 
         <div className="cyber-metrics" aria-label="Channel metrics">
-          <Metric label={t('metrics.subscribers')} value="12.5K" />
-          <Metric label={t('metrics.themes')} value="45+" />
-          <Metric label={t('metrics.uptime')} value="1,240H" />
+          <Metric label={t('metrics.subscribers.label')} value={t('metrics.subscribers.value')} />
+          <Metric label={t('metrics.themes.label')} value={t('metrics.themes.value')} />
+          <Metric label={t('metrics.uptime.label')} value={t('metrics.uptime.value')} />
         </div>
       </div>
 

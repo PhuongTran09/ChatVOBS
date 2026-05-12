@@ -1,4 +1,3 @@
-import React from 'react';
 import './CyberToggle.css';
 
 interface CyberToggleProps {
@@ -9,13 +8,13 @@ interface CyberToggleProps {
   activeColor?: 'cyan' | 'magenta' | 'green';
 }
 
-export const CyberToggle: React.FC<CyberToggleProps> = ({
+export const CyberToggle = ({
   labelLeft,
   labelRight,
   value,
   onChange,
   activeColor = 'cyan',
-}) => {
+}: CyberToggleProps) => {
   return (
     <div className={`cyber-toggle-container color-${activeColor}`}>
       {labelLeft && <span className={`toggle-label ${!value ? 'active' : ''}`}>{labelLeft}</span>}

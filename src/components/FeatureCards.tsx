@@ -1,4 +1,3 @@
-import React from 'react';
 import './FeatureCards.css';
 import { useI18n } from '../i18n';
 
@@ -7,6 +6,10 @@ export function FeatureCards() {
 
   return (
     <section className="cyber-section" id="chat-themes">
+      <div className="section-head">
+        <span className="badge badge-primary">{t('features.title')}</span>
+        <p className="sys-text">{t('features.description')}</p>
+      </div>
       <div className="feature-grid">
         <article className="cyber-card">
           <h3>{t('features.glass.title')}</h3>

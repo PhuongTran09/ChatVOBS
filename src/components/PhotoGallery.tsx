@@ -1,5 +1,5 @@
-import React from 'react';
 import './PhotoGallery.css';
+import { useI18n } from '../i18n';
 
 interface GalleryItem {
   id: number;
@@ -15,11 +15,13 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryProps) {
+  const { t } = useI18n();
+
   return (
     <section className="cyber-section" id="gallery">
       <div className="section-head">
-        <span className="badge badge-secondary">SNAPSHOTS</span>
-        <h2>[ SYSTEM_GALLERY.img ]</h2>
+        <span className="badge badge-secondary">{t('gallery.badge')}</span>
+        <h2>{t('gallery.title')}</h2>
       </div>
       <div className="gallery-viewport">
         <div className="gallery-track">
