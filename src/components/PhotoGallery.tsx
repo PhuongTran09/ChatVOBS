@@ -23,7 +23,7 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
         <span className="badge badge-secondary">{t('gallery.badge')}</span>
         <h2>{t('gallery.title')}</h2>
       </div>
-      <div className="gallery-viewport">
+      <div className="gallery-viewport custom-scrollbar">
         <div className="gallery-track">
           {/* Original Items */}
           {galleryItems.map((item) => (
@@ -55,6 +55,7 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
               </div>
               <div className="img-meta">
                 <span className="file-name">{item.name}</span>
+                <span className="file-date">{item.date}</span>
               </div>
             </div>
           ))}

@@ -139,26 +139,107 @@
 
 /* STATUS PANEL */
 .status-panel {
-  border: 1px solid #333;
-  background: #000;
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  background: rgba(5, 5, 8, 0.9);
+  backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  animation: floatPanel 4s ease-in-out infinite;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    inset 0 0 15px rgba(255, 0, 255, 0.05);
+  perspective: 1000px;
+}
+
+/* 3D SIDE SHADOW EFFECT */
+.status-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -6px;
+  width: 6px;
+  height: 100%;
+  background: rgba(255, 0, 255, 0.1);
+  transform: skewY(-45deg);
+  transform-origin: left top;
+  border-right: 1px solid rgba(255, 0, 255, 0.2);
+}
+
+.status-panel::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  transform: skewX(-45deg);
+  transform-origin: left top;
 }
 
 .status-panel:hover {
   border-color: var(--magenta);
-  box-shadow: 0 0 25px var(--magenta-dim);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.8),
+    0 0 30px var(--magenta-dim);
+  transform: translateY(-10px) scale(1.02);
+}
+
+/* DECORATIVE ELEMENTS */
+.panel-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(255, 255, 255, 0.02) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.panel-corner-tl {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 12px;
+  height: 12px;
+  border-top: 2px solid var(--magenta);
+  border-left: 2px solid var(--magenta);
+  z-index: 10;
+}
+
+.panel-corner-br {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-bottom: 2px solid var(--magenta);
+  border-right: 2px solid var(--magenta);
+  z-index: 10;
+}
+
+@keyframes floatPanel {
+  0%, 100% { transform: translateY(0) rotateX(2deg) rotateY(-2deg); }
+  50% { transform: translateY(-4px) rotateX(-2deg) rotateY(2deg); }
 }
 
 .panel-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 15px;
-  border-bottom: 1px solid #333;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 0, 255, 0.1);
   color: var(--magenta);
   transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .status-panel:hover .panel-head {
@@ -207,4 +288,50 @@
 .tech-tags span:hover {
   color: var(--cyan);
   text-shadow: 0 0 8px var(--cyan);
+}
+
+@media (max-width: 640px) {
+  .cyber-hero {
+    padding: 12px;
+    gap: 15px;
+  }
+  
+  .glitch-text {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  
+  .hero-lead {
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .platform-tags {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .plat-tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+  
+  .hero-actions {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .cyber-btn {
+    padding: 6px 14px;
+    font-size: 0.75rem;
+  }
+  
+  .highlight-text {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
 }

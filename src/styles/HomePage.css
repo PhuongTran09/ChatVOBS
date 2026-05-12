@@ -16,7 +16,7 @@
   /* Text */
   --text-main: #e0e0e0;
   --text-dim: #8892b0;
-  --font-mono: 'Share Tech Mono', 'Courier New', Courier, monospace;
+  --font-mono: 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
 }
 
 * {
@@ -160,6 +160,60 @@ button {
     grid-template-columns: 1fr !important;
   }
   .glitch-text {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+  }
+  
+  .glitch-text {
+    font-size: 1.4rem;
+  }
+  
+  .cyber-section {
+    padding: 15px;
+  }
+  
+  .cyber-home {
+    gap: 15px;
+    padding: 15px 10px;
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
+
+  .cyber-panel {
+    font-size: 0.75rem;
+  }
+  
+  .panel-head {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .sys-text {
+    font-size: 0.7rem;
+  }
+}
+
+/* SCROLLBAR CYBERPUNK */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--cyan);
 }

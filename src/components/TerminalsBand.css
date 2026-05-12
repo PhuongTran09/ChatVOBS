@@ -2,12 +2,33 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  min-height: 380px;
+  min-height: 420px;
   position: relative;
+  transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cyber-split.is-standby {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.term-slot {
+  position: relative;
+  min-height: 400px;
+}
+
+.standby-text {
+  color: var(--cyan);
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px var(--cyan-dim);
 }
 
 @media (max-width: 900px) {
   .cyber-split {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 }

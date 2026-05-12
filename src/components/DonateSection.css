@@ -154,7 +154,6 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: 60px;
   background: rgba(255, 255, 255, 0.05);
   border: none;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -193,10 +192,51 @@
 
 @media (max-width: 800px) {
   .donate-card {
-    grid-template-columns: 1fr;
-    padding-right: 70px;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px 80px 20px; /* Increased bottom padding */
+    gap: 20px;
   }
+  
   .donate-qr-wrapper {
     order: -1;
+    margin-bottom: 10px;
+  }
+
+  .donate-next-btn {
+    right: 0;
+    width: 20%;
+    height: 32px; /* Slightly taller for better touch */
+    flex-direction: row;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .next-label {
+    writing-mode: horizontal-tb;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .donate-card {
+    padding: 20px 15px 75px 15px;
+  }
+  
+  .donate-info .sys-text {
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+  }
+  
+  .donate-msg p {
+    font-size: 0.75rem;
+  }
+  
+  .msg-tag {
+    font-size: 0.7rem;
+  }
+  
+  .donate-method-tag {
+    font-size: 0.7rem;
   }
 }

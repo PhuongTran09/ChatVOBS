@@ -90,3 +90,34 @@
   box-shadow: 0 0 15px var(--cyan), inset 0 0 10px var(--cyan);
   text-shadow: 0 0 5px #fff;
 }
+
+@media (max-width: 640px) {
+  .cyber-header {
+    padding: 8px 12px;
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .brand-text strong {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  
+  .brand-text span {
+    font-size: 0.65rem;
+  }
+  
+  .cyber-nav {
+    gap: 10px;
+  }
+  
+  .cyber-nav a {
+    font-size: 0.75rem;
+  }
+
+  .mode-switch button {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+}

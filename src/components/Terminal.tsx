@@ -9,7 +9,7 @@ interface TerminalProps {
   isActive: boolean;
   isDragging: boolean;
   onMouseDown: (e: MouseEvent) => void;
-  onHeaderMouseDown: (e: MouseEvent) => void;
+  onHeaderMouseDown: (e: any) => void; // Using any for combined Mouse/Touch events
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
@@ -33,6 +33,19 @@ export function Terminal({
 }: TerminalProps) {
   if (!terminalState.isOpen) return null;
 
+  // Handler for touch start
+  const handleTouchStart = (e: React.TouchEvent) => {
+    // Prevent scrolling when dragging
+    const touch = e.touches[0];
+    const syntheticEvent = {
+      target: e.target,
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      closest: (selector: string) => (e.target as HTMLElement).closest(selector)
+    };
+    onHeaderMouseDown(syntheticEvent);
+  };
+
   return (
     <div 
       id={id}
@@ -43,15 +56,30 @@ export function Terminal({
       }}
       onMouseDown={onMouseDown}
     >
-      <div className={`term-head ${headClass}`} onMouseDown={onHeaderMouseDown}>
-        <span>{title}</span>
+      {/* 3D DECORATIVE LAYERS */}
+      <div className="terminal-glitch-line" />
+      <div className="terminal-scanline" />
+      <div className="terminal-corner-top-left" />
+      <div className="terminal-corner-bottom-right" />
+      
+      <div 
+        className={`term-head ${headClass}`} 
+        onMouseDown={onHeaderMouseDown}
+        onTouchStart={handleTouchStart}
+      >
+        <div className="head-label">
+          <span className="head-dot" />
+          <span>{title}</span>
+        </div>
         <div className="term-controls">
           <span className="ctrl minimize" onClick={(e) => { e.stopPropagation(); onMinimize(); }} />
           <span className="ctrl maximize" onClick={(e) => { e.stopPropagation(); onMaximize(); }} />
           <span className="ctrl close" onClick={(e) => { e.stopPropagation(); onClose(); }} />
         </div>
       </div>
-      {!terminalState.isMinimized && children}
+      <div className="terminal-content-wrapper">
+        {children}
+      </div>
     </div>
   );
 }

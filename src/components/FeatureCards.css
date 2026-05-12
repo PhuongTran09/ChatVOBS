@@ -65,3 +65,17 @@
 .cyber-card:hover p {
   color: var(--text-main);
 }
+
+@media (max-width: 640px) {
+  .cyber-card {
+    padding: 12px;
+  }
+  
+  .cyber-card h3 {
+    font-size: 0.9rem;
+  }
+  
+  .cyber-card p {
+    font-size: 0.75rem;
+  }
+}
