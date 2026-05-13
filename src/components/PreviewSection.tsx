@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { ShadowPreview } from "./ShadowPreview";
 import { getExampleMarkup } from "../data/exampleMarkup";
 import { useI18n } from "../i18n";
@@ -6,13 +7,22 @@ import "./PreviewSection.css";
 interface PreviewSectionProps {
   combinedCss: string;
   cssOutput: string;
+  onCssChange?: (css: string) => void;
+  onCopySuccess?: () => void;
 }
 
 export const PreviewSection = ({
   combinedCss,
   cssOutput,
+  onCssChange,
+  onCopySuccess,
 }: PreviewSectionProps) => {
   const { t } = useI18n();
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(cssOutput);
+    onCopySuccess?.();
+  };
 
   return (
     <div className="preview-panel slide-left">
@@ -40,10 +50,7 @@ export const PreviewSection = ({
           <span className="badge badge-primary">{t('preview.css_output')}</span>
           <button
             className="btn-secondary copy-button"
-            onClick={() => {
-              navigator.clipboard.writeText(cssOutput);
-              alert(t('preview.copied_msg'));
-            }}
+            onClick={handleCopy}
           >
             <svg
               width="16"
@@ -65,7 +72,8 @@ export const PreviewSection = ({
         <textarea
           className="css-output custom-scrollbar"
           value={cssOutput}
-          readOnly
+          onChange={(e) => onCssChange?.(e.target.value)}
+          spellCheck={false}
           rows={12}
         />
       </section>

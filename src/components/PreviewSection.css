@@ -1,6 +1,7 @@
 .preview-panel {
   display: grid;
   gap: 24px;
+  position: relative;
 }
 
 .card-header {

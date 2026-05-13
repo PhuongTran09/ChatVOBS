@@ -32,22 +32,51 @@ export function createChatCustomizerHelpers(values: CustomizerValues) {
     (isChecked("animation-reverse") ? -16 : 16) * scalar;
 
   const inStyle = () => {
-    let style = "opacity: 0;";
+    let style = "opacity: 0; filter: brightness(2);";
     if (isChecked("animation-slide")) {
-      style += ` transform: translateX(${slide(-1)}px);`;
+      style += ` transform: translateX(${slide(-2)}px) skewX(-15deg);`;
     }
     return style;
   };
 
   const outStyle = () => {
-    let style = "opacity: 0;";
+    let style = "opacity: 0; filter: brightness(0.5);";
     if (isChecked("animation-slide")) {
-      style += ` transform: translateX(${slide(1)}px);`;
+      style += ` transform: translateX(${slide(2)}px) skewX(15deg);`;
     }
     return style;
   };
 
   const callbacks: Record<string, (id?: string) => string> = {
+    "imports": () => {
+      const fontIds = [
+        "author-font-family",
+        "author-owner-font-family",
+        "author-moderator-font-family",
+        "author-member-font-family",
+        "message-font-family",
+        "timestamp-font-family",
+        "fan-funding-first-line-font-family",
+        "fan-funding-second-line-font-family",
+        "super-chat-content-font-family",
+      ];
+      const usedFonts = new Set<string>();
+      fontIds.forEach((id) => {
+        const font = String(getValue(id));
+        if (font) usedFonts.add(font);
+      });
+
+      return Array.from(usedFonts)
+        .map(
+          (font) =>
+            `@import url("https://fonts.googleapis.com/css?family=${font.replace(
+              / /g,
+              "+"
+            )}");`
+        )
+        .join("\n");
+    },
+
     "show-outlines": (id?: string) => {
       if (isChecked(id!)) {
         const size = Number(getValue("outline-size"));
@@ -244,18 +273,26 @@ export function createChatCustomizerHelpers(values: CustomizerValues) {
 
     "background-owner": () =>
       isChecked("use-gradient-backgrounds")
-        ? "linear-gradient(to right, var(--color-white), var(--color-owner-accent))"
-        : "var(--color-owner-accent)",
+        ? "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)"
+        : "none",
 
     "background-moderator": () =>
       isChecked("use-gradient-backgrounds")
-        ? "linear-gradient(to right, var(--color-moderator-accent), var(--color-muted-panel))"
-        : "var(--color-moderator-accent)",
+        ? "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)"
+        : "none",
 
     "background-member": () =>
       isChecked("use-gradient-backgrounds")
-        ? "linear-gradient(to right, var(--color-member-light) 25%, var(--color-white) 75%, var(--color-member-light) 100%)"
-        : "var(--color-member-light)",
+        ? "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%)"
+        : "none",
+
+    "shimmer-animation": () =>
+      isChecked("use-gradient-backgrounds")
+        ? [
+            "  background-size: 200% 100% !important;",
+            "  animation: shimmer 2s linear infinite !important;",
+          ].join("\n")
+        : "",
 
     "ticker": () => {
       let ret = "";
@@ -303,13 +340,15 @@ export function createChatCustomizerHelpers(values: CustomizerValues) {
 
       if (ain) {
         keyframes.push(`0% { ${inStyle()} }`);
+        // Mid-point glitch
+        keyframes.push(`${((runningTime + inTime * 0.7) / time) * 100}% { transform: translateX(${slide(0.2)}px) skewX(2deg); opacity: 1; filter: brightness(1.2); }`);
         runningTime += inTime;
-        keyframes.push(`${(runningTime / time) * 100}% { opacity: 1; transform: none;}`);
+        keyframes.push(`${(runningTime / time) * 100}% { opacity: 1; transform: none; filter: brightness(1); }`);
       }
 
       if (aout) {
         runningTime += waitTime;
-        keyframes.push(`${(runningTime / time) * 100}% { opacity: 1; transform: none;}`);
+        keyframes.push(`${(runningTime / time) * 100}% { opacity: 1; transform: none; filter: brightness(1); }`);
         runningTime += outTime;
         keyframes.push(`${(runningTime / time) * 100}% { ${outStyle()} }`);
       }
@@ -321,7 +360,7 @@ export function createChatCustomizerHelpers(values: CustomizerValues) {
         "",
         "yt-live-chat-text-message-renderer,",
         "yt-live-chat-legacy-paid-message-renderer {",
-        `  animation: anim ${time}ms;`,
+        `  animation: anim ${time}ms cubic-bezier(0.2, 0.8, 0.2, 1);`,
         "  animation-fill-mode: forwards;",
         "}",
         "",
@@ -386,6 +425,15 @@ export function parseCssToValues(css: string, currentValues: CustomizerValues): 
         return;
       }
 
+      // Map Simple Colors (e.g. --fan-funding-*)
+      if (name.startsWith('--') && (name.includes('color') || name.includes('accent'))) {
+        const id = name.replace(/^--/, '');
+        if (newValues[id] !== undefined) {
+          newValues[id] = val;
+          return;
+        }
+      }
+
       // Map RGBA variables back to Hex + Opacity
       const rgbaMatch = val.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/i);
       if (rgbaMatch) {
@@ -411,11 +459,11 @@ export function parseCssToValues(css: string, currentValues: CustomizerValues): 
         }
       }
 
-      // Map Numeric/Size Variables
-      const sizeMatch = val.match(/^(\d+)px$/);
-      if (sizeMatch) {
+      // Map Numeric/Size Variables (px, ms, s)
+      const numericMatch = val.match(/^([\d.]+)(px|ms|s)$/);
+      if (numericMatch) {
         const id = name.replace(/^--/, '');
-        newValues[id] = sizeMatch[1];
+        newValues[id] = numericMatch[1];
         return;
       }
 

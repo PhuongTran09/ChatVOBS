@@ -73,16 +73,20 @@
 /* =========================================
    TOGGLE SWITCH (CYBERPUNK STYLE)
 ========================================= */
-.toggle-item {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 6px 0;
+.toggle-item-wrapper {
+  padding: 8px 0;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.toggle-item:hover .control-label {
+.toggle-item-wrapper .cyber-toggle-container {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.toggle-item-wrapper:hover .toggle-label {
   color: #fff;
   text-shadow: 0 0 8px var(--neon-cyan);
 }
