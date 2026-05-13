@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { ShadowPreview } from "./ShadowPreview";
 import { getExampleMarkup } from "../data/exampleMarkup";
 import { useI18n } from "../i18n";
