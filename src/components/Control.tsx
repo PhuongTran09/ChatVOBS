@@ -6,6 +6,7 @@ import type {
   ColorRangeControl,
 } from "../types/customizer";
 import { useI18n } from "../i18n";
+import { CyberToggle } from "./CyberToggle";
 import './Control.css';
 
 interface ControlProps {
@@ -45,19 +46,14 @@ export function Control({ control, values, setValue }: ControlProps) {
     const isChecked = !!values[c.id];
 
     return (
-      <label className="control-item toggle-item" htmlFor={c.id}>
-        {c.label && <span className="control-label">{t(`field.${c.id}.label`)}</span>}
-        <div className={`toggle-switch ${isChecked ? 'checked' : ''}`}>
-          <input
-            id={c.id}
-            type="checkbox"
-            className="sr-only"
-            checked={isChecked}
-            onChange={(e) => setValue(c.id, e.target.checked)}
-          />
-          <span className="toggle-slider"></span>
-        </div>
-      </label>
+      <div className="control-item toggle-item-wrapper">
+        <CyberToggle
+          labelLeft={c.label ? t(`field.${c.id}.label`) : undefined}
+          value={isChecked}
+          onChange={(val) => setValue(c.id, val)}
+          activeColor="cyan"
+        />
+      </div>
     );
   }
 

@@ -88,6 +88,8 @@ export const en = {
   'preview.css_output': 'CSS OUTPUT',
   'preview.copy_css': 'Copy CSS',
   'preview.copied_msg': 'CSS copied to clipboard!',
+  'import.success_msg': 'Custom CSS applied successfully!',
+  'import.error_msg': 'Invalid CSS format! Please check again.',
   'floating.scroll_top': 'Scroll to top',
   'floating.restore_terminals': 'Restore Terminals',
   'system.standby': '> SYSTEM_STANDBY.log',

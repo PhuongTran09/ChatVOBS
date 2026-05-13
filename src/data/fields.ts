@@ -32,21 +32,23 @@ export const fields: FieldGroup[] = [
   },
   {
     title: "Channel names",
+    colors: [
+      { id: "author-color", label: "Author name color", type: "color", value: "#00ffff" },
+      { id: "author-owner-color", label: "Owner color", type: "color", value: "#ff00ff" },
+      { id: "author-moderator-color", label: "Moderator color", type: "color", value: "#00ff00" },
+      { id: "author-member-color", label: "Sponsor color", type: "color", value: "#00ffff" },
+      { id: "author-border-color", label: "Border color", type: "color", value: "#ffffff" },
+    ],
     controls: [
-      { id: "author-font-family", label: "Font", type: "select", value: "Changa One", options: fonts },
-      { id: "author-owner-font-family", label: "Owner Font", type: "select", value: "Changa One", options: fonts },
-      { id: "author-moderator-font-family", label: "Moderator Font", type: "select", value: "Changa One", options: fonts },
-      { id: "author-member-font-family", label: "Sponsor Font", type: "select", value: "Changa One", options: fonts },
-      { id: "author-font-size", label: "Font size", type: "number", value: "20" },
+      { id: "author-font-family", label: "Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "author-owner-font-family", label: "Owner Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "author-moderator-font-family", label: "Moderator Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "author-member-font-family", label: "Sponsor Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "author-font-size", label: "Font size", type: "number", value: "16" },
       { id: "author-line-height", label: "Line height (0 for default)", type: "number", value: "0" },
-      { id: "author-color", label: "Color", type: "color", value: "#cccccc" },
-      { id: "author-owner-color", label: "Owner color", type: "color", value: "#ffd600" },
-      { id: "author-moderator-color", label: "Moderator color", type: "color", value: "#5e84f1" },
-      { id: "author-member-color", label: "Sponsor color", type: "color", value: "#0f9d58" },
       
       { id: "author-padding", label: "Padding", type: "number", value: "0" },
       { id: "author-border-size", label: "Border size", type: "number", value: "0" },
-      { id: "author-border-color", label: "Border color", type: "color", value: "#ffffff" },
       { id: "author-border-radius", label: "Border radius", type: "number", value: "0" },
       { id: "author-margin-top", label: "Margin top", type: "number", value: "0" },
       { id: "author-margin-right", label: "Margin right", type: "number", value: "0" },
@@ -66,20 +68,20 @@ export const fields: FieldGroup[] = [
     ],
 
     colors: [
-      { id: "message-background-color", label: "Message background color", type: "color-range", value: "#cccccc", rangeId: "message-background-opacity", rangeValue: "0" },
-      { id: "owner-message-background-color", label: "Owner message background color", type: "color-range", value: "#ffd600", rangeId: "owner-message-background-opacity", rangeValue: "0" },
-      { id: "moderator-message-background-color", label: "Moderator message background color", type: "color-range", value: "#5e84f1", rangeId: "moderator-message-background-opacity", rangeValue: "0" },
-      { id: "member-message-background-color", label: "Sponsor message background color", type: "color-range", value: "#0f9d58", rangeId: "member-message-background-opacity", rangeValue: "0" },
+      { id: "message-background-color", label: "Message background color", type: "color-range", value: "#050508", rangeId: "message-background-opacity", rangeValue: "0.8" },
+      { id: "owner-message-background-color", label: "Owner message background color", type: "color-range", value: "#050508", rangeId: "owner-message-background-opacity", rangeValue: "0.8" },
+      { id: "moderator-message-background-color", label: "Moderator message background color", type: "color-range", value: "#050508", rangeId: "moderator-message-background-opacity", rangeValue: "0.8" },
+      { id: "member-message-background-color", label: "Sponsor message background color", type: "color-range", value: "#050508", rangeId: "member-message-background-opacity", rangeValue: "0.8" },
       
       { id: "message-color", label: "Fallback/Paid text color", type: "color", value: "#ffffff" },
-      { id: "message-text-color", label: "Message text color", type: "color", value: "#ffffff" },
-      { id: "message-border-color", label: "Message border color", type: "color", value: "#ffffff" },
-      { id: "content-border-color", label: "Content border color", type: "color", value: "#ffffff" },
+      { id: "message-text-color", label: "Message text color", type: "color", value: "#e0e0e0" },
+      { id: "message-border-color", label: "Message border color", type: "color", value: "#00ffff" },
+      { id: "content-border-color", label: "Content border color", type: "color", value: "#00ffff" },
     ],
 
     controls: [
-      { id: "message-font-family", label: "Font", type: "select", value: "Imprima", options: fonts },
-      { id: "message-font-size", label: "Font size", type: "number", value: "18" },
+      { id: "message-font-family", label: "Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "message-font-size", label: "Font size", type: "number", value: "16" },
       { id: "message-line-height", label: "Line height", type: "number", value: "0" },
       { id: "message-letter-spacing", label: "Letter spacing", type: "number", value: "0" },
 
@@ -108,8 +110,8 @@ export const fields: FieldGroup[] = [
     ],
 
     controls: [
-      { id: "timestamp-font-family", label: "Font", type: "select", value: "Imprima", options: fonts },
-      { id: "timestamp-font-size", label: "Font size", type: "number", value: "16" },
+      { id: "timestamp-font-family", label: "Font", type: "select", value: "Share Tech Mono", options: fonts },
+      { id: "timestamp-font-size", label: "Font size", type: "number", value: "12" },
       { id: "timestamp-line-height", label: "Line height (0 for default)", type: "number", value: "0" },
     ],
   },
@@ -148,21 +150,21 @@ export const fields: FieldGroup[] = [
     ],
 
     controls: [
-      { id: "fan-funding-first-line-font-family", label: "First line font", type: "select", value: "Changa One", options: fonts },
+      { id: "fan-funding-first-line-font-family", label: "First line font", type: "select", value: "Share Tech Mono", options: fonts },
 
-      { id: "fan-funding-first-line-font-size", label: "First line font size", type: "number", value: "20" },
+      { id: "fan-funding-first-line-font-size", label: "First line font size", type: "number", value: "18" },
 
       { id: "fan-funding-first-line-line-height", label: "First line line height (0 for default)", type: "number", value: "0" },
 
-      { id: "fan-funding-second-line-font-family", label: "Second line font", type: "select", value: "Imprima", options: fonts },
+      { id: "fan-funding-second-line-font-family", label: "Second line font", type: "select", value: "Share Tech Mono", options: fonts },
 
-      { id: "fan-funding-second-line-font-size", label: "Second line font size", type: "number", value: "18" },
+      { id: "fan-funding-second-line-font-size", label: "Second line font size", type: "number", value: "14" },
 
       { id: "fan-funding-second-line-line-height", label: "Second line line height (0 for default)", type: "number", value: "0" },
 
-      { id: "super-chat-content-font-family", label: "SuperChat content font", type: "select", value: "Imprima", options: fonts },
+      { id: "super-chat-content-font-family", label: "SuperChat content font", type: "select", value: "Share Tech Mono", options: fonts },
 
-      { id: "super-chat-content-font-size", label: "SuperChat content font size", type: "number", value: "18" },
+      { id: "super-chat-content-font-size", label: "SuperChat content font size", type: "number", value: "16" },
 
       { id: "super-chat-content-line-height", label: "SuperChat content line height (0 for default)", type: "number", value: "0" },
     ],

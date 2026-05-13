@@ -88,6 +88,8 @@ export type TranslationKey =
   | 'preview.css_output'
   | 'preview.copy_css'
   | 'preview.copied_msg'
+  | 'import.success_msg'
+  | 'import.error_msg'
   | 'floating.scroll_top'
   | 'floating.restore_terminals'
   | 'system.standby'
