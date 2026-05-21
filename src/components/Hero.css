@@ -59,7 +59,7 @@
 }
 
 .glitch-text:hover {
-  text-shadow: 0 0 20px #fff, 5px 5px var(--cyan), -5px -5px var(--magenta);
+  text-shadow: 0 0 12px #fff, 2px 2px var(--cyan), -2px -2px var(--magenta)
 }
 
 .hero-lead {
@@ -113,15 +113,13 @@
   background: var(--cyan);
   color: #000;
   border: 1px solid var(--cyan);
-  box-shadow: 0 0 10px var(--cyan-dim);
-  animation: electricFlash 5s infinite;
+  box-shadow: 0 4px 10px var(--cyan-dim);
 }
 
 .cyber-btn.primary-cyan:hover {
   background: #fff;
-  box-shadow: 0 0 20px var(--cyan), 0 0 60px var(--cyan-dim);
-  transform: translateY(-3px) scale(1.02);
-  animation: electricFlash 0.8s infinite;
+  box-shadow: 0 5px 15px var(--cyan-dim);
+  transform: translateY(-2px);
 }
 
 .cyber-btn.outline-magenta {
@@ -131,10 +129,10 @@
 }
 
 .cyber-btn.outline-magenta:hover {
-  background: var(--magenta-dim);
-  box-shadow: 0 0 25px var(--magenta), inset 0 0 10px var(--magenta);
-  transform: translateY(-3px) scale(1.02);
-  text-shadow: 0 0 8px #fff;
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: 0 5px 15px var(--magenta-dim);
+  transform: translateY(-2px);
+  text-shadow: 0 0 3px var(--magenta);
 }
 
 /* STATUS PANEL */
@@ -147,6 +145,7 @@
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   animation: floatPanel 4s ease-in-out infinite;
+  will-change: transform;
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.6),
     inset 0 0 15px rgba(255, 0, 255, 0.05);

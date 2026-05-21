@@ -35,6 +35,7 @@ export function StreamerProfilePage({
     closeTerminal,
     reopenTerminals,
     handleMouseDown,
+    resetPosition,
   } = useTerminals()
   
   // Initial loading effect
@@ -114,6 +115,7 @@ export function StreamerProfilePage({
         toggleMinimize={toggleMinimize}
         toggleMaximize={toggleMaximize}
         closeTerminal={closeTerminal}
+        resetPosition={resetPosition}
       />
 
       <PhotoGallery 

@@ -10,6 +10,7 @@ interface TerminalProps {
   isDragging: boolean;
   onMouseDown: (e: MouseEvent) => void;
   onHeaderMouseDown: (e: any) => void; // Using any for combined Mouse/Touch events
+  onHeaderDoubleClick?: () => void;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
@@ -25,6 +26,7 @@ export function Terminal({
   isDragging,
   onMouseDown,
   onHeaderMouseDown,
+  onHeaderDoubleClick,
   onMinimize,
   onMaximize,
   onClose,
@@ -66,6 +68,7 @@ export function Terminal({
         className={`term-head ${headClass}`} 
         onMouseDown={onHeaderMouseDown}
         onTouchStart={handleTouchStart}
+        onDoubleClick={onHeaderDoubleClick}
       >
         <div className="head-label">
           <span className="head-dot" />

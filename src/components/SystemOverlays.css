@@ -63,3 +63,18 @@
 
 .log-entry.delay-1 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
 .log-entry.delay-2 { animation-delay: 0.8s; opacity: 0; animation-fill-mode: forwards; }
+
+/* MOBILE RESPONSIVE TWEAKS */
+@media (max-width: 768px) {
+  .reboot-content {
+    max-width: 85%;
+  }
+
+  .reboot-glitch {
+    font-size: 1.2rem;
+  }
+
+  .reboot-logs {
+    font-size: 0.7rem;
+  }
+}

@@ -27,6 +27,8 @@ export function useTerminals() {
     id: TerminalId;
     startX: number;
     startY: number;
+    posX: number;
+    posY: number;
   } | null>(null);
 
   const bringToFront = (id: TerminalId) => {
@@ -111,6 +113,8 @@ export function useTerminals() {
         id,
         startX: e.clientX - restoredPos.x,
         startY: e.clientY - restoredPos.y,
+        posX: restoredPos.x,
+        posY: restoredPos.y,
       });
       return;
     }
@@ -119,55 +123,61 @@ export function useTerminals() {
       id,
       startX: e.clientX - terminals[id].pos.x,
       startY: e.clientY - terminals[id].pos.y,
+      posX: terminals[id].pos.x,
+      posY: terminals[id].pos.y,
     });
   };
 
   useEffect(() => {
+    if (!dragging) return;
+
+    const el = document.getElementById(dragging.id);
+    let finalX = dragging.posX;
+    let finalY = dragging.posY;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (dragging) {
-        setTerminals((prev) => ({
-          ...prev,
-          [dragging.id]: {
-            ...prev[dragging.id],
-            pos: {
-              x: e.clientX - dragging.startX,
-              y: e.clientY - dragging.startY,
-            },
-          },
-        }));
+      finalX = e.clientX - dragging.startX;
+      finalY = e.clientY - dragging.startY;
+      if (el) {
+        el.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
       }
     };
 
     const handleMouseUp = () => {
+      setTerminals((prev) => ({
+        ...prev,
+        [dragging.id]: {
+          ...prev[dragging.id],
+          pos: { x: finalX, y: finalY },
+        },
+      }));
       setDragging(null);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (dragging) {
-        const touch = e.touches[0];
-        setTerminals((prev) => ({
-          ...prev,
-          [dragging.id]: {
-            ...prev[dragging.id],
-            pos: {
-              x: touch.clientX - dragging.startX,
-              y: touch.clientY - dragging.startY,
-            },
-          },
-        }));
+      const touch = e.touches[0];
+      finalX = touch.clientX - dragging.startX;
+      finalY = touch.clientY - dragging.startY;
+      if (el) {
+        el.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
       }
     };
 
     const handleTouchEnd = () => {
+      setTerminals((prev) => ({
+        ...prev,
+        [dragging.id]: {
+          ...prev[dragging.id],
+          pos: { x: finalX, y: finalY },
+        },
+      }));
       setDragging(null);
     };
 
-    if (dragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-      window.addEventListener("touchmove", handleTouchMove, { passive: false });
-      window.addEventListener("touchend", handleTouchEnd);
-    }
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -179,6 +189,16 @@ export function useTerminals() {
 
   const isAnyTerminalClosed = !terminals.music.isOpen || !terminals.obs.isOpen;
 
+  const resetPosition = (id: TerminalId) => {
+    setTerminals((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        pos: { x: 0, y: 0 },
+      },
+    }));
+  };
+
   return {
     terminals,
     activeTerminal,
@@ -189,7 +209,9 @@ export function useTerminals() {
     toggleMinimize,
     toggleMaximize,
     closeTerminal,
-    reopenTerminals,
     handleMouseDown,
+    reopenTerminals,
+    draggingId: dragging?.id || null,
+    resetPosition,
   };
 }

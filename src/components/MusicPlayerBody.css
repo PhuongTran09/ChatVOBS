@@ -29,6 +29,7 @@
   justify-content: center;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--green);
   animation: rotateDisc 5s linear infinite, neonPulseGreen 2s infinite alternate;
+  will-change: transform;
   background-image: repeating-radial-gradient(
     circle,
     #111,

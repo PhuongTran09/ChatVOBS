@@ -75,16 +75,14 @@
   opacity: 0.6;
 }
 
-/* HIDE SYSTEM CURSOR GLOBALLY */
-:root, * {
+/* HIDE SYSTEM CURSOR ONLY WHEN COMPONENT IS ACTIVE */
+body.custom-cursor-active,
+body.custom-cursor-active * {
   cursor: none !important;
 }
 
 @media (max-width: 900px) {
   .custom-cursor-container {
     display: none;
-  }
-  :root, * {
-    cursor: auto !important;
   }
 }
