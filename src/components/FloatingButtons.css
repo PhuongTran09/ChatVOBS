@@ -123,3 +123,28 @@
   opacity: 0.3;
   animation: glitchFlash 0.1s infinite;
 }
+
+/* MOBILE RESPONSIVE TWEAKS */
+@media (max-width: 768px) {
+  .scroll-top-btn,
+  .restore-terminals-btn {
+    width: 40px;
+    height: 40px;
+    right: 20px;
+    border-width: 1px;
+  }
+  
+  .scroll-top-btn {
+    bottom: 20px;
+  }
+  
+  .restore-terminals-btn {
+    bottom: 70px;
+  }
+  
+  .scroll-top-btn svg,
+  .restore-terminals-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
