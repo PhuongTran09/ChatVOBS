@@ -320,3 +320,26 @@
   border-radius: 4px;
   display: block;
 }
+
+/* MOBILE PERFORMANCE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  .cyber-terminal {
+    backdrop-filter: none; /* Causes severe lag on mobile */
+    background: rgba(10, 10, 15, 0.98); /* Solidify background */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.9); /* Simplify shadow */
+  }
+  
+  .terminal-scanline {
+    display: none; /* Remove overlay layer */
+  }
+  
+  .cyber-terminal::before,
+  .cyber-terminal::after {
+    display: none; /* Remove 3D skew effects */
+  }
+  
+  .terminal-content-wrapper {
+    /* Use native smooth scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
+  }
+}
