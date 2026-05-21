@@ -5,22 +5,49 @@ export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [type, setType] = useState<'default' | 'pointer' | 'link' | 'click'>('default');
   const [isVisible, setIsVisible] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   const mousePos = useRef({ x: 0, y: 0 });
-  // const currentPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 901px) and (pointer: fine)');
+    
+    const checkDevice = () => {
+      setIsDesktop(mediaQuery.matches);
+    };
+
+    checkDevice();
+    
+    mediaQuery.addEventListener('change', checkDevice);
+    return () => mediaQuery.removeEventListener('change', checkDevice);
+  }, []);
+
+  useEffect(() => {
+    if (isDesktop && isVisible) {
+      document.body.classList.add('custom-cursor-active');
+    } else {
+      document.body.classList.remove('custom-cursor-active');
+    }
+    return () => {
+      document.body.classList.remove('custom-cursor-active');
+    };
+  }, [isDesktop, isVisible]);
+
+  useEffect(() => {
+    if (!isDesktop) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
       if (!isVisible) setIsVisible(true);
     };
 
+    let animId: number;
     const updateCursor = () => {
       if (cursorRef.current) {
         // Direct DOM update for zero lag
         cursorRef.current.style.transform = `translate3d(${mousePos.current.x}px, ${mousePos.current.y}px, 0)`;
       }
-      requestAnimationFrame(updateCursor);
+      animId = requestAnimationFrame(updateCursor);
     };
 
     const updateType = (e: MouseEvent) => {
@@ -51,7 +78,7 @@ export function CustomCursor() {
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp as any);
     
-    const animId = requestAnimationFrame(updateCursor);
+    animId = requestAnimationFrame(updateCursor);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -60,9 +87,9 @@ export function CustomCursor() {
       window.removeEventListener('mouseup', handleMouseUp as any);
       cancelAnimationFrame(animId);
     };
-  }, [isVisible]);
+  }, [isVisible, isDesktop]);
 
-  if (!isVisible) return null;
+  if (!isDesktop || !isVisible) return null;
 
   return (
     <div 

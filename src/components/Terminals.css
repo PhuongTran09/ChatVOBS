@@ -10,6 +10,7 @@
     0 10px 40px rgba(0, 0, 0, 0.8),
     inset 0 0 20px rgba(255, 255, 255, 0.02);
   transition: transform 0.1s ease-out, opacity 0.3s ease, border-color 0.4s, box-shadow 0.4s;
+  will-change: transform;
   user-select: none;
   z-index: 100;
   border-radius: 4px;
