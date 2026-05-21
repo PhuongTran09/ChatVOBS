@@ -265,10 +265,58 @@
   position: relative;
   z-index: 10;
   background: linear-gradient(to bottom, rgba(255,255,255,0.01), transparent);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* ACTUAL MAXIMIZED STATE */
+.cyber-terminal.maximized {
+  position: fixed !important;
+  top: 5vh !important;
+  left: 5vw !important;
+  width: 90vw !important;
+  height: 90vh !important;
+  transform: none !important;
+  z-index: 3000 !important;
+}
+
+.cyber-terminal.maximized .terminal-content-wrapper {
+  max-height: calc(90vh - 50px);
+}
+
+/* Custom Cyberpunk Scrollbar for Terminals */
+.terminal-content-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.terminal-content-wrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+.terminal-content-wrapper::-webkit-scrollbar-thumb {
+  background: var(--cyan-dim);
+  border-radius: 3px;
+}
+.terminal-content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--cyan);
+}
+.active#music .terminal-content-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.4);
+}
+.active#music .terminal-content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--green);
 }
 
 .term-body {
   padding: 20px;
   font-size: 0.9rem;
   line-height: 1.6;
+}
+
+.term-body img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--cyan-dim);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  margin: 15px 0;
+  border-radius: 4px;
+  display: block;
 }

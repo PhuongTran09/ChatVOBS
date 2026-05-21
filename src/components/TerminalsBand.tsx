@@ -15,6 +15,7 @@ interface TerminalsBandProps {
   toggleMinimize: (id: TerminalId) => void;
   toggleMaximize: (id: TerminalId) => void;
   closeTerminal: (id: TerminalId) => void;
+  resetPosition: (id: TerminalId) => void;
 }
 
 export const TerminalsBand = ({
@@ -26,6 +27,7 @@ export const TerminalsBand = ({
   toggleMinimize,
   toggleMaximize,
   closeTerminal,
+  resetPosition,
 }: TerminalsBandProps) => {
   const { t } = useI18n();
   const isAnyOpen = terminals.music.isOpen || terminals.obs.isOpen;
@@ -50,6 +52,7 @@ export const TerminalsBand = ({
               isDragging={draggingId === "music"}
               onMouseDown={() => bringToFront("music")}
               onHeaderMouseDown={(e) => handleMouseDown("music", e)}
+              onHeaderDoubleClick={() => resetPosition("music")}
               onMinimize={() => toggleMinimize("music")}
               onMaximize={() => toggleMaximize("music")}
               onClose={() => closeTerminal("music")}
@@ -68,6 +71,7 @@ export const TerminalsBand = ({
               isDragging={draggingId === "obs"}
               onMouseDown={() => bringToFront("obs")}
               onHeaderMouseDown={(e) => handleMouseDown("obs", e)}
+              onHeaderDoubleClick={() => resetPosition("obs")}
               onMinimize={() => toggleMinimize("obs")}
               onMaximize={() => toggleMaximize("obs")}
               onClose={() => closeTerminal("obs")}

@@ -189,6 +189,16 @@ export function useTerminals() {
 
   const isAnyTerminalClosed = !terminals.music.isOpen || !terminals.obs.isOpen;
 
+  const resetPosition = (id: TerminalId) => {
+    setTerminals((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        pos: { x: 0, y: 0 },
+      },
+    }));
+  };
+
   return {
     terminals,
     activeTerminal,
@@ -199,7 +209,9 @@ export function useTerminals() {
     toggleMinimize,
     toggleMaximize,
     closeTerminal,
-    reopenTerminals,
     handleMouseDown,
+    reopenTerminals,
+    draggingId: dragging?.id || null,
+    resetPosition,
   };
 }
