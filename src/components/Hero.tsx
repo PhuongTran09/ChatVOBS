@@ -7,7 +7,7 @@ interface HeroProps {
   onOpenChat?: () => void;
 }
 
-export function Hero({ profileMode, onOpenChat }: HeroProps) {
+export function Hero({ profileMode }: HeroProps) {
   const { t } = useI18n();
 
   return (
