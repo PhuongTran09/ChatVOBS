@@ -265,23 +265,29 @@
   position: relative;
   z-index: 10;
   background: linear-gradient(to bottom, rgba(255,255,255,0.01), transparent);
-  max-height: 320px;
+  max-height: 335px;
   overflow-y: auto;
 }
 
 /* ACTUAL MAXIMIZED STATE */
 .cyber-terminal.maximized {
   position: fixed !important;
-  top: 5vh !important;
-  left: 5vw !important;
-  width: 90vw !important;
-  height: 90vh !important;
-  transform: none !important;
-  z-index: 3000 !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 800px !important;
+  max-width: 95vw !important;
+  height: auto !important;
+  max-height: 85vh !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 99999 !important;
+  /* Massive box shadow creates a fake dark backdrop overlay for the popup */
+  box-shadow: 0 0 100px rgba(0, 0, 0, 1), 0 0 0 9999px rgba(0, 0, 0, 0.7) !important;
+  display: flex;
+  flex-direction: column;
 }
 
 .cyber-terminal.maximized .terminal-content-wrapper {
-  max-height: calc(90vh - 50px);
+  max-height: calc(85vh - 50px);
 }
 
 /* Custom Cyberpunk Scrollbar for Terminals */

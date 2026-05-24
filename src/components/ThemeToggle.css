@@ -1,0 +1,41 @@
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 45px;
+  height: 45px;
+  background: var(--bg-dark);
+  border: 1px solid var(--text-main);
+  color: var(--text-main);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 4px 4px 0 var(--text-main);
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--text-main);
+  color: var(--bg-dark);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--text-main);
+}
+
+/* Dark Mode Overrides for Toggle Button */
+[data-theme="dark"] .theme-toggle-btn {
+  background: var(--panel-bg);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan-dim);
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+  background: var(--cyan);
+  color: #000;
+  box-shadow: 0 0 20px var(--cyan);
+  transform: scale(1.1);
+}

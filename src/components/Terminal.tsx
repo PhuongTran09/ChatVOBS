@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import type { ReactNode, MouseEvent } from 'react';
 import type { TerminalId, TerminalState } from '../types/terminal';
 import './Terminals.css';
@@ -48,7 +49,7 @@ export function Terminal({
     onHeaderMouseDown(syntheticEvent);
   };
 
-  return (
+  const content = (
     <div 
       id={id}
       className={`cyber-terminal ${terminalState.isMinimized ? 'minimized' : ''} ${terminalState.isMaximized ? 'maximized' : ''} ${isDragging ? 'dragging' : ''} ${isActive ? 'active' : ''}`}
@@ -85,4 +86,10 @@ export function Terminal({
       </div>
     </div>
   );
+
+  if (terminalState.isMaximized) {
+    return createPortal(content, document.body);
+  }
+
+  return content;
 }

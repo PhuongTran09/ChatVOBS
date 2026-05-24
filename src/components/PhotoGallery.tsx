@@ -18,7 +18,7 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
   const { t } = useI18n();
 
   return (
-    <section className="cyber-section" id="gallery">
+    <div className="gallery-container" id="gallery">
       <div className="section-head">
         <span className="badge badge-secondary">{t('gallery.badge')}</span>
         <h2>{t('gallery.title')}</h2>
@@ -46,7 +46,7 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
           {galleryItems.map((item) => (
             <div 
               className="gallery-item" 
-              key={`dup-${item.id}`}
+              key={`${item.id}-dup`}
               onClick={() => setSelectedImage({ src: item.src, name: item.name })}
             >
               <div className="img-frame">
@@ -61,6 +61,6 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

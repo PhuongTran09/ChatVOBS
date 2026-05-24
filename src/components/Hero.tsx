@@ -11,7 +11,7 @@ export function Hero({ profileMode, onOpenChat }: HeroProps) {
   const { t } = useI18n();
 
   return (
-    <section className="cyber-hero" id="overview">
+    <div className="hero-top-grid">
       <div className="hero-content">
         <div className="badge-wrapper">
           <span className="cyber-badge">{t('hero.badge')}</span>
@@ -31,14 +31,7 @@ export function Hero({ profileMode, onOpenChat }: HeroProps) {
           <span className="plat-tag">FB GAMING</span>
         </div>
 
-        <div className="hero-actions">
-          <button type="button" className="cyber-btn primary-cyan" onClick={onOpenChat}>
-            {t('hero.primary')}
-          </button>
-          <button type="button" className="cyber-btn outline-magenta">
-            {t('hero.secondary')}
-          </button>
-        </div>
+
 
         <div className="cyber-metrics" aria-label="Channel metrics">
           <Metric label={t('metrics.subscribers.label')} value={t('metrics.subscribers.value')} />
@@ -68,6 +61,6 @@ export function Hero({ profileMode, onOpenChat }: HeroProps) {
           </div>
         </div>
       </aside>
-    </section>
+    </div>
   );
 }

@@ -1,0 +1,129 @@
+.chat-editor-section {
+  padding: 60px 20px;
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+  border-top: 1px dashed rgba(0, 255, 255, 0.2);
+  border-bottom: 1px dashed rgba(0, 255, 255, 0.2);
+  margin: 40px 0;
+  position: relative;
+}
+
+.chat-editor-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.chat-editor-info {
+  text-align: left;
+}
+
+.chat-editor-info h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.chat-editor-info .description {
+  margin-bottom: 30px;
+  opacity: 0.8;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.large-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+/* Chat Mockup Styles */
+.chat-editor-mockup {
+  background: rgba(10, 10, 15, 0.8);
+  border: 1px solid var(--cyan-dim);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1);
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.mockup-body {
+  padding: 20px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 15px;
+  overflow: hidden;
+}
+
+.mockup-msg {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 15px;
+  border-radius: 4px;
+  border-left: 3px solid var(--cyan);
+  animation: slideUpFadeIn 0.4s ease-out forwards;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.mockup-msg.owner { border-left-color: var(--magenta); }
+.mockup-msg.mod { border-left-color: var(--green); }
+
+.msg-user {
+  font-weight: bold;
+  margin-right: 8px;
+  color: var(--cyan);
+}
+.mockup-msg.owner .msg-user { color: var(--magenta); }
+.mockup-msg.mod .msg-user { color: var(--green); }
+
+.msg-text {
+  color: #fff;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .chat-editor-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .chat-editor-info {
+    text-align: center;
+  }
+  
+  .chat-editor-info h2 {
+    font-size: 2rem;
+  }
+
+  .chat-editor-mockup {
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-editor-section {
+    padding: 40px 15px;
+  }
+  
+  .mockup-body {
+    height: 200px;
+    font-size: 0.85rem;
+  }
+}

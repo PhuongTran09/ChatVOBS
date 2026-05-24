@@ -1,33 +1,59 @@
 .cyber-metrics {
   display: flex;
-  gap: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .cyber-metric {
-  border: 1px solid var(--cyan-dim);
-  padding: 10px 15px;
-  background: rgba(0, 255, 255, 0.05);
-  transition: all 0.3s;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 255, 0.03);
+  backdrop-filter: blur(5px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  flex: 1; /* Helps them stretch equally to fill the row */
+  min-width: 120px;
+}
+
+.cyber-metric::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  transform: skewX(-20deg);
+  transition: all 0.5s ease;
 }
 
 .cyber-metric:hover {
   border-color: var(--cyan);
-  box-shadow: 0 0 20px var(--cyan-dim);
-  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+  transform: translateY(-3px);
+  background: rgba(0, 255, 255, 0.08);
+}
+
+.cyber-metric:hover::before {
+  left: 200%;
 }
 
 .metric-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--magenta);
-  margin-bottom: 5px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .metric-value {
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: #fff;
-  font-weight: bold;
+  font-weight: 900;
   transition: all 0.3s;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
 .cyber-metric:hover .metric-value {

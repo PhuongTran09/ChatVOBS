@@ -61,7 +61,7 @@ export function SocialSchedule() {
   };
 
   return (
-    <section className="cyber-grid-2-1" id="social-schedule">
+    <div className="cyber-grid-2-1" id="schedule">
       {/* STREAM SCHEDULE */}
       <div className="cyber-panel schedule-panel">
         <div className="panel-head">
@@ -122,6 +122,6 @@ export function SocialSchedule() {
           <button className="cyber-btn primary-cyan discord-btn">{t('discord.btn')}</button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

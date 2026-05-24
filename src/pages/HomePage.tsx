@@ -11,6 +11,7 @@ import { ImageModal } from '../components/ImageModal'
 import { FloatingButtons } from '../components/FloatingButtons'
 import { TerminalsBand } from '../components/TerminalsBand'
 import { useTerminals } from '../hooks/useTerminals'
+import { ChatEditorSection } from '../components/ChatEditorSection'
 
 export function StreamerProfilePage({
   onOpenChat,
@@ -37,7 +38,7 @@ export function StreamerProfilePage({
     handleMouseDown,
     resetPosition,
   } = useTerminals()
-  
+
   // Initial loading effect
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -45,6 +46,17 @@ export function StreamerProfilePage({
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Lock body scroll when any terminal is maximized
+  useEffect(() => {
+    const isAnyMaximized = Object.values(terminals).some((t) => t.isMaximized);
+    if (isAnyMaximized) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [terminals]);
 
   const donateMethods = [
     {
@@ -89,59 +101,70 @@ export function StreamerProfilePage({
 
   return (
     <main className={`cyber-home mode-${profileMode}`}>
-      <Header 
-        profileMode={profileMode} 
-        setProfileMode={setProfileMode} 
+      <Header
+        profileMode={profileMode}
+        setProfileMode={setProfileMode}
       />
 
-      <Hero 
-        profileMode={profileMode} 
-        onOpenChat={onOpenChat} 
+      <section className="cyber-hero" id="overview">
+        <Hero
+          profileMode={profileMode}
+          onOpenChat={onOpenChat}
+        />
+
+        <FeatureCards />
+      </section>
+
+      <SystemOverlays
+        isInitialLoading={isInitialLoading}
+        isRebooting={isRebooting}
+      />
+      <section className="cyber-section" id="overlays-activity" style={{ zIndex: 9999 }}>
+        <ChatEditorSection onOpenChat={onOpenChat} />
+        <TerminalsBand
+          terminals={terminals}
+          activeTerminal={activeTerminal}
+          draggingId={dragging?.id}
+          bringToFront={bringToFront}
+          handleMouseDown={handleMouseDown}
+          toggleMinimize={toggleMinimize}
+          toggleMaximize={toggleMaximize}
+          closeTerminal={closeTerminal}
+          resetPosition={resetPosition}
+        />
+      </section>
+
+      <section className="cyber-section" id="social-hub">
+        <SocialSchedule />
+        
+        <PhotoGallery
+          galleryItems={galleryItems}
+          setSelectedImage={setSelectedImage}
+        />
+      </section>
+
+
+      <DonateSection
+        donateMethods={donateMethods}
+        activeDonateIdx={activeDonateIdx}
+        nextDonate={nextDonate}
       />
 
-      <FeatureCards />
-
-      <SystemOverlays 
-        isInitialLoading={isInitialLoading} 
-        isRebooting={isRebooting} 
+      <ImageModal
+        selectedImage={selectedImage}
+        onClose={() => setSelectedImage(null)}
       />
 
-      <TerminalsBand
-        terminals={terminals}
-        activeTerminal={activeTerminal}
-        draggingId={dragging?.id}
-        bringToFront={bringToFront}
-        handleMouseDown={handleMouseDown}
-        toggleMinimize={toggleMinimize}
-        toggleMaximize={toggleMaximize}
-        closeTerminal={closeTerminal}
-        resetPosition={resetPosition}
+      <FloatingButtons
+        showScrollTop={showScrollTop}
+        scrollToTop={scrollToTop}
+        isAnyTerminalClosed={isAnyTerminalClosed}
+        reopenTerminals={reopenTerminals}
       />
 
-      <PhotoGallery 
-        galleryItems={galleryItems} 
-        setSelectedImage={setSelectedImage} 
-      />
-
-      <SocialSchedule />
-
-      <DonateSection 
-        donateMethods={donateMethods} 
-        activeDonateIdx={activeDonateIdx} 
-        nextDonate={nextDonate} 
-      />
-
-      <ImageModal 
-        selectedImage={selectedImage} 
-        onClose={() => setSelectedImage(null)} 
-      />
-
-      <FloatingButtons 
-        showScrollTop={showScrollTop} 
-        scrollToTop={scrollToTop} 
-        isAnyTerminalClosed={isAnyTerminalClosed} 
-        reopenTerminals={reopenTerminals} 
-      />
-      </main>
-      )
-      }
+      <footer className="cyber-footer">
+        <p>Created by <span className="author-name">Yatokenji</span> / 2026</p>
+      </footer>
+    </main>
+  )
+}

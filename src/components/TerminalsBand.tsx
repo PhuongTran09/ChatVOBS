@@ -33,7 +33,7 @@ export const TerminalsBand = ({
   const isAnyOpen = terminals.music.isOpen || terminals.obs.isOpen;
 
   return (
-    <section className={`cyber-section cyber-split ${!isAnyOpen ? 'is-standby' : ''}`} id="activity">
+    <div className={`cyber-split ${!isAnyOpen ? 'is-standby' : ''}`} id="activity" style={{ marginTop: '20px' }}>
       {!isAnyOpen ? (
         <div className="terminal-standby">
           <div className="standby-content">
@@ -82,6 +82,6 @@ export const TerminalsBand = ({
           </div>
         </>
       )}
-    </section>
+    </div>
   );
 };

@@ -1,34 +1,50 @@
-
-.cyber-hero {
+.hero-top-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
   gap: 30px;
-  background: var(--panel-bg);
+}
+
+.cyber-hero {
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 0, 255, 0.15);
   border-left: 4px solid var(--magenta);
-  padding: 30px;
+  box-shadow: 
+    inset 1px 1px 0 rgba(255, 255, 255, 0.05), 
+    inset 0 0 30px rgba(0, 0, 0, 0.8),
+    0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
   position: relative;
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.1);
-  transition: all 0.4s;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .cyber-hero:hover {
-  box-shadow: 0 0 35px rgba(255, 0, 255, 0.25);
+  border-color: rgba(255, 0, 255, 0.4);
+  border-left-color: var(--magenta);
+  box-shadow: 
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1), 
+    inset 0 0 40px rgba(255, 0, 255, 0.05), 
+    0 15px 40px rgba(255, 0, 255, 0.15);
+  transform: translateY(-4px);
 }
 
 .cyber-hero::before {
   content: '';
   position: absolute;
-  top: 0; right: 0;
-  width: 40px; height: 40px;
-  border-top: 2px solid var(--cyan);
-  border-right: 2px solid var(--cyan);
-  transition: all 0.3s;
+  top: -2px; right: -2px;
+  width: 25px; height: 25px;
+  border-top: 3px solid var(--cyan);
+  border-right: 3px solid var(--cyan);
+  border-top-right-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
 }
 
 .cyber-hero:hover::before {
-  width: 60px;
-  height: 60px;
-  filter: drop-shadow(0 0 10px var(--cyan));
+  width: 45px;
+  height: 45px;
+  filter: drop-shadow(0 0 12px var(--cyan));
 }
 
 .cyber-badge {
@@ -51,48 +67,77 @@
 }
 
 .glitch-text {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
+  font-weight: 900;
   color: #fff;
-  margin: 0 0 15px 0;
-  text-shadow: 3px 3px var(--cyan), -3px -3px var(--magenta);
-  transition: all 0.3s;
+  margin: 0 0 20px 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.5),
+    4px 4px 0px rgba(0, 255, 255, 0.4), 
+    -4px -4px 0px rgba(255, 0, 255, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .glitch-text:hover {
-  text-shadow: 0 0 12px #fff, 2px 2px var(--cyan), -2px -2px var(--magenta)
+  text-shadow: 
+    0 0 20px #fff, 
+    6px 6px 0px rgba(0, 255, 255, 0.6), 
+    -6px -6px 0px rgba(255, 0, 255, 0.6);
+  transform: scale(1.02);
 }
 
 .hero-lead {
-  color: var(--text-dim);
-  line-height: 1.6;
-  margin-bottom: 20px;
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 25px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-left: 4px solid var(--cyan);
+  border-radius: 0 8px 8px 0;
+  box-shadow: inset 20px 0 50px rgba(0, 255, 255, 0.02);
 }
 
 .platform-tags {
   display: flex;
-  gap: 15px;
-  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
 .plat-tag {
   color: var(--text-dim);
-  border: 1px solid var(--text-dim);
-  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 16px;
   font-size: 0.85rem;
-  border-radius: 4px;
-  transition: all 0.3s;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .plat-tag:hover {
-  border-color: #fff;
+  border-color: var(--cyan);
   color: #fff;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transform: translateY(-3px);
+  background: rgba(0, 255, 255, 0.1);
 }
 
 .plat-tag.active {
-  color: var(--cyan);
-  border-color: var(--cyan);
-  box-shadow: 0 0 10px var(--cyan-dim);
+  background: linear-gradient(45deg, var(--magenta), #ff0055);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-actions {
@@ -129,8 +174,9 @@
 }
 
 .cyber-btn.outline-magenta:hover {
-  background: rgba(255, 0, 255, 0.1);
-  box-shadow: 0 5px 15px var(--magenta-dim);
+  background: var(--magenta);
+  color: #000;
+  box-shadow: 0 0 20px var(--magenta);
   transform: translateY(-2px);
   text-shadow: 0 0 3px var(--magenta);
 }
@@ -289,7 +335,12 @@
   text-shadow: 0 0 8px var(--cyan);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .hero-top-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
   .cyber-hero {
     padding: 12px;
     gap: 15px;
