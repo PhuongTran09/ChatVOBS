@@ -5,6 +5,7 @@ import './MusicPlayerBody.css'
 export function MusicPlayerBody() {
   const { t } = useI18n();
   const [activeSongIdx, setActiveSongIdx] = useState(0);
+  const [volume, setVolume] = useState(80);
 
   const songs = [
     { name: "Rainy Night in Tokyo", artist: "Lofi Girl / Chillhop", time: "03:20" },
@@ -24,7 +25,6 @@ export function MusicPlayerBody() {
               </div>
             </div>
           </div>
-          <div className="disc-arm" />
         </div>
         <div className="music-info">
           <p className="song-title">{songs[activeSongIdx].name}</p>
@@ -46,7 +46,15 @@ export function MusicPlayerBody() {
         <button className="m-btn" onClick={() => setActiveSongIdx((prev) => (prev < songs.length - 1 ? prev + 1 : 0))}>{'>>'}</button>
         <div className="volume-slider">
           <span>{t('music.vol')}</span>
-          <div className="vol-bar"><div className="vol-fill" /></div>
+          <input 
+            type="range" 
+            className="vol-input-green" 
+            min="0" 
+            max="100" 
+            value={volume} 
+            onChange={(e) => setVolume(Number(e.target.value))} 
+            style={{ '--vol-percent': `${volume}%` } as React.CSSProperties}
+          />
         </div>
       </div>
       <div className="music-list custom-scrollbar">

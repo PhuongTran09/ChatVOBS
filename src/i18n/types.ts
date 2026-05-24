@@ -6,7 +6,7 @@ export type TranslationKey =
   | 'nav.profile'
   | 'nav.overlays'
   | 'nav.donate'
-  | 'nav.obs'
+  | 'nav.schedule'
   | 'obs.body.title'
   | 'obs.body.guide'
   | 'obs.body.step1'

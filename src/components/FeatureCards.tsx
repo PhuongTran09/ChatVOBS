@@ -5,7 +5,7 @@ export function FeatureCards() {
   const { t } = useI18n();
 
   return (
-    <section className="cyber-section" id="chat-themes">
+    <div className="features-wrapper" id="features">
       <div className="section-head">
         <span className="badge badge-primary">{t('features.title')}</span>
         <p className="sys-text">{t('features.description')}</p>
@@ -24,6 +24,6 @@ export function FeatureCards() {
           <p>{t('features.terminal.desc')}</p>
         </article>
       </div>
-    </section>
+    </div>
   );
 }

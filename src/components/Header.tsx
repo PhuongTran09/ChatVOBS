@@ -21,9 +21,9 @@ export function Header({ profileMode, setProfileMode }: HeaderProps) {
       </div>
       <nav className="cyber-nav" aria-label="Primary">
         <a href="#overview">{t('nav.profile')}</a>
-        <a href="#chat-themes">{t('nav.overlays')}</a>
-        <a href="#activity">{t('nav.donate')}</a>
-        <a href="#obs-setup">{t('nav.obs')}</a>
+        <a href="#overlays-activity">{t('nav.overlays')}</a>
+        <a href="#donate">{t('nav.donate')}</a>
+        <a href="#social-hub">{t('nav.schedule')}</a>
       </nav>
       <CyberButtonSwitch 
         options={[

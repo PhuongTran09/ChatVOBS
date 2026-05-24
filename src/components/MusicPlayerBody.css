@@ -13,78 +13,94 @@
 
 .disc-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
 }
 
 .music-disc {
   width: 100%;
   height: 100%;
-  background: #111;
+  background: #0a0a0a;
   border-radius: 50%;
-  border: 4px solid #222;
+  border: 2px solid var(--cyan-dim);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--green);
-  animation: rotateDisc 5s linear infinite, neonPulseGreen 2s infinite alternate;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 15px rgba(0, 0, 0, 0.8);
+  animation: rotateDisc 4s linear infinite;
   will-change: transform;
+  /* Groove texture */
   background-image: repeating-radial-gradient(
-    circle,
-    #111,
+    circle at center,
+    #111 0,
     #111 2px,
-    #222 3px,
-    #111 4px
+    #050505 3px,
+    #050505 4px
   );
-  transition: all 0.3s;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Vinyl Reflection Effect */
+.music-disc::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    transparent 0deg,
+    rgba(255, 255, 255, 0.15) 45deg,
+    transparent 90deg,
+    rgba(255, 255, 255, 0.15) 225deg,
+    transparent 270deg
+  );
+  pointer-events: none;
 }
 
 .music-disc:hover {
-  box-shadow: 0 0 30px var(--green);
+  box-shadow: 0 0 30px var(--cyan);
+  border-color: var(--cyan);
   animation-duration: 2s;
 }
 
 .disc-inner {
-  width: 35%;
-  height: 35%;
-  background: var(--green);
+  width: 38%;
+  height: 38%;
+  background: conic-gradient(var(--magenta), var(--cyan), var(--magenta));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 10px var(--green);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+  position: relative;
+  z-index: 2; /* above the reflection */
+  border: 2px solid #111;
 }
 
 .disc-label {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid #000;
+  border: 1px dashed rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 
 .disc-dot {
-  width: 6px;
-  height: 6px;
-  background: #000;
+  width: 8px;
+  height: 8px;
+  background: #111;
   border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
 }
 
-.disc-arm {
-  position: absolute;
-  top: -5px;
-  right: -10px;
-  width: 40px;
-  height: 5px;
-  background: #444;
-  transform: rotate(45deg);
-  transform-origin: left center;
-  border-radius: 2px;
-}
+
 
 .music-info {
   flex: 1;
@@ -115,7 +131,7 @@
 
 .progress-bar {
   height: 4px;
-  background: #222;
+  background: #111;
   border-radius: 2px;
   margin-bottom: 5px;
   overflow: hidden;
@@ -176,17 +192,30 @@
   color: var(--text-dim);
 }
 
-.vol-bar {
+.vol-input-green {
+  -webkit-appearance: none;
+  appearance: none;
   width: 60px;
   height: 4px;
-  background: #222;
+  background: #111;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  background-image: linear-gradient(var(--green), var(--green));
+  background-size: var(--vol-percent, 80%) 100%;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
 }
 
-.vol-fill {
-  width: 75%;
-  height: 100%;
+.vol-input-green::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 8px;
+  height: 12px;
   background: var(--green);
-  box-shadow: 0 0 5px var(--green);
+  border-radius: 2px;
+  box-shadow: 0 0 10px var(--green);
+  cursor: pointer;
 }
 
 .music-list {
