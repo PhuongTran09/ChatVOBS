@@ -252,8 +252,6 @@ html[lang="vi"] {
 
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   padding: 24px;

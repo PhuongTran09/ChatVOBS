@@ -7,7 +7,6 @@
 .cyber-hero {
   padding: 40px;
   background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
-  backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 0, 255, 0.15);
   border-left: 4px solid var(--magenta);
   box-shadow: 
@@ -96,7 +95,6 @@
   margin-bottom: 25px;
   padding: 15px 20px;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(4px);
   border-left: 4px solid var(--cyan);
   border-radius: 0;
   box-shadow: inset 20px 0 50px rgba(0, 255, 255, 0.02);
@@ -185,7 +183,6 @@
 .status-panel {
   border: 1px solid var(--magenta);
   background: rgba(5, 5, 8, 0.9);
-  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
