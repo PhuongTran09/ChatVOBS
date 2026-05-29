@@ -81,10 +81,17 @@ export function StreamerProfilePage({
   }
 
   useEffect(() => {
+    let ticking = false
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setShowScrollTop(window.scrollY > 400)
+          ticking = false
+        })
+        ticking = true
+      }
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
