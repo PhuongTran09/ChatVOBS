@@ -6,10 +6,10 @@
 
 .cyber-metric {
   border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 16px;
   background: rgba(0, 255, 255, 0.03);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(2px);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
@@ -28,16 +28,7 @@
   transition: all 0.5s ease;
 }
 
-.cyber-metric:hover {
-  border-color: var(--cyan);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
-  transform: translateY(-3px);
-  background: rgba(0, 255, 255, 0.08);
-}
-
-.cyber-metric:hover::before {
-  left: 200%;
-}
+/* Hover effects removed */
 
 .metric-label {
   display: block;
@@ -56,6 +47,4 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-.cyber-metric:hover .metric-value {
-  text-shadow: 0 0 15px var(--cyan);
-}
+/* Hover effects removed */

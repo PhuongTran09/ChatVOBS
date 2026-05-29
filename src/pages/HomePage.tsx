@@ -135,6 +135,9 @@ export function StreamerProfilePage({
       </section>
 
       <section className="cyber-section" id="social-hub">
+        <div style={{ textAlign: 'left', marginBottom: '25px' }}>
+          <span className="badge badge-primary">SOCIAL HUB</span>
+        </div>
         <SocialSchedule />
         
         <PhotoGallery

@@ -7,14 +7,14 @@
 .cyber-hero {
   padding: 40px;
   background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 0, 255, 0.15);
   border-left: 4px solid var(--magenta);
   box-shadow: 
     inset 1px 1px 0 rgba(255, 255, 255, 0.05), 
     inset 0 0 30px rgba(0, 0, 0, 0.8),
     0 10px 30px rgba(0, 0, 0, 0.5);
-  border-radius: 16px;
+  border-radius: 0;
   position: relative;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -36,7 +36,7 @@
   width: 25px; height: 25px;
   border-top: 3px solid var(--cyan);
   border-right: 3px solid var(--cyan);
-  border-top-right-radius: 16px;
+  border-top-right-radius: 0;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   pointer-events: none;
 }
@@ -54,7 +54,7 @@
   padding: 4px 10px;
   font-size: 0.8rem;
   margin-bottom: 15px;
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
   animation: neonFlicker 5s infinite;
   transition: all 0.3s;
@@ -96,9 +96,9 @@
   margin-bottom: 25px;
   padding: 15px 20px;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(4px);
   border-left: 4px solid var(--cyan);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0;
   box-shadow: inset 20px 0 50px rgba(0, 255, 255, 0.02);
 }
 
@@ -117,7 +117,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 1px;
-  border-radius: 20px;
+  border-radius: 0;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   position: relative;
@@ -151,7 +151,7 @@
   font-weight: bold;
   letter-spacing: 1px;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .cyber-btn.primary-cyan {
@@ -183,9 +183,9 @@
 
 /* STATUS PANEL */
 .status-panel {
-  border: 1px solid rgba(255, 0, 255, 0.2);
+  border: 1px solid var(--magenta);
   background: rgba(5, 5, 8, 0.9);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -193,8 +193,8 @@
   animation: floatPanel 4s ease-in-out infinite;
   will-change: transform;
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.6),
-    inset 0 0 15px rgba(255, 0, 255, 0.05);
+    0 20px 40px rgba(0, 0, 0, 0.8),
+    0 0 30px var(--magenta-dim);
   perspective: 1000px;
 }
 
@@ -224,13 +224,7 @@
   transform-origin: left top;
 }
 
-.status-panel:hover {
-  border-color: var(--magenta);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.8),
-    0 0 30px var(--magenta-dim);
-  transform: translateY(-10px) scale(1.02);
-}
+/* removed status-panel:hover */
 
 /* DECORATIVE ELEMENTS */
 .panel-scanline {
@@ -281,16 +275,13 @@
   align-items: center;
   gap: 10px;
   padding: 12px 15px;
-  border-bottom: 1px solid rgba(255, 0, 255, 0.1);
+  border-bottom: 1px solid var(--magenta);
   color: var(--magenta);
   transition: all 0.3s;
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.status-panel:hover .panel-head {
-  border-bottom-color: var(--magenta);
   background: rgba(255, 0, 255, 0.08);
 }
+
+/* removed status-panel:hover .panel-head */
 
 .blink-dot {
   width: 10px; height: 10px;
@@ -310,17 +301,14 @@
 }
 
 .highlight-text {
-  color: var(--cyan);
+  color: #fff;
   line-height: 1.5;
   margin-bottom: 15px;
-  text-shadow: 0 0 5px var(--cyan-dim);
+  text-shadow: 0 0 15px var(--cyan);
   transition: all 0.3s;
 }
 
-.status-panel:hover .highlight-text {
-  text-shadow: 0 0 15px var(--cyan);
-  color: #fff;
-}
+/* removed status-panel:hover .highlight-text */
 
 .tech-tags span {
   display: inline-block;
