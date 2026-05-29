@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap');
 @import './animations.css';
 
 :root {
@@ -21,6 +21,10 @@
   /* Grid Colors */
   --grid-base: rgba(0, 255, 255, 0.02);
   --grid-glow: rgba(0, 255, 255, 0.3);
+}
+
+html[lang="vi"] {
+  --font-mono: 'Chakra Petch', 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
 }
 
 * {
@@ -91,13 +95,13 @@ button {
   position: relative;
   padding: 40px;
   background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(0, 255, 255, 0.15);
   box-shadow: 
     inset 1px 1px 0 rgba(255, 255, 255, 0.05), 
     inset 0 0 30px rgba(0, 0, 0, 0.8),
     0 10px 30px rgba(0, 0, 0, 0.5);
-  border-radius: 16px;
+  border-radius: 0;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -126,7 +130,7 @@ button {
   left: -2px;
   border-right: none;
   border-bottom: none;
-  border-top-left-radius: 16px;
+  border-top-left-radius: 0;
 }
 
 .cyber-section::after {
@@ -134,7 +138,7 @@ button {
   right: -2px;
   border-left: none;
   border-top: none;
-  border-bottom-right-radius: 16px;
+  border-bottom-right-radius: 0;
 }
 
 .cyber-section:hover::before,

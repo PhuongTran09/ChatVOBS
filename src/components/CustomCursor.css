@@ -57,7 +57,7 @@
   width: 20px;
   height: 20px;
   background: var(--cyan);
-  filter: blur(15px);
+  filter: blur(5px);
   opacity: 0.3;
   transform: translate(-50%, -50%);
   border-radius: 50%;

@@ -1,6 +1,6 @@
 .features-wrapper {
   border: 1px solid rgba(0, 255, 255, 0.15);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 25px;
   background: rgba(0, 0, 0, 0.3);
   box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
@@ -14,59 +14,24 @@
 }
 
 .cyber-card {
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 12px;
+  border: 1px solid var(--cyan);
+  border-radius: 0;
   padding: 25px;
-  background: rgba(0, 255, 255, 0.03);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 255, 255, 0.08);
+  backdrop-filter: blur(2px);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.cyber-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 50%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
-  transform: skewX(-20deg);
-  transition: all 0.6s ease;
-}
-
-.cyber-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--cyan);
-  background: rgba(0, 255, 255, 0.08);
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
 }
 
-.cyber-card:hover::before {
-  left: 200%;
-}
-
 .cyber-card.card-magenta {
-  border-color: rgba(255, 0, 255, 0.2);
-  background: rgba(255, 0, 255, 0.03);
-}
-.cyber-card.card-magenta::before {
-  background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.2), transparent);
-}
-.cyber-card.card-magenta:hover {
   border-color: var(--magenta);
   background: rgba(255, 0, 255, 0.08);
   box-shadow: 0 0 25px rgba(255, 0, 255, 0.2), inset 0 0 10px rgba(255, 0, 255, 0.1);
 }
 
 .cyber-card.card-green {
-  border-color: rgba(0, 255, 0, 0.2);
-  background: rgba(0, 255, 0, 0.03);
-}
-.cyber-card.card-green::before {
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
-}
-.cyber-card.card-green:hover {
   border-color: var(--green);
   background: rgba(0, 255, 0, 0.08);
   box-shadow: 0 0 25px rgba(0, 255, 0, 0.2), inset 0 0 10px rgba(0, 255, 0, 0.1);
@@ -77,32 +42,21 @@
   font-size: 1.2rem;
   color: #fff;
   transition: all 0.3s;
-}
-
-.cyber-card:hover h3 {
   text-shadow: 0 0 12px var(--cyan);
-  color: #fff;
 }
 
-.cyber-card.card-cyan:hover h3 { text-shadow: 0 0 12px var(--cyan); color: #fff; }
-.cyber-card.card-magenta h3 { color: var(--magenta); }
-.cyber-card.card-magenta:hover h3 { text-shadow: 0 0 12px var(--magenta); color: #fff; }
-.cyber-card.card-yellow:hover h3 { text-shadow: 0 0 12px #ff0; color: #fff; }
-.cyber-card.card-purple:hover h3 { text-shadow: 0 0 12px #a0f; color: #fff; }
-
-.cyber-card.card-green h3 { color: var(--green); }
-.cyber-card.card-green:hover h3 { text-shadow: 0 0 12px var(--green); color: #fff; }
+.cyber-card.card-cyan h3 { text-shadow: 0 0 12px var(--cyan); color: #fff; }
+.cyber-card.card-magenta h3 { color: #fff; text-shadow: 0 0 12px var(--magenta); }
+.cyber-card.card-yellow h3 { color: #fff; text-shadow: 0 0 12px #ff0; }
+.cyber-card.card-purple h3 { color: #fff; text-shadow: 0 0 12px #a0f; }
+.cyber-card.card-green h3 { color: #fff; text-shadow: 0 0 12px var(--green); }
 
 .cyber-card p {
-  color: var(--text-dim);
+  color: #fff;
   font-size: 0.9rem;
   line-height: 1.6;
   margin-bottom: 0;
   transition: all 0.3s;
-}
-
-.cyber-card:hover p {
-  color: #fff;
 }
 
 @media (max-width: 640px) {

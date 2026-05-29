@@ -46,6 +46,7 @@ export function ChatEditorSection({ onOpenChat }: ChatEditorSectionProps) {
       <div className="chat-editor-grid">
         {/* Left Column: Content */}
         <div className="chat-editor-info">
+          <span className="badge badge-primary" style={{ marginBottom: '15px', display: 'inline-block' }}>STREAM OVERLAYS</span>
           <h2 className="glitch-text" data-text={t('nav.overlays')}>
             {t('nav.overlays')}
           </h2>
