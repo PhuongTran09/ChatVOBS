@@ -126,3 +126,9 @@
 }
 
 /* Removed gallery-item hover animations */
+
+.gallery-item:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  transform: translateY(-5px);
+}

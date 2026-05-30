@@ -5,10 +5,10 @@
 }
 
 .cyber-metric {
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  border: 1px solid rgba(0, 255, 0, 0.2);
   border-radius: 0;
   padding: 8px 16px;
-  background: rgba(0, 255, 255, 0.03);
+  background: rgba(0, 255, 0, 0.03);
   backdrop-filter: blur(2px);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
@@ -23,7 +23,7 @@
   position: absolute;
   top: 0; left: -100%;
   width: 50%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
   transform: skewX(-20deg);
   transition: all 0.5s ease;
 }
@@ -33,7 +33,7 @@
 .metric-label {
   display: block;
   font-size: 0.7rem;
-  color: var(--magenta);
+  color: var(--green);
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 1px;

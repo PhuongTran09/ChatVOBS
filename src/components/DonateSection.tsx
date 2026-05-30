@@ -7,6 +7,7 @@ interface DonateMethod {
   url: string;
   color: string;
   btnClass: string;
+  qrImage?: string;
 }
 
 interface DonateSectionProps {
@@ -57,10 +58,9 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
               <div className="qr-frame">
                 <img 
                   key={activeDonate.id}
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${activeDonate.url}`} 
+                  src={activeDonate.qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${activeDonate.url}`} 
                   alt={`QR ${activeDonate.name}`} 
                 />
-                <div className="scan-line-anim" />
               </div>
               <span className="qr-label">{t('donate.scan')}</span>
             </div>

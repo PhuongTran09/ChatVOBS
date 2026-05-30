@@ -51,7 +51,7 @@ export function ChatEditorSection({ onOpenChat }: ChatEditorSectionProps) {
             {t('nav.overlays')}
           </h2>
           <p className="sys-text description">
-            Tạo và tùy chỉnh giao diện khung chat độc quyền cho luồng livestream của bạn. Hỗ trợ hiển thị mượt mà trên OBS Studio, Streamlabs Desktop và XSplit. Tích hợp sẵn CSS Cyberpunk 0-lag.
+            {t('nav.overlays.desc')}
           </p>
           <button type="button" className="cyber-btn primary-cyan large-btn" onClick={onOpenChat}>
             {t('hero.primary') || 'OPEN CHAT EDITOR'}
