@@ -138,6 +138,55 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.channel-profile-tag {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  padding: 10px 20px;
+  border-left: 4px solid var(--green);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.channel-profile-tag:hover {
+  border-color: var(--green);
+  box-shadow: 0 5px 20px rgba(0, 255, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.channel-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 0;
+  border: 2px solid var(--green);
+  object-fit: cover;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.channel-info-hero {
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-name-hero {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.channel-platform-hero {
+  font-size: 0.75rem;
+  color: var(--green);
+  font-family: var(--font-mono);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
 .hero-actions {
   display: flex;
   gap: 15px;
@@ -280,11 +329,9 @@
 
 /* removed status-panel:hover .panel-head */
 
-.blink-dot {
-  width: 10px; height: 10px;
-  background: var(--red);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--red);
+.blink-bell {
+  color: var(--red);
+  filter: drop-shadow(0 0 5px var(--red));
   animation: blink 1s infinite;
 }
 

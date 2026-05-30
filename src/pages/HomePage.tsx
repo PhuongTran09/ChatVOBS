@@ -12,6 +12,7 @@ import { FloatingButtons } from '../components/FloatingButtons'
 import { TerminalsBand } from '../components/TerminalsBand'
 import { useTerminals } from '../hooks/useTerminals'
 import { ChatEditorSection } from '../components/ChatEditorSection'
+import { Footer } from '../components/Footer'
 
 export function StreamerProfilePage({
   onOpenChat,
@@ -60,16 +61,16 @@ export function StreamerProfilePage({
 
   const donateMethods = [
     {
-      id: 'playerduo',
-      name: 'PLAYERDUO',
-      url: 'https://playerduo.net/example',
-      color: 'var(--magenta)',
-      btnClass: 'outline-magenta'
+      id: 'zypage',
+      name: 'ZYPAGE',
+      url: 'https://zypage.com/yatokenji',
+      color: 'var(--cyan)',
+      btnClass: 'primary-cyan'
     },
     {
-      id: 'wescan',
-      name: 'WESCAN',
-      url: 'https://wescan.vn/example',
+      id: 'playerduo',
+      name: 'PLAYERDUO',
+      url: 'https://playerduo.net/yatokenji',
       color: 'var(--magenta)',
       btnClass: 'outline-magenta'
     }
@@ -172,9 +173,7 @@ export function StreamerProfilePage({
         reopenTerminals={reopenTerminals}
       />
 
-      <footer className="cyber-footer">
-        <p>Created by <span className="author-name">Yatokenji</span> / 2026</p>
-      </footer>
+      <Footer />
     </main>
   )
 }

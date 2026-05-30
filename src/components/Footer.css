@@ -1,0 +1,34 @@
+/* FOOTER STYLES */
+.cyber-footer {
+  text-align: center;
+  padding: 40px 20px 60px;
+  margin-top: 60px;
+  border-top: 1px dashed var(--cyan-dim);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.cyber-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+.cyber-footer p {
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.cyber-footer .author-name {
+  font-weight: bold;
+  color: var(--magenta);
+  font-size: 0.85rem;
+}

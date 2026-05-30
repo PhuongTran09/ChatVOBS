@@ -28,6 +28,16 @@
   gap: 10px;
 }
 
+.calendar-icon {
+  color: var(--green);
+  filter: drop-shadow(0 0 5px var(--green));
+}
+
+.community-icon {
+  color: var(--magenta);
+  filter: drop-shadow(0 0 5px var(--magenta));
+}
+
 .current-day-tag {
   display: flex;
   align-items: center;
