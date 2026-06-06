@@ -1,6 +1,6 @@
 body.overlay-mode {
-  background-color: black !important;
-  background: black !important;
+  background-color: transparent !important;
+  background: transparent !important;
 }
 
 .qr-overlay-wrapper {
