@@ -4,11 +4,12 @@ import { StreamerProfilePage } from './pages/HomePage'
 import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 import { QROverlayPage } from './pages/QROverlayPage'
 import { ClockOverlayPage } from './pages/ClockOverlayPage'
+import { LoadingOverlayPage } from './pages/LoadingOverlayPage'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | null>(null)
+  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -17,6 +18,8 @@ function App() {
       setOverlayType('qr');
     } else if (overlay === 'clock') {
       setOverlayType('clock');
+    } else if (overlay === 'loading') {
+      setOverlayType('loading');
     }
   }, []);
 
@@ -35,6 +38,10 @@ function App() {
 
   if (overlayType === 'clock') {
     return <ClockOverlayPage />;
+  }
+
+  if (overlayType === 'loading') {
+    return <LoadingOverlayPage />;
   }
 
 
