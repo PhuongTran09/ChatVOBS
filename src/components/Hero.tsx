@@ -100,6 +100,11 @@ export function Hero({ profileMode }: HeroProps) {
                             {notification.description}
                           </p>
                         )}
+                        {notification.publishedAt && (
+                          <span className="notification-date">
+                            {new Date(notification.publishedAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.')}
+                          </span>
+                        )}
                       </div>
                     </div>
                   {notification.tags && notification.tags.length > 0 && (

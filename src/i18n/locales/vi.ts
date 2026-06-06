@@ -34,6 +34,7 @@ export const vi = {
   'panel.groups': '{count} nhóm',
   'panel.live': 'NOTIFICATION',
   'panel.topic': 'CHỦ ĐỀ: BUILD GIAO DIỆN CHAT YOUTUBE PHONG CÁCH CYBERPUNK',
+  'panel.startTime': 'Bắt đầu:',
   'features.stream.title': 'STREAM_TOOLS',
   'features.social.title': 'SOCIAL_PLATFORMS',
   'donate.support': 'ỦNG HỘ',

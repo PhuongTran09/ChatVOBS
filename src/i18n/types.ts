@@ -31,6 +31,7 @@ export type TranslationKey =
   | 'panel.groups'
   | 'panel.live'
   | 'panel.topic'
+  | 'panel.startTime'
   | 'features.stream.title'
   | 'features.social.title'
   | 'donate.support'

@@ -465,6 +465,17 @@
   text-transform: none;
 }
 
+.notification-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--cyan);
+  opacity: 0.8;
+  display: block;
+  text-align: right;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
 .notification-item.latest {
   border: 1px solid rgba(0, 255, 255, 0.25);
   background: rgba(0, 255, 255, 0.04);
@@ -604,6 +615,10 @@
   .notification-desc {
     font-size: 0.62rem;
     line-height: 1.15;
+  }
+
+  .notification-date {
+    font-size: 0.58rem;
   }
 
   .tech-tags span {
