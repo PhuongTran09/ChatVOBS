@@ -34,8 +34,8 @@
 }
 
 .community-icon {
-  color: var(--magenta);
-  filter: drop-shadow(0 0 5px var(--magenta));
+  color: var(--cyan);
+  filter: drop-shadow(0 0 5px var(--cyan));
 }
 
 .current-day-tag {
@@ -149,10 +149,13 @@
 }
 
 .discord-panel {
-  border: 1px solid var(--magenta);
+  border: 1px solid var(--cyan-dim);
   background: linear-gradient(135deg, #000, #111);
   transition: all 0.3s;
-  box-shadow: 0 0 25px var(--magenta-dim);
+}
+
+.discord-panel .panel-head {
+  color: var(--cyan);
 }
 
 .discord-content {

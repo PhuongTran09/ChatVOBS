@@ -114,52 +114,68 @@ export function StreamerProfilePage({
         setProfileMode={setProfileMode}
       />
 
-      <section className="cyber-hero" id="overview">
-        <Hero
-          profileMode={profileMode}
-          onOpenChat={onOpenChat}
-        />
+      {profileMode === 'streamer' && (
+        <section className="cyber-hero" id="overview">
+          <Hero
+            profileMode={profileMode}
+            onOpenChat={onOpenChat}
+          />
 
-        <FeatureCards />
-      </section>
+          <FeatureCards />
+        </section>
+      )}
 
       <SystemOverlays
         isInitialLoading={isInitialLoading}
         isRebooting={isRebooting}
       />
-      <section className="cyber-section" id="overlays-activity" style={{ zIndex: 9999 }}>
-        <ChatEditorSection onOpenChat={onOpenChat} />
-        <TerminalsBand
-          terminals={terminals}
-          activeTerminal={activeTerminal}
-          draggingId={dragging?.id}
-          bringToFront={bringToFront}
-          handleMouseDown={handleMouseDown}
-          toggleMinimize={toggleMinimize}
-          toggleMaximize={toggleMaximize}
-          closeTerminal={closeTerminal}
-          resetPosition={resetPosition}
-        />
-      </section>
+      {profileMode === 'streamer' ? (
+        <>
+          <section className="cyber-section" id="overlays-activity" style={{ zIndex: 9999 }}>
+            <ChatEditorSection onOpenChat={onOpenChat} />
+            <TerminalsBand
+              terminals={terminals}
+              activeTerminal={activeTerminal}
+              draggingId={dragging?.id}
+              bringToFront={bringToFront}
+              handleMouseDown={handleMouseDown}
+              toggleMinimize={toggleMinimize}
+              toggleMaximize={toggleMaximize}
+              closeTerminal={closeTerminal}
+              resetPosition={resetPosition}
+            />
+          </section>
 
-      <section className="cyber-section" id="social-hub">
-        <div style={{ textAlign: 'left', marginBottom: '25px' }}>
-          <span className="badge badge-primary">SOCIAL HUB</span>
-        </div>
-        <SocialSchedule />
-        
-        <PhotoGallery
-          galleryItems={galleryItems}
-          setSelectedImage={setSelectedImage}
-        />
-      </section>
+          <section className="cyber-section" id="social-hub">
+            <div style={{ textAlign: 'left', marginBottom: '25px' }}>
+              <span className="badge badge-primary">SOCIAL HUB</span>
+            </div>
+            <SocialSchedule />
+            
+            <PhotoGallery
+              galleryItems={galleryItems}
+              setSelectedImage={setSelectedImage}
+            />
+          </section>
 
-
-      <DonateSection
-        donateMethods={donateMethods}
-        activeDonateIdx={activeDonateIdx}
-        nextDonate={nextDonate}
-      />
+          <DonateSection
+            donateMethods={donateMethods}
+            activeDonateIdx={activeDonateIdx}
+            nextDonate={nextDonate}
+          />
+        </>
+      ) : (
+        <section className="cyber-section coming-soon-section">
+          <div className="coming-soon-container">
+            <div className="panel-scanline" />
+            <div className="panel-corner-tl" />
+            <div className="panel-corner-br" />
+            <h1 className="glitch-text" data-text="COMING SOON">COMING SOON</h1>
+            <p className="sys-text" style={{ color: 'var(--cyan)' }}>&gt; ACCESSING_DEVELOPER_PORTAL.log</p>
+            <p className="sys-text blink-text" style={{ color: 'var(--magenta)' }}>&gt; UNDER_CONSTRUCTION_... [SYSTEM_STANDBY]</p>
+          </div>
+        </section>
+      )}
 
       <ImageModal
         selectedImage={selectedImage}

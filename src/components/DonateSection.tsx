@@ -24,7 +24,6 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
     <section className="cyber-section donate-section" id="donate">
       <div className="section-head">
         <span className="badge badge-primary">{t('donate.support')}</span>
-        <h2>{t('donate.title')}</h2>
       </div>
       
       <div className="donate-container">

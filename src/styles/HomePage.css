@@ -259,4 +259,42 @@ button {
   background: var(--cyan);
 }
 
+/* COMING SOON */
+.coming-soon-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  margin-top: 40px;
+}
+
+.coming-soon-container {
+  border: 1px solid var(--magenta);
+  background: rgba(5, 5, 8, 0.9);
+  padding: 50px;
+  text-align: center;
+  box-shadow: 0 0 30px var(--magenta-dim);
+  position: relative;
+  overflow: hidden;
+  max-width: 600px;
+  width: 100%;
+}
+
+.coming-soon-container .glitch-text {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 0 0 15px var(--magenta);
+}
+
+.coming-soon-container p {
+  font-family: var(--font-mono);
+  margin: 8px 0;
+  letter-spacing: 1.5px;
+}
+
+.blink-text {
+  animation: neonFlicker 2s infinite;
+}
+
 
