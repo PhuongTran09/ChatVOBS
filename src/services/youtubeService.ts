@@ -94,6 +94,44 @@ export async function getLatestNotification(channelId: string): Promise<YouTubeN
 }
 
 /**
+ * Fetches the latest videos or streams from the channel as notifications
+ */
+export async function getLatestNotifications(channelId: string, maxResults: number = 5): Promise<YouTubeNotification[]> {
+  try {
+    const searchResponse = await fetch(
+      `${BASE_URL}/search?part=id&channelId=${channelId}&order=date&maxResults=${maxResults}&type=video&key=${API_KEY}`
+    );
+    if (!searchResponse.ok) throw new Error(`YouTube API error: ${searchResponse.status}`);
+    const searchData = await searchResponse.json();
+    
+    if (searchData.items && searchData.items.length > 0) {
+      const videoIds = searchData.items.map((item: any) => item.id.videoId).filter(Boolean).join(',');
+      
+      const videoResponse = await fetch(
+        `${BASE_URL}/videos?part=snippet&id=${videoIds}&key=${API_KEY}`
+      );
+      if (!videoResponse.ok) throw new Error(`YouTube API error: ${videoResponse.status}`);
+      const videoData = await videoResponse.json();
+      
+      if (videoData.items && videoData.items.length > 0) {
+        return videoData.items.map((video: any) => ({
+          title: video.snippet.title,
+          videoId: video.id,
+          publishedAt: video.snippet.publishedAt,
+          description: video.snippet.description,
+          thumbnailUrl: video.snippet.thumbnails.medium?.url || video.snippet.thumbnails.default?.url || '',
+          tags: video.snippet.tags || []
+        }));
+      }
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching YouTube notifications:', error);
+    return [];
+  }
+}
+
+/**
  * Formats numbers to a shorter string (e.g., 12500 -> 12.5K)
  */
 export function formatCompactNumber(numberStr: string): string {

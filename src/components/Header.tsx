@@ -20,10 +20,21 @@ export function Header({ profileMode, setProfileMode }: HeaderProps) {
         </div>
       </div>
       <nav className="cyber-nav" aria-label="Primary">
-        <a href="#overview">{t('nav.profile')}</a>
-        <a href="#overlays-activity">{t('nav.overlays')}</a>
-        <a href="#donate">{t('nav.donate')}</a>
-        <a href="#social-hub">{t('nav.schedule')}</a>
+        {profileMode === 'developer' ? (
+          <>
+            <a href="#overview">{t('nav.dev.profile')}</a>
+            <a href="#dev-skills">{t('nav.dev.skills')}</a>
+            <a href="#dev-projects">{t('nav.dev.projects')}</a>
+            <a href="#dev-tools">{t('nav.dev.tools')}</a>
+          </>
+        ) : (
+          <>
+            <a href="#overview">{t('nav.profile')}</a>
+            <a href="#overlays-activity">{t('nav.overlays')}</a>
+            <a href="#donate">{t('nav.donate')}</a>
+            <a href="#social-hub">{t('nav.schedule')}</a>
+          </>
+        )}
       </nav>
       <CyberButtonSwitch 
         options={[

@@ -21,7 +21,6 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
     <div className="gallery-container" id="gallery">
       <div className="section-head">
         <span className="badge badge-secondary">{t('gallery.badge')}</span>
-        <h2>{t('gallery.title')}</h2>
       </div>
       <div className="gallery-viewport custom-scrollbar">
         <div className="gallery-track">
