@@ -441,6 +441,30 @@
   border-color: var(--cyan);
 }
 
+.notification-title {
+  font-size: 0.85rem;
+  line-height: 1.3;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  margin-bottom: 4px;
+}
+
+.notification-desc {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+  text-transform: none;
+}
+
 .notification-item.latest {
   border: 1px solid rgba(0, 255, 255, 0.25);
   background: rgba(0, 255, 255, 0.04);
@@ -510,6 +534,27 @@
   .hero-lead {
     font-size: 0.8rem;
     margin-bottom: 15px;
+    padding: 10px 15px;
+  }
+
+  .channel-profile-tag {
+    padding: 10px 15px;
+    gap: 12px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .channel-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .channel-name-hero {
+    font-size: 1rem;
+  }
+
+  .channel-platform-hero {
+    font-size: 0.65rem;
   }
   
   .platform-tags {
@@ -539,5 +584,30 @@
 
   .panel-body {
     padding: 12px;
+  }
+
+  .status-panel {
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .notification-thumb {
+    width: 64px;
+    height: 36px;
+  }
+
+  .notification-title {
+    font-size: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .notification-desc {
+    font-size: 0.62rem;
+    line-height: 1.15;
+  }
+
+  .tech-tags span {
+    font-size: 0.7rem;
+    margin-right: 6px;
   }
 }
