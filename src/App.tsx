@@ -3,16 +3,20 @@ import { useState, useEffect } from 'react'
 import { StreamerProfilePage } from './pages/HomePage'
 import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 import { QROverlayPage } from './pages/QROverlayPage'
+import { ClockOverlayPage } from './pages/ClockOverlayPage'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [isOverlay, setIsOverlay] = useState(false)
+  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('overlay') === 'qr') {
-      setIsOverlay(true);
+    const overlay = params.get('overlay');
+    if (overlay === 'qr') {
+      setOverlayType('qr');
+    } else if (overlay === 'clock') {
+      setOverlayType('clock');
     }
   }, []);
 
@@ -25,9 +29,14 @@ function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  if (isOverlay) {
+  if (overlayType === 'qr') {
     return <QROverlayPage />;
   }
+
+  if (overlayType === 'clock') {
+    return <ClockOverlayPage />;
+  }
+
 
   return (
     <>
