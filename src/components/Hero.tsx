@@ -92,11 +92,11 @@ export function Hero({ profileMode }: HeroProps) {
                         </a>
                       )}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer" className="highlight-text notification-title" style={{ fontSize: '0.85rem', lineHeight: '1.3', textDecoration: 'none', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0, marginBottom: '4px' }}>
+                        <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer" className="highlight-text notification-title">
                           {notification.title}
                         </a>
                         {notification.description && (
-                          <p className="notification-desc" style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '4px', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.2', textTransform: 'none' }}>
+                          <p className="notification-desc">
                             {notification.description}
                           </p>
                         )}
