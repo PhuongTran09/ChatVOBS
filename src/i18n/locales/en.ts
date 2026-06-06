@@ -34,6 +34,7 @@ export const en = {
   'panel.groups': '{count} groups',
   'panel.live': 'NOTIFICATION',
   'panel.topic': 'TOPIC: BUILDING YOUTUBE CHAT INTERFACE CYBERPUNK STYLE',
+  'panel.startTime': 'Started:',
   'features.stream.title': 'STREAM_TOOLS',
   'features.social.title': 'SOCIAL_PLATFORMS',
   'donate.support': 'SUPPORT_ME',

@@ -21,10 +21,52 @@ export interface YouTubeNotification {
   tags: string[];
 }
 
+const CACHE_KEYS = {
+  STATS: 'youtube_stats_cache',
+  NOTIFICATIONS: 'youtube_notifications_cache'
+};
+
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes cache expiration
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+function getFromCache<T>(key: string, ignoreExpiry = false): T | null {
+  try {
+    const cached = localStorage.getItem(key);
+    if (!cached) return null;
+    const entry: CacheEntry<T> = JSON.parse(cached);
+    if (!ignoreExpiry && Date.now() - entry.timestamp > CACHE_TTL) {
+      return null;
+    }
+    return entry.data;
+  } catch {
+    return null;
+  }
+}
+
+function setToCache<T>(key: string, data: T): void {
+  try {
+    const entry: CacheEntry<T> = {
+      data,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(key, JSON.stringify(entry));
+  } catch (error) {
+    console.error('Error saving to local storage cache:', error);
+  }
+}
+
 /**
  * Fetches YouTube channel statistics using a handle (e.g., @YatoKenji)
  */
 export async function getChannelStats(handle: string): Promise<YouTubeStats | null> {
+  // Check active cache
+  const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
+  if (cached) return cached;
+
   try {
     const formattedHandle = handle.startsWith('@') ? handle : `@${handle}`;
     const response = await fetch(
@@ -35,7 +77,7 @@ export async function getChannelStats(handle: string): Promise<YouTubeStats | nu
     
     if (data.items && data.items.length > 0) {
       const channel = data.items[0];
-      return {
+      const stats = {
         id: channel.id,
         subscriberCount: channel.statistics.subscriberCount,
         viewCount: channel.statistics.viewCount,
@@ -44,89 +86,102 @@ export async function getChannelStats(handle: string): Promise<YouTubeStats | nu
         title: channel.snippet.title,
         description: channel.snippet.description
       };
+      setToCache(CACHE_KEYS.STATS, stats);
+      return stats;
     }
     return null;
   } catch (error) {
     console.error('Error fetching YouTube stats:', error);
+    // Fall back to expired cache if available to prevent showing blank interface
+    const fallback = getFromCache<YouTubeStats>(CACHE_KEYS.STATS, true);
+    if (fallback) return fallback;
     return null;
   }
 }
 
 /**
  * Fetches the latest video or stream from the channel as a notification
+ * Optimized: Uses playlistItems of the default uploads playlist (1 quota unit instead of 100)
  */
 export async function getLatestNotification(channelId: string): Promise<YouTubeNotification | null> {
+  const cacheKey = `${CACHE_KEYS.NOTIFICATIONS}_latest_${channelId}`;
+  const cached = getFromCache<YouTubeNotification>(cacheKey);
+  if (cached) return cached;
+
   try {
-    // Get latest video ID
-    const searchResponse = await fetch(
-      `${BASE_URL}/search?part=id&channelId=${channelId}&order=date&maxResults=1&type=video&key=${API_KEY}`
-    );
-    if (!searchResponse.ok) throw new Error(`YouTube API error: ${searchResponse.status}`);
-    const searchData = await searchResponse.json();
+    if (!channelId.startsWith('UC')) {
+      throw new Error(`Invalid channel ID: ${channelId}`);
+    }
+    // Uploads playlist ID is derived by changing UC to UU in the channel ID
+    const playlistId = 'UU' + channelId.substring(2);
     
-    if (searchData.items && searchData.items.length > 0) {
-      const videoId = searchData.items[0].id.videoId;
-      
-      // Get video details (description, tags, thumbnail)
-      const videoResponse = await fetch(
-        `${BASE_URL}/videos?part=snippet&id=${videoId}&key=${API_KEY}`
-      );
-      if (!videoResponse.ok) throw new Error(`YouTube API error: ${videoResponse.status}`);
-      const videoData = await videoResponse.json();
-      
-      if (videoData.items && videoData.items.length > 0) {
-        const video = videoData.items[0];
-        return {
-          title: video.snippet.title,
-          videoId: video.id,
-          publishedAt: video.snippet.publishedAt,
-          description: video.snippet.description,
-          thumbnailUrl: video.snippet.thumbnails.medium?.url || video.snippet.thumbnails.default?.url || '',
-          tags: video.snippet.tags || []
-        };
-      }
+    const response = await fetch(
+      `${BASE_URL}/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&key=${API_KEY}`
+    );
+    if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      const item = data.items[0];
+      const notification = {
+        title: item.snippet.title || '',
+        videoId: item.snippet.resourceId?.videoId || '',
+        publishedAt: item.snippet.publishedAt || '',
+        description: item.snippet.description || '',
+        thumbnailUrl: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
+        tags: []
+      };
+      setToCache(cacheKey, notification);
+      return notification;
     }
     return null;
   } catch (error) {
     console.error('Error fetching YouTube notification:', error);
+    const fallback = getFromCache<YouTubeNotification>(cacheKey, true);
+    if (fallback) return fallback;
     return null;
   }
 }
 
 /**
  * Fetches the latest videos or streams from the channel as notifications
+ * Optimized: Uses playlistItems of the default uploads playlist (1 quota unit instead of 100)
  */
 export async function getLatestNotifications(channelId: string, maxResults: number = 5): Promise<YouTubeNotification[]> {
+  const cacheKey = `${CACHE_KEYS.NOTIFICATIONS}_list_${channelId}_${maxResults}`;
+  const cached = getFromCache<YouTubeNotification[]>(cacheKey);
+  if (cached) return cached;
+
   try {
-    const searchResponse = await fetch(
-      `${BASE_URL}/search?part=id&channelId=${channelId}&order=date&maxResults=${maxResults}&type=video&key=${API_KEY}`
-    );
-    if (!searchResponse.ok) throw new Error(`YouTube API error: ${searchResponse.status}`);
-    const searchData = await searchResponse.json();
+    if (!channelId.startsWith('UC')) {
+      throw new Error(`Invalid channel ID: ${channelId}`);
+    }
+    // Uploads playlist ID is derived by changing UC to UU in the channel ID
+    const playlistId = 'UU' + channelId.substring(2);
     
-    if (searchData.items && searchData.items.length > 0) {
-      const videoIds = searchData.items.map((item: any) => item.id.videoId).filter(Boolean).join(',');
-      
-      const videoResponse = await fetch(
-        `${BASE_URL}/videos?part=snippet&id=${videoIds}&key=${API_KEY}`
-      );
-      if (!videoResponse.ok) throw new Error(`YouTube API error: ${videoResponse.status}`);
-      const videoData = await videoResponse.json();
-      
-      if (videoData.items && videoData.items.length > 0) {
-        return videoData.items.map((video: any) => ({
-          title: video.snippet.title,
-          videoId: video.id,
-          publishedAt: video.snippet.publishedAt,
-          description: video.snippet.description,
-          thumbnailUrl: video.snippet.thumbnails.medium?.url || video.snippet.thumbnails.default?.url || '',
-          tags: video.snippet.tags || []
-        }));
-      }
+    const response = await fetch(
+      `${BASE_URL}/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${maxResults}&key=${API_KEY}`
+    );
+    if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
+    const data = await response.json();
+    
+    if (data.items && data.items.length > 0) {
+      const list = data.items.map((item: any) => ({
+        title: item.snippet.title || '',
+        videoId: item.snippet.resourceId?.videoId || '',
+        publishedAt: item.snippet.publishedAt || '',
+        description: item.snippet.description || '',
+        thumbnailUrl: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
+        tags: []
+      }));
+      setToCache(cacheKey, list);
+      return list;
     }
     return [];
   } catch (error) {
     console.error('Error fetching YouTube notifications:', error);
+    const fallback = getFromCache<YouTubeNotification[]>(cacheKey, true);
+    if (fallback) return fallback;
     return [];
   }
 }
