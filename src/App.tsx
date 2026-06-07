@@ -5,11 +5,13 @@ import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 import { QROverlayPage } from './pages/QROverlayPage'
 import { ClockOverlayPage } from './pages/ClockOverlayPage'
 import { LoadingOverlayPage } from './pages/LoadingOverlayPage'
+import { SubOverlayPage } from './pages/SubOverlayPage'
+import { TransitionOverlayPage } from './pages/TransitionOverlayPage'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | null>(null)
+  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | 'sub' | 'transition' | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -20,6 +22,10 @@ function App() {
       setOverlayType('clock');
     } else if (overlay === 'loading') {
       setOverlayType('loading');
+    } else if (overlay === 'sub') {
+      setOverlayType('sub');
+    } else if (overlay === 'transition') {
+      setOverlayType('transition');
     }
   }, []);
 
@@ -44,6 +50,14 @@ function App() {
     return <LoadingOverlayPage />;
   }
 
+  if (overlayType === 'sub') {
+    return <SubOverlayPage />;
+  }
+
+  if (overlayType === 'transition') {
+    return <TransitionOverlayPage />;
+  }
+
 
   return (
     <>
@@ -58,4 +72,3 @@ function App() {
 }
 
 export default App
-

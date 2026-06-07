@@ -62,16 +62,22 @@ function setToCache<T>(key: string, data: T): void {
 /**
  * Fetches YouTube channel statistics using a handle (e.g., @YatoKenji)
  */
-export async function getChannelStats(handle: string): Promise<YouTubeStats | null> {
+export async function getChannelStats(identifier: string, bypassCache = false): Promise<YouTubeStats | null> {
   // Check active cache
-  const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
-  if (cached) return cached;
+  if (!bypassCache) {
+    const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
+    if (cached) return cached;
+  }
 
   try {
-    const formattedHandle = handle.startsWith('@') ? handle : `@${handle}`;
-    const response = await fetch(
-      `${BASE_URL}/channels?part=statistics,snippet&forHandle=${formattedHandle}&key=${API_KEY}`
-    );
+    let url = '';
+    if (identifier.startsWith('UC')) {
+      url = `${BASE_URL}/channels?part=statistics,snippet&id=${identifier}&key=${API_KEY}`;
+    } else {
+      const formattedHandle = identifier.startsWith('@') ? identifier : `@${identifier}`;
+      url = `${BASE_URL}/channels?part=statistics,snippet&forHandle=${formattedHandle}&key=${API_KEY}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
     const data = await response.json();
     
@@ -187,7 +193,7 @@ export async function getLatestNotifications(channelId: string, maxResults: numb
 }
 
 /**
- * Formats numbers to a shorter string (e.g., 12500 -> 12.5K)
+ * Formats numbers to a shorter string (e.g., 12530 -> 12.53K)
  */
 export function formatCompactNumber(numberStr: string): string {
   const number = parseInt(numberStr, 10);
@@ -195,6 +201,84 @@ export function formatCompactNumber(numberStr: string): string {
   
   return Intl.NumberFormat('en-US', {
     notation: 'compact',
-    maximumFractionDigits: 1
+    maximumFractionDigits: 2
   }).format(number);
+}
+
+/**
+ * Fetches YouTube channel statistics for the authenticated user (returns exact sub count)
+ */
+export async function getMyChannelStats(accessToken: string): Promise<YouTubeStats | null> {
+  const { BASE_URL } = API_CONFIG.YOUTUBE;
+  const response = await fetch(
+    `${BASE_URL}/channels?part=statistics,snippet&mine=true`,
+    {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }
+  );
+  
+  if (!response.ok) {
+    let errMsg = `OAuth Error ${response.status}`;
+    try {
+      const errData = await response.json();
+      if (errData.error?.message) {
+        errMsg = errData.error.message;
+      }
+    } catch {}
+    throw new Error(errMsg);
+  }
+  
+  const data = await response.json();
+  
+  if (data.items && data.items.length > 0) {
+    const channel = data.items[0];
+    const stats = {
+      id: channel.id,
+      subscriberCount: channel.statistics.subscriberCount, // Exact subscriber count
+      viewCount: channel.statistics.viewCount,
+      videoCount: channel.statistics.videoCount,
+      thumbnailUrl: channel.snippet.thumbnails.default?.url || '',
+      title: channel.snippet.title,
+      description: channel.snippet.description
+    };
+    return stats;
+  }
+  return null;
+}
+
+/**
+ * Fetches concurrent viewers count for an active live stream of a channel
+ */
+export async function getLiveStreamViewers(channelId: string): Promise<number | null> {
+  try {
+    const { API_KEY, BASE_URL } = API_CONFIG.YOUTUBE;
+    // 1. Search for active live broadcast video
+    const searchUrl = `${BASE_URL}/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${API_KEY}`;
+    const searchRes = await fetch(searchUrl);
+    if (!searchRes.ok) throw new Error(`Search API error: ${searchRes.status}`);
+    const searchData = await searchRes.json();
+    
+    if (searchData.items && searchData.items.length > 0) {
+      const videoId = searchData.items[0].id.videoId;
+      
+      // 2. Fetch liveStreamingDetails for the active videoId
+      const videoUrl = `${BASE_URL}/videos?part=liveStreamingDetails&id=${videoId}&key=${API_KEY}`;
+      const videoRes = await fetch(videoUrl);
+      if (!videoRes.ok) throw new Error(`Videos API error: ${videoRes.status}`);
+      const videoData = await videoRes.json();
+      
+      if (videoData.items && videoData.items.length > 0) {
+        const details = videoData.items[0].liveStreamingDetails;
+        if (details && details.concurrentViewers) {
+          return parseInt(details.concurrentViewers, 10);
+        }
+      }
+    }
+    return null; // Offline or no live stream found
+  } catch (error) {
+    console.error('Error fetching live stream viewers count:', error);
+    return null;
+  }
 }
