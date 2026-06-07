@@ -38,9 +38,9 @@
   transform: translateY(200%);
 }
 
-/* Unified 8-second card sequence animation (Slide up, shake, stay, slide down) */
+/* Unified 10-second card sequence animation (Slide up, shake, stay, slide down) */
 .yato-transition-card.animate-in {
-  animation: cardSequence 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: cardSequence 10s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes cardSequence {
@@ -66,11 +66,11 @@
     transform: translateY(0) translate(0, 0) rotate(0);
     opacity: 1;
   }
-  88% {
+  90% {
     transform: translateY(0);
     opacity: 1;
   }
-  92% {
+  94% {
     transform: translateY(-10px) scaleY(1.1);
     opacity: 1;
   }
@@ -95,7 +95,7 @@
 
 .yato-transition-card.theme-rainbow {
   border-image: var(--accent-gradient) 1;
-  animation: cardSequence 8s cubic-bezier(0.25, 1, 0.5, 1) forwards, rainbowGlow 5s linear infinite;
+  animation: cardSequence 10s cubic-bezier(0.25, 1, 0.5, 1) forwards, rainbowGlow 5s linear infinite;
 }
 
 @keyframes rainbowGlow {
@@ -229,6 +229,22 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
+/* Subtitle text transitions */
+.cta-text-animate {
+  animation: ctaTextIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ctaTextIn {
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Subs counter (Middle) */
 .counter-side {
   display: flex;
@@ -256,16 +272,86 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Interactive clicking buttons container (Right) */
 .interactive-side {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
   width: 170px;
   height: 44px;
   z-index: 2;
 }
+
+/* Button groups transitions */
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+}
+
+.sub-bell-group {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sub-bell-group.hide {
+  opacity: 0;
+  transform: translateY(-30px);
+  pointer-events: none;
+}
+
+.like-dislike-group {
+  position: absolute;
+  top: 4px; /* Centered vertically inside 44px container (button height is 36px) */
+  left: 0;
+  width: 170px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  transform: translateY(30px);
+  pointer-events: none;
+}
+
+.like-dislike-group.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Action Buttons (Like, Dislike, Share) */
+.like-btn,
+.dislike-btn,
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  padding: 0;
+}
+
+.like-btn:hover,
+.dislike-btn:hover,
+.share-btn:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.like-btn.active {
+  color: #00f0ff; /* Light Cyan for active like */
+  background-color: rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
 
 .sub-btn {
   width: 120px;
@@ -352,7 +438,7 @@
 }
 
 .yato-transition-card.animate-in .cursor-hand {
-  animation: cursorSequence 8s ease forwards;
+  animation: cursorSequence 10s ease forwards;
 }
 
 @keyframes cursorSequence {
@@ -361,45 +447,59 @@
     transform: translate(220px, 70px) scale(1);
   }
   /* Stays hidden while card slides up */
-  18% {
+  15% {
     opacity: 0.1;
     transform: translate(220px, 70px) scale(1);
   }
   /* Glides to the Subscribe button */
-  30% {
+  25% {
     opacity: 1;
     transform: translate(62px, 22px) scale(1);
   }
   /* Performs the Subscribe Click */
-  33% {
+  27% {
     opacity: 1;
     transform: translate(62px, 22px) scale(0.85);
   }
-  36% {
+  29% {
     opacity: 1;
     transform: translate(62px, 22px) scale(1);
   }
   /* Glides to the Bell icon */
-  46% {
+  42% {
     opacity: 1;
-    transform: translate(148px, 14px) scale(1);
+    transform: translate(146px, 22px) scale(1);
   }
   /* Performs the Bell Click */
-  49% {
+  44% {
     opacity: 1;
-    transform: translate(148px, 14px) scale(0.85);
+    transform: translate(146px, 22px) scale(0.85);
   }
-  52% {
+  46% {
     opacity: 1;
-    transform: translate(148px, 14px) scale(1);
+    transform: translate(146px, 22px) scale(1);
+  }
+  /* Glides to the Like button */
+  62% {
+    opacity: 1;
+    transform: translate(27px, 22px) scale(1);
+  }
+  /* Performs the Like Click */
+  65% {
+    opacity: 1;
+    transform: translate(27px, 22px) scale(0.85);
+  }
+  67% {
+    opacity: 1;
+    transform: translate(27px, 22px) scale(1);
   }
   /* Fades out and drops */
-  62% {
+  77% {
     opacity: 0;
-    transform: translate(148px, 60px) scale(1);
+    transform: translate(27px, 60px) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(148px, 60px) scale(1);
+    transform: translate(27px, 60px) scale(1);
   }
 }

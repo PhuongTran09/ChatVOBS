@@ -69,6 +69,32 @@
   z-index: 2;
 }
 
+.minimal-slider-viewport {
+  height: 76px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.minimal-slider-track {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.minimal-slider-track.transition-active {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.minimal-stat-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 76px;
+  flex-shrink: 0;
+}
+
 /* Minimal Combined Card Styles (Subscriber + Live Viewers side-by-side) */
 .sub-minimal-card.combined {
   display: flex;
@@ -76,8 +102,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 28px;
-  min-width: 340px;
-  gap: 16px;
+  min-width: 460px;
+  gap: 24px;
 }
 
 .minimal-split-box {

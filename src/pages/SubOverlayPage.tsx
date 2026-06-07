@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../styles/SubOverlayPage.css';
-import { getChannelStats, getLiveStreamViewers, formatCompactNumber } from '../services/youtubeService';
+import { getChannelStats, formatCompactNumber } from '../services/youtubeService';
 
 interface YouTubeStats {
   id: string;
@@ -15,13 +15,13 @@ interface YouTubeStats {
 export function SubOverlayPage() {
   const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber' | 'rainbow'>('cyan');
   const [ytStats, setYtStats] = useState<YouTubeStats | null>(null);
-  const [minimal, setMinimal] = useState<boolean>(true); // Default to minimal mode (Sub + Live Viewers)
+  const [minimal, setMinimal] = useState<boolean>(true); // Default to minimal mode
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [pollInterval, setPollInterval] = useState<number>(10); // Poll every 10s by default
+  const [pollInterval, setPollInterval] = useState<number>(60); // Poll every 60s
   const [simulate, setSimulate] = useState<boolean>(false);
   const [simulatedSubs, setSimulatedSubs] = useState<number | null>(null);
-  const [simulatedViewers, setSimulatedViewers] = useState<number | null>(null);
-  const [liveViewers, setLiveViewers] = useState<number | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
   
   // Custom configuration overrides from URL parameters
   const [goal, setGoal] = useState<number>(4000);
@@ -30,7 +30,6 @@ export function SubOverlayPage() {
   const [customSubs, setCustomSubs] = useState<number | null>(null);
   const [customViews, setCustomViews] = useState<number | null>(null);
   const [customVideos, setCustomVideos] = useState<number | null>(null);
-  const [customViewers, setCustomViewers] = useState<number | null>(null); // Live viewers override
   const [showStats, setShowStats] = useState<boolean>(true);
   const [handle, setHandle] = useState<string>('@YatoKenji');
 
@@ -47,9 +46,8 @@ export function SubOverlayPage() {
     const subsParam = params.get('subs');
     const viewsParam = params.get('views');
     const videosParam = params.get('videos');
-    const viewersParam = params.get('viewers') || params.get('views_live');
     const showStatsParam = params.get('showstats');
-    const handleParam = params.get('handle') || params.get('channelId'); // Support channelId directly
+    const handleParam = params.get('handle') || params.get('channelId');
     const detailsParam = params.get('details');
     const minimalParam = params.get('minimal');
     const pollParam = params.get('poll') || params.get('interval');
@@ -82,11 +80,6 @@ export function SubOverlayPage() {
       if (!isNaN(parsedVideos) && parsedVideos >= 0) setCustomVideos(parsedVideos);
     }
 
-    if (viewersParam) {
-      const parsedViewers = parseInt(viewersParam, 10);
-      if (!isNaN(parsedViewers) && parsedViewers >= 0) setCustomViewers(parsedViewers);
-    }
-
     if (showStatsParam === 'false') {
       setShowStats(false);
     }
@@ -106,7 +99,7 @@ export function SubOverlayPage() {
       setSimulate(true);
     }
 
-    // Toggle minimal mode: default is true (show Sub + Live Viewers side-by-side)
+    // Toggle minimal mode: default is true
     if (detailsParam === 'true' || minimalParam === 'false') {
       setMinimal(false);
     }
@@ -116,22 +109,20 @@ export function SubOverlayPage() {
     };
   }, []);
 
-  // Effect to load YouTube channel stats and concurrent viewers with polling
+  // Effect to load YouTube channel stats with polling
   useEffect(() => {
+    // If subscriber count is overridden, or if we are simulating, do not fetch API
+    if (customSubs !== null || simulate) {
+      return;
+    }
+
     async function fetchStats(isPoll: boolean) {
       setIsSyncing(true);
       try {
         // Fetch public YouTube data (supports handle or UC channelId)
         const statsData = await getChannelStats(handle, isPoll);
-        
         if (statsData) {
           setYtStats(statsData);
-
-          // Fetch live concurrent viewers using the channel ID
-          if (customViewers === null) {
-            const viewers = await getLiveStreamViewers(statsData.id);
-            setLiveViewers(viewers);
-          }
         }
       } catch (err) {
         console.error('Error fetching YouTube stats:', err);
@@ -149,9 +140,9 @@ export function SubOverlayPage() {
     }, pollInterval * 1000);
 
     return () => clearInterval(intervalId);
-  }, [handle, pollInterval, customViewers]);
+  }, [handle, pollInterval, simulate, customSubs]);
 
-  // Effect to simulate subscriber and viewer ticks (helpful for testing/previews)
+  // Effect to simulate subscriber ticks (helpful for testing/previews)
   useEffect(() => {
     if (!simulate) return;
 
@@ -159,15 +150,8 @@ export function SubOverlayPage() {
       ? customSubs 
       : (ytStats ? parseInt(ytStats.subscriberCount, 10) : 3530);
 
-    const baseViewers = customViewers !== null
-      ? customViewers
-      : (liveViewers !== null ? liveViewers : 45);
-
     if (simulatedSubs === null) {
       setSimulatedSubs(baseSubs);
-    }
-    if (simulatedViewers === null) {
-      setSimulatedViewers(baseViewers);
     }
 
     const timer = setInterval(() => {
@@ -176,17 +160,30 @@ export function SubOverlayPage() {
         // 30% chance to gain 1 sub
         return Math.random() > 0.7 ? prev + 1 : prev;
       });
-      
-      setSimulatedViewers(prev => {
-        if (prev === null) return baseViewers;
-        // Randomly fluctuate viewers by +/- 1-3 viewers
-        const change = Math.floor(Math.random() * 7) - 3;
-        return Math.max(prev + change, 0);
-      });
     }, 4000);
 
     return () => clearInterval(timer);
-  }, [simulate, ytStats, customSubs, customViewers, liveViewers, simulatedSubs, simulatedViewers]);
+  }, [simulate, ytStats, customSubs, simulatedSubs]);
+
+  // Rotate active statistics slide every 5 seconds with slide-up transition
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setCurrentIndex(prev => prev + 1);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleTransitionEnd = () => {
+    // There are 3 stats in the rotating list. When we reach index 3 (the clone),
+    // we snap back to index 0 instantly without animation.
+    if (currentIndex === 3) {
+      setIsTransitioning(false);
+      setCurrentIndex(0);
+    }
+  };
+
+
 
   // Determine active values (custom URL override vs. fetched API vs. defaults)
   const displayName = customName || ytStats?.title || 'YATO KENJI';
@@ -197,12 +194,6 @@ export function SubOverlayPage() {
     : (customSubs !== null 
         ? customSubs 
         : (ytStats ? parseInt(ytStats.subscriberCount, 10) : 3530));
-
-  const activeViewers = customViewers !== null
-    ? customViewers
-    : (simulate && simulatedViewers !== null
-        ? simulatedViewers
-        : liveViewers);
     
   const viewCountStr = customViews !== null 
     ? customViews.toString() 
@@ -211,6 +202,14 @@ export function SubOverlayPage() {
   const videoCountStr = customVideos !== null 
     ? customVideos.toString() 
     : (ytStats ? ytStats.videoCount : '142');
+
+  // Rotating statistics data
+  const rotatingStatsList = [
+    { value: formatCompactNumber(subscriberCount.toString()), label: 'ĐĂNG KÝ' },
+    { value: formatCompactNumber(viewCountStr), label: 'LƯỢT XEM' },
+    { value: videoCountStr, label: 'SỐ VIDEO' }
+  ];
+
 
   // Calculations
   const progressPercent = Math.min((subscriberCount / goal) * 100, 100);
@@ -225,12 +224,12 @@ export function SubOverlayPage() {
   };
   const activeColor = theme === 'rainbow' ? '#00f0ff' : themeColors[theme];
 
-  // Minimal Mode: Render subscriber count and live viewers side-by-side
+  // Minimal Mode: Render single statistic card rotating through sub, views, and video count
   if (minimal) {
     return (
       <div className="sub-overlay-wrapper">
         <div 
-          className={`sub-minimal-card combined theme-${theme}`}
+          className={`sub-minimal-card theme-${theme}`}
           style={{ 
             '--accent-color': activeColor,
             '--accent-gradient': themeColors[theme]
@@ -245,33 +244,27 @@ export function SubOverlayPage() {
           <div className="corner-decor top-right" />
           <div className="corner-decor bottom-left" />
           <div className="corner-decor bottom-right" />
-          
-          {/* Real-time status sync indicator */}
-          <div className={`minimal-sync-indicator ${isSyncing ? 'active' : ''}`}>
-            {isSyncing ? 'SYNCING' : 'LIVE'}
-          </div>
 
-          <div className="minimal-split-box">
-            <div className="minimal-count">
-              {formatCompactNumber(subscriberCount.toString())}
+          <div className="minimal-slider-viewport">
+            <div 
+              className={`minimal-slider-track ${isTransitioning ? 'transition-active' : ''}`}
+              style={{ transform: `translateY(-${currentIndex * 76}px)` }}
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {[...rotatingStatsList, rotatingStatsList[0]].map((stat, idx) => (
+                <div key={idx} className="minimal-stat-slide">
+                  <div className="minimal-count">{stat.value}</div>
+                  <div className="minimal-label">{stat.label}</div>
+                </div>
+              ))}
             </div>
-            <div className="minimal-label">SUBSCRIBERS</div>
-          </div>
-
-          <div className="minimal-divider"></div>
-
-          <div className="minimal-split-box">
-            <div className={`minimal-count ${activeViewers !== null ? 'live-accent-text' : 'offline-text'}`}>
-              {activeViewers !== null ? activeViewers.toLocaleString() : 'OFFLINE'}
-            </div>
-            <div className="minimal-label">LIVE VIEWERS</div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Detailed Mode: Render full HUD statistics card
+  // Detailed Mode: Render full HUD statistics card showing Subs, Views, and Videos count
   return (
     <div className="sub-overlay-wrapper">
       <div 
@@ -293,10 +286,10 @@ export function SubOverlayPage() {
         
         {/* HUD Top Bar info */}
         <div className="card-top-hud">
-          <div className="hud-id">{isSyncing ? 'SYS_STATUS: SYNCING...' : 'SYS_STATUS: ONLINE'}</div>
+          <div className="hud-id">{isSyncing ? 'SYS_STATUS: ĐỒNG BỘ...' : 'SYS_STATUS: TRỰC TUYẾN'}</div>
           <div className="hud-status">
-            <span className={`live-pulse-dot ${isSyncing ? 'syncing' : (activeViewers !== null ? 'active-live' : '')}`} />
-            <span>{isSyncing ? 'SYNCING...' : 'LIVE SUBSCRIBERS'}</span>
+            <span className={`live-pulse-dot ${isSyncing ? 'syncing' : ''}`} />
+            <span>{isSyncing ? 'ĐANG CẬP NHẬT...' : 'ĐĂNG KÝ TRỰC TIẾP'}</span>
           </div>
         </div>
 
@@ -320,13 +313,13 @@ export function SubOverlayPage() {
           <div className="counter-value">
             {formatCompactNumber(subscriberCount.toString())}
           </div>
-          <div className="counter-label">TOTAL SUBSCRIBERS</div>
+          <div className="counter-label">TỔNG LƯỢT ĐĂNG KÝ</div>
         </div>
 
         {/* Cyberpunk Progress Bar */}
         <div className="goal-progress-section">
           <div className="goal-label-row">
-            <span className="goal-tag">GOAL PROGRESS</span>
+            <span className="goal-tag">TIẾN TRÌNH MỤC TIÊU</span>
             <span className="goal-pct">{progressPercent.toFixed(1)}%</span>
           </div>
           
@@ -340,31 +333,23 @@ export function SubOverlayPage() {
           </div>
 
           <div className="goal-info-row">
-            <span className="goal-subs-target">TARGET: {goal.toLocaleString()}</span>
-            <span className="goal-remaining">{subsRemaining.toLocaleString()} TO GO</span>
+            <span className="goal-subs-target">MỤC TIÊU: {goal.toLocaleString()}</span>
+            <span className="goal-remaining">CẦN THÊM: {subsRemaining.toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Channel Details Section (Views, Videos, Live viewers) */}
+        {/* Channel Details Section (Views, Videos) */}
         {showStats && (
           <div className="channel-extra-stats">
             <div className="divider-line" />
             <div className="stats-grid">
               <div className="stat-box">
                 <span className="stat-value">{formatCompactNumber(viewCountStr)}</span>
-                <span className="stat-label">TOTAL VIEWS</span>
+                <span className="stat-label">TỔNG LƯỢT XEM</span>
               </div>
               <div className="stat-box">
                 <span className="stat-value">{videoCountStr}</span>
-                <span className="stat-label">VIDEOS</span>
-              </div>
-              
-              {/* Live concurrent viewers display */}
-              <div className="stat-box">
-                <span className={`stat-value ${activeViewers !== null ? 'live-accent' : 'offline-text'}`}>
-                  {activeViewers !== null ? activeViewers.toLocaleString() : 'OFFLINE'}
-                </span>
-                <span className="stat-label">LIVE VIEWERS</span>
+                <span className="stat-label">SỐ VIDEO</span>
               </div>
             </div>
           </div>

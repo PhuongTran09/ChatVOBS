@@ -103,10 +103,9 @@ export function LoadingOverlayPage() {
   };
   const activeColor = accentColors[theme];
 
-  // Format real YouTube stats or use realistic fallback values
   const displaySubs = ytStats ? formatCompactNumber(ytStats.subscriberCount) : 'NA';
   const displayViews = ytStats ? formatCompactNumber(ytStats.viewCount) : 'NA';
-  const displayLiveHours = t('metrics.uptime.value') || 'NA';
+  const displayVideos = ytStats ? formatCompactNumber(ytStats.videoCount) : t('metrics.videos.value') || 'NA';
 
   return (
     <div className="loading-overlay-wrapper">
@@ -189,8 +188,8 @@ export function LoadingOverlayPage() {
                   <div className="stat-value">{displayViews}</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-label">TOTAL UPTIME</div>
-                  <div className="stat-value">{displayLiveHours}</div>
+                  <div className="stat-label">TOTAL VIDEOS</div>
+                  <div className="stat-value">{displayVideos}</div>
                 </div>
               </div>
             </div>
