@@ -61,7 +61,7 @@ export function Hero({ profileMode }: HeroProps) {
         <div className="cyber-metrics" aria-label="Channel metrics">
           <Metric label={t('metrics.subscribers.label')} value={stats ? formatCompactNumber(stats.subscriberCount) : t('metrics.subscribers.value')} />
           <Metric label="TOTAL VIEWS" value={stats ? formatCompactNumber(stats.viewCount) : '...'} />
-          <Metric label={t('metrics.uptime.label')} value={t('metrics.uptime.value')} />
+          <Metric label={t('metrics.videos.label')} value={stats ? formatCompactNumber(stats.videoCount) : t('metrics.videos.value')} />
         </div>
       </div>
 

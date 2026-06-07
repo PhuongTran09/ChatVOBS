@@ -62,16 +62,22 @@ function setToCache<T>(key: string, data: T): void {
 /**
  * Fetches YouTube channel statistics using a handle (e.g., @YatoKenji)
  */
-export async function getChannelStats(handle: string): Promise<YouTubeStats | null> {
+export async function getChannelStats(identifier: string, bypassCache = false): Promise<YouTubeStats | null> {
   // Check active cache
-  const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
-  if (cached) return cached;
+  if (!bypassCache) {
+    const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
+    if (cached) return cached;
+  }
 
   try {
-    const formattedHandle = handle.startsWith('@') ? handle : `@${handle}`;
-    const response = await fetch(
-      `${BASE_URL}/channels?part=statistics,snippet&forHandle=${formattedHandle}&key=${API_KEY}`
-    );
+    let url = '';
+    if (identifier.startsWith('UC')) {
+      url = `${BASE_URL}/channels?part=statistics,snippet&id=${identifier}&key=${API_KEY}`;
+    } else {
+      const formattedHandle = identifier.startsWith('@') ? identifier : `@${identifier}`;
+      url = `${BASE_URL}/channels?part=statistics,snippet&forHandle=${formattedHandle}&key=${API_KEY}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
     const data = await response.json();
     
@@ -94,50 +100,6 @@ export async function getChannelStats(handle: string): Promise<YouTubeStats | nu
     console.error('Error fetching YouTube stats:', error);
     // Fall back to expired cache if available to prevent showing blank interface
     const fallback = getFromCache<YouTubeStats>(CACHE_KEYS.STATS, true);
-    if (fallback) return fallback;
-    return null;
-  }
-}
-
-/**
- * Fetches the latest video or stream from the channel as a notification
- * Optimized: Uses playlistItems of the default uploads playlist (1 quota unit instead of 100)
- */
-export async function getLatestNotification(channelId: string): Promise<YouTubeNotification | null> {
-  const cacheKey = `${CACHE_KEYS.NOTIFICATIONS}_latest_${channelId}`;
-  const cached = getFromCache<YouTubeNotification>(cacheKey);
-  if (cached) return cached;
-
-  try {
-    if (!channelId.startsWith('UC')) {
-      throw new Error(`Invalid channel ID: ${channelId}`);
-    }
-    // Uploads playlist ID is derived by changing UC to UU in the channel ID
-    const playlistId = 'UU' + channelId.substring(2);
-    
-    const response = await fetch(
-      `${BASE_URL}/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=1&key=${API_KEY}`
-    );
-    if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
-    const data = await response.json();
-    
-    if (data.items && data.items.length > 0) {
-      const item = data.items[0];
-      const notification = {
-        title: item.snippet.title || '',
-        videoId: item.snippet.resourceId?.videoId || '',
-        publishedAt: item.snippet.publishedAt || '',
-        description: item.snippet.description || '',
-        thumbnailUrl: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
-        tags: []
-      };
-      setToCache(cacheKey, notification);
-      return notification;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error fetching YouTube notification:', error);
-    const fallback = getFromCache<YouTubeNotification>(cacheKey, true);
     if (fallback) return fallback;
     return null;
   }
@@ -187,7 +149,7 @@ export async function getLatestNotifications(channelId: string, maxResults: numb
 }
 
 /**
- * Formats numbers to a shorter string (e.g., 12500 -> 12.5K)
+ * Formats numbers to a shorter string (e.g., 12530 -> 12.53K)
  */
 export function formatCompactNumber(numberStr: string): string {
   const number = parseInt(numberStr, 10);
@@ -195,6 +157,6 @@ export function formatCompactNumber(numberStr: string): string {
   
   return Intl.NumberFormat('en-US', {
     notation: 'compact',
-    maximumFractionDigits: 1
+    maximumFractionDigits: 2
   }).format(number);
 }
