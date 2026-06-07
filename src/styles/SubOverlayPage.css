@@ -56,7 +56,6 @@
   font-size: 2.8rem;
   font-weight: 900;
   letter-spacing: 1.5px;
-  text-shadow: 0 0 12px var(--accent-color);
   line-height: 1.1;
   z-index: 2;
 }
@@ -93,7 +92,6 @@
   font-size: 2.2rem;
   font-weight: 900;
   letter-spacing: 1.5px;
-  text-shadow: 0 0 10px var(--accent-color);
   line-height: 1.1;
   z-index: 2;
 }
@@ -126,7 +124,7 @@
 /* Minimal Real-time Sync Indicator */
 .minimal-sync-indicator {
   position: absolute;
-  top: 8px;
+  top: 12px;
   right: 12px;
   font-size: 0.55rem;
   letter-spacing: 1.5px;
