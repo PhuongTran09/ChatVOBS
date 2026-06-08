@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useMemo, type ReactNode } from 'react'
 import { getTranslation } from './translations'
 import type { Locale, TranslationKey } from './types'
 
@@ -12,15 +12,6 @@ type I18nContextValue = {
 }
 
 const I18nContext = createContext<I18nContextValue | undefined>(undefined)
-
-function detectLocale(): Locale {
-  const savedLocale = window.localStorage.getItem(STORAGE_KEY)
-  if (savedLocale === 'en' || savedLocale === 'vi') {
-    return savedLocale
-  }
-
-  return window.navigator.language.toLowerCase().startsWith('vi') ? 'vi' : 'en'
-}
 
 function formatMessage(
   template: string,
@@ -37,21 +28,19 @@ function formatMessage(
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(detectLocale)
-
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, locale)
-    document.documentElement.lang = locale
-  }, [locale])
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, 'en')
+    document.documentElement.lang = 'en'
+  }
 
   const value = useMemo<I18nContextValue>(
     () => ({
-      locale,
-      setLocale,
-      toggleLocale: () => setLocale((current) => (current === 'en' ? 'vi' : 'en')),
-      t: (key, params) => formatMessage(getTranslation(locale, key), params),
+      locale: 'en',
+      setLocale: () => {},
+      toggleLocale: () => {},
+      t: (key, params) => formatMessage(getTranslation('en', key), params),
     }),
-    [locale],
+    [],
   )
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
