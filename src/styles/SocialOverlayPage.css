@@ -1,0 +1,174 @@
+.social-overlay-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: transparent !important; /* Transparent for OBS Overlay */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.holo-social-card {
+  --accent-color: #00f0ff;
+  position: relative;
+  width: 100%;
+  max-width: 190px;
+  aspect-ratio: 0.82;
+  background: rgba(8, 8, 12, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 22px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+}
+
+.holo-social-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 55%
+  );
+  animation: sweep 4s infinite linear;
+}
+
+.holo-frame-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.holo-frame-corner.top-left {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+.holo-frame-corner.top-right {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+}
+.holo-frame-corner.bottom-left {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+}
+.holo-frame-corner.bottom-right {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+.social-tag {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #555;
+  text-align: left;
+}
+
+/* Hologram transitions */
+.social-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  gap: 12px;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-content-container.transition-in {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  filter: brightness(1) blur(0);
+}
+
+.social-content-container.transition-out {
+  opacity: 0;
+  transform: scale(0.92) translateY(10px);
+  filter: brightness(1.5) blur(2px);
+}
+
+.social-platform-label {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.social-details {
+  text-align: center;
+}
+
+.social-handle {
+  font-size: 0.82rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.social-action-txt {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #777;
+}
+
+/* Puppy Dance GIF Container */
+.puppy-dance-container {
+  position: relative;
+  width: 105px;
+  height: 105px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+.puppy-dance-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 2px;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.puppy-dance-gif.transition-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.puppy-dance-gif.transition-out {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+@keyframes sweep {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

@@ -8,10 +8,11 @@ import { LoadingOverlayPage } from './pages/LoadingOverlayPage'
 import { SubOverlayPage } from './pages/SubOverlayPage'
 import { TransitionOverlayPage } from './pages/TransitionOverlayPage'
 import { EndStreamOverlayPage } from './pages/EndStreamOverlayPage'
+import { SocialOverlayPage } from './pages/SocialOverlayPage'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | 'sub' | 'transition' | 'end' | null>(null)
+  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | 'sub' | 'transition' | 'end' | 'social' | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -28,6 +29,8 @@ function App() {
       setOverlayType('transition');
     } else if (overlay === 'end') {
       setOverlayType('end');
+    } else if (overlay === 'social') {
+      setOverlayType('social');
     }
   }, []);
 
@@ -62,6 +65,10 @@ function App() {
 
   if (overlayType === 'end') {
     return <EndStreamOverlayPage />;
+  }
+
+  if (overlayType === 'social') {
+    return <SocialOverlayPage />;
   }
 
 
