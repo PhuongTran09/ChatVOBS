@@ -15,7 +15,7 @@ export function SocialOverlayPage() {
   const [activeGifIdx, setActiveGifIdx] = useState(0);
   const [gifTransition, setGifTransition] = useState<'in' | 'out'>('in');
   const [followText, setFollowText] = useState('FOLLOW FOR UPDATES');
-  const [youtubeHandle, setYoutubeHandle] = useState('@YatoKenji');
+
 
   useEffect(() => {
     // Add overlay mode to body for transparency
@@ -25,13 +25,13 @@ export function SocialOverlayPage() {
     const params = new URLSearchParams(window.location.search);
     const themeParam = params.get('theme')?.toLowerCase();
     const followParam = params.get('follow');
-    const handleParam = params.get('handle') || params.get('channelId');
+    // const handleParam = params.get('handle') || params.get('channelId');
 
     if (themeParam === 'magenta') setTheme('magenta');
     if (themeParam === 'amber') setTheme('amber');
     
     if (followParam) setFollowText(followParam);
-    if (handleParam) setYoutubeHandle(handleParam.startsWith('@') ? handleParam : `@${handleParam}`);
+    // if (handleParam) setYoutubeHandle(handleParam.startsWith('@') ? handleParam : `@${handleParam}`);
 
     return () => {
       document.body.classList.remove('overlay-mode');
