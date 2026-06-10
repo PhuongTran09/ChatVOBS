@@ -48,28 +48,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Lưới Grid phát sáng tương tác với chuột */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  pointer-events: none;
-  z-index: -1;
-  background-image: 
-    linear-gradient(var(--grid-glow) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-glow) 1px, transparent 1px);
-  background-size: 30px 30px;
-  -webkit-mask-image: radial-gradient(
-    300px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), 
-    black 0%, 
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    300px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), 
-    black 0%, 
-    transparent 100%
-  );
-}
+
 
 a {
   color: var(--cyan);
@@ -96,21 +75,15 @@ button {
   padding: 40px;
   background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
   border: 1px solid rgba(0, 255, 255, 0.15);
-  box-shadow: 
-    inset 1px 1px 0 rgba(255, 255, 255, 0.05), 
-    inset 0 0 30px rgba(0, 0, 0, 0.8),
-    0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   border-radius: 0;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .cyber-section:hover {
   border-color: rgba(0, 255, 255, 0.4);
-  box-shadow: 
-    inset 1px 1px 0 rgba(255, 255, 255, 0.1), 
-    inset 0 0 40px rgba(0, 255, 255, 0.05), 
-    0 15px 40px rgba(0, 255, 255, 0.15);
-  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .cyber-section::before,
@@ -144,7 +117,6 @@ button {
 .cyber-section:hover::after {
   width: 45px;
   height: 45px;
-  filter: drop-shadow(0 0 12px var(--cyan));
 }
 
 [id]:target {
@@ -155,7 +127,7 @@ button {
 .cyber-panel {
   background: var(--panel-bg);
   border: 1px solid #333;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   transition: all 0.3s;
 }
 
@@ -176,13 +148,11 @@ button {
   width: 10px; height: 10px;
   background: var(--red);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--red);
   animation: blink 1s infinite;
 }
 
 .blink-dot.green {
   background: var(--green);
-  box-shadow: 0 0 8px var(--green);
 }
 
 .sys-text {
@@ -273,7 +243,6 @@ button {
   background: rgba(5, 5, 8, 0.9);
   padding: 50px;
   text-align: center;
-  box-shadow: 0 0 30px var(--magenta-dim);
   position: relative;
   overflow: hidden;
   max-width: 600px;
@@ -284,7 +253,6 @@ button {
   font-size: 3rem;
   margin-bottom: 20px;
   color: #fff;
-  text-shadow: 0 0 15px var(--magenta);
 }
 
 .coming-soon-container p {
@@ -294,7 +262,7 @@ button {
 }
 
 .blink-text {
-  animation: neonFlicker 2s infinite;
+  animation: blink 2s infinite;
 }
 
 

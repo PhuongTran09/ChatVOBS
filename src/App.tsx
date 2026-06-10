@@ -4,15 +4,15 @@ import { StreamerProfilePage } from './pages/HomePage'
 import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 import { QROverlayPage } from './pages/QROverlayPage'
 import { ClockOverlayPage } from './pages/ClockOverlayPage'
-import { LoadingOverlayPage } from './pages/LoadingOverlayPage'
 import { SubOverlayPage } from './pages/SubOverlayPage'
 import { TransitionOverlayPage } from './pages/TransitionOverlayPage'
-import { EndStreamOverlayPage } from './pages/EndStreamOverlayPage'
 import { SocialOverlayPage } from './pages/SocialOverlayPage'
+import { CombinedOverlayPage } from './pages/CombinedOverlayPage'
+import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'loading' | 'sub' | 'transition' | 'end' | 'social' | null>(null)
+  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'sub' | 'transition' | 'social' | 'combined' | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -21,27 +21,18 @@ function App() {
       setOverlayType('qr');
     } else if (overlay === 'clock') {
       setOverlayType('clock');
-    } else if (overlay === 'loading') {
-      setOverlayType('loading');
     } else if (overlay === 'sub') {
       setOverlayType('sub');
     } else if (overlay === 'transition') {
       setOverlayType('transition');
-    } else if (overlay === 'end') {
-      setOverlayType('end');
     } else if (overlay === 'social') {
       setOverlayType('social');
+    } else if (overlay === 'combined' || overlay === 'all') {
+      setOverlayType('combined');
     }
   }, []);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+
 
   if (overlayType === 'qr') {
     return <QROverlayPage />;
@@ -49,10 +40,6 @@ function App() {
 
   if (overlayType === 'clock') {
     return <ClockOverlayPage />;
-  }
-
-  if (overlayType === 'loading') {
-    return <LoadingOverlayPage />;
   }
 
   if (overlayType === 'sub') {
@@ -63,17 +50,18 @@ function App() {
     return <TransitionOverlayPage />;
   }
 
-  if (overlayType === 'end') {
-    return <EndStreamOverlayPage />;
-  }
-
   if (overlayType === 'social') {
     return <SocialOverlayPage />;
+  }
+
+  if (overlayType === 'combined') {
+    return <CombinedOverlayPage />;
   }
 
 
   return (
     <>
+      <LanguageSwitchFixed />
       {screen === 'chat' ? (
         <ChatCustomizerPage onBackHome={() => setScreen('home')} />
       ) : (

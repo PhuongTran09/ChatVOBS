@@ -1,4 +1,3 @@
-
 .donate-container {
   display: flex;
   justify-content: center;
@@ -6,12 +5,8 @@
   width: 100%;
 }
 
-.donate-card {
+.donate-carousel {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 30px;
-  padding: 30px 80px 30px 30px;
   width: 100%;
   max-width: 800px;
   border: 1px solid var(--cyan-dim);
@@ -20,22 +15,41 @@
   transition: all 0.5s ease;
 }
 
-.donate-card::before {
+.donate-carousel::before {
   content: "";
   position: absolute;
   top: 0; left: 0;
   width: 4px; height: 100%;
   background: var(--cyan);
   box-shadow: 0 0 15px var(--cyan);
+  z-index: 10;
+  transition: all 0.5s ease;
 }
 
-.donate-card.method-wescan::before {
+.donate-carousel.method-playerduo::before {
   background: var(--magenta);
   box-shadow: 0 0 15px var(--magenta);
 }
 
-.donate-card.method-wescan {
+.donate-carousel.method-playerduo {
   border-color: var(--magenta-dim);
+}
+
+.donate-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.donate-slide {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 30px;
+  padding: 30px 80px 30px 30px;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .method-header {
@@ -73,28 +87,6 @@
   margin-bottom: 25px;
 }
 
-.donate-msg {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.03);
-  border-left: 2px solid var(--text-dim);
-}
-
-.msg-tag {
-  color: var(--cyan);
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.donate-msg p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  text-transform: none;
-}
-
 .donate-qr-wrapper {
   display: flex;
   flex-direction: column;
@@ -111,20 +103,19 @@
 
 .qr-frame {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   overflow: hidden;
 }
 
 .qr-frame img {
   width: 100%;
   height: 100%;
-  display: block;
+  object-fit: contain;
 }
 
 .scan-line-anim {
   position: absolute;
-  top: 0;
   left: 0;
   width: 100%;
   height: 2px;
@@ -134,7 +125,7 @@
   z-index: 2;
 }
 
-.method-wescan .scan-line-anim {
+.method-playerduo .scan-line-anim {
   background: var(--magenta);
   box-shadow: 0 0 10px var(--magenta);
 }
@@ -165,7 +156,8 @@
   gap: 10px;
   cursor: pointer;
   transition: all 0.3s;
-  z-index: 5;
+  z-index: 12;
+  width: 60px;
 }
 
 .donate-next-btn:hover {
@@ -173,7 +165,7 @@
   color: var(--cyan);
 }
 
-.method-wescan .donate-next-btn:hover {
+.method-playerduo .donate-next-btn:hover {
   background: rgba(255, 0, 255, 0.1);
   color: var(--magenta);
 }
@@ -191,10 +183,10 @@
 }
 
 @media (max-width: 800px) {
-  .donate-card {
+  .donate-slide {
     display: flex;
     flex-direction: column;
-    padding: 30px 20px 80px 20px; /* Increased bottom padding */
+    padding: 30px 20px 80px 20px;
     gap: 20px;
   }
   
@@ -204,9 +196,12 @@
   }
 
   .donate-next-btn {
+    left: 0;
     right: 0;
-    width: 20%;
-    height: 32px; /* Slightly taller for better touch */
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: 45px;
     flex-direction: row;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -219,21 +214,13 @@
 }
 
 @media (max-width: 640px) {
-  .donate-card {
+  .donate-slide {
     padding: 20px 15px 75px 15px;
   }
   
   .donate-info .sys-text {
     font-size: 0.85rem;
     margin-bottom: 15px;
-  }
-  
-  .donate-msg p {
-    font-size: 0.75rem;
-  }
-  
-  .msg-tag {
-    font-size: 0.7rem;
   }
   
   .donate-method-tag {
