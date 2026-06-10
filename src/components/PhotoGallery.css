@@ -36,18 +36,6 @@
   display: flex;
   gap: 30px;
   width: max-content;
-  animation: slideGallery 40s linear infinite;
-  will-change: transform;
-}
-
-.gallery-viewport:hover .gallery-track,
-.gallery-viewport:active .gallery-track {
-  animation-play-state: paused;
-}
-
-@keyframes slideGallery {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-50% - 15px)); } /* 15px is half of the gap */
 }
 
 .gallery-item {

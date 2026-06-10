@@ -59,6 +59,7 @@ export type TranslationKey =
   | 'discord.desc'
   | 'discord.btn'
   | 'gallery.badge'
+  | 'music.play'
   | 'music.pause'
   | 'music.vol'
   | 'system.booting'

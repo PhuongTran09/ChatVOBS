@@ -24,28 +24,10 @@ export function PhotoGallery({ galleryItems, setSelectedImage }: PhotoGalleryPro
       </div>
       <div className="gallery-viewport custom-scrollbar">
         <div className="gallery-track">
-          {/* Original Items */}
           {galleryItems.map((item) => (
             <div 
               className="gallery-item" 
               key={item.id}
-              onClick={() => setSelectedImage({ src: item.src, name: item.name })}
-            >
-              <div className="img-frame">
-                <img src={item.thumb} alt={item.name} />
-                <div className="scanline" />
-              </div>
-              <div className="img-meta">
-                <span className="file-name">{item.name}</span>
-                <span className="file-date">{item.date}</span>
-              </div>
-            </div>
-          ))}
-          {/* Duplicated Items for Seamless Loop */}
-          {galleryItems.map((item) => (
-            <div 
-              className="gallery-item" 
-              key={`${item.id}-dup`}
               onClick={() => setSelectedImage({ src: item.src, name: item.name })}
             >
               <div className="img-frame">

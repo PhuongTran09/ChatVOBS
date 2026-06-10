@@ -83,7 +83,7 @@ export function useTerminals() {
     if (activeTerminal === id) setActiveTerminal(null);
     setTerminals((prev) => ({
       ...prev,
-      [id]: { ...prev[id], isOpen: false },
+      [id]: { ...prev[id], isOpen: false, isMaximized: false, isMinimized: false },
     }));
   };
 

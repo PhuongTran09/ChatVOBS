@@ -1,32 +1,21 @@
 @keyframes slideDown {
-  0% { transform: translateY(-50px); opacity: 0; filter: brightness(2); }
-  60% { transform: translateY(10px); filter: brightness(1.2); }
-  100% { transform: translateY(0); opacity: 1; filter: brightness(1); }
+  0% { transform: translateY(-30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes glassIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes rotateDisc {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-@keyframes neonPulseGreen {
-  from { box-shadow: 0 0 5px var(--green), inset 0 0 2px var(--green); }
-  to { box-shadow: 0 0 20px var(--green), inset 0 0 5px var(--green); }
-}
-
-@keyframes neonPulseCyan {
-  from { box-shadow: 0 0 5px var(--cyan), inset 0 0 2px var(--cyan); }
-  to { box-shadow: 0 0 20px var(--cyan), inset 0 0 5px var(--cyan); }
-}
-
-@keyframes neonPulseMagenta {
-  from { box-shadow: 0 0 5px var(--magenta), inset 0 0 2px var(--magenta); }
-  to { box-shadow: 0 0 20px var(--magenta), inset 0 0 5px var(--magenta); }
 }
 
 @keyframes neonFlicker {
@@ -37,11 +26,6 @@
 @keyframes slideGallery {
   0% { transform: translateX(0); }
   100% { transform: translateX(calc(-100% / 2)); }
-}
-
-@keyframes glassIn {
-  from { opacity: 0; transform: scale(0.9) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes arrowJump {
@@ -55,16 +39,16 @@
 }
 
 @keyframes btnClickGlitch {
-  0% { transform: translate(0); filter: hue-rotate(0deg); }
-  25% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
-  50% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
-  75% { transform: translate(-2px, -1px); filter: hue-rotate(270deg); }
-  100% { transform: translate(0); filter: hue-rotate(360deg); }
+  0% { transform: translate(0); }
+  25% { transform: translate(-3px, 2px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, -1px); }
+  100% { transform: translate(0); }
 }
 
 @keyframes glitchFlash {
   0% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
   100% { opacity: 0.3; transform: scale(1); }
 }
 
@@ -83,7 +67,3 @@
   50% { border-color: var(--green); }
 }
 
-@keyframes electricFlash {
-  0%, 100% { filter: brightness(1) contrast(1); }
-  50% { filter: brightness(1.5) contrast(1.2) hue-rotate(10deg); }
-}

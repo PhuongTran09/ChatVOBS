@@ -48,9 +48,9 @@ export function StreamerProfilePage({
     return () => clearTimeout(timer);
   }, []);
 
-  // Lock body scroll when any terminal is maximized
+  // Lock body scroll when any terminal is maximized and open
   useEffect(() => {
-    const isAnyMaximized = Object.values(terminals).some((t) => t.isMaximized);
+    const isAnyMaximized = Object.values(terminals).some((t) => t.isOpen && t.isMaximized);
     if (isAnyMaximized) {
       document.body.style.overflow = 'hidden';
     } else {

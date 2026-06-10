@@ -21,12 +21,11 @@
   padding: 18px 25px;
   width: 320px;
   background: rgba(8, 8, 12, 0.9); /* Semitransparent dark cyberpunk backdrop */
-  border: 2px solid var(--accent-color);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 20px calc(var(--accent-color) * 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   font-family: 'Courier New', Courier, monospace;
   color: #ffffff;
   overflow: visible; /* to allow rotated text outside */
-  transition: border-color 0.8s ease, box-shadow 0.8s ease;
+  transition: border-color 0.8s ease;
 }
 
 /* Theme variations */
@@ -131,8 +130,7 @@
   align-items: center;
   gap: 6px;
   color: var(--accent-color);
-  text-shadow: 0 0 5px var(--accent-color);
-  transition: color 0.8s ease, text-shadow 0.8s ease;
+  transition: color 0.8s ease;
 }
 
 .dot-blink {
@@ -140,9 +138,8 @@
   height: 5px;
   background-color: var(--accent-color);
   border-radius: 50%;
-  box-shadow: 0 0 5px var(--accent-color);
   animation: blink 1s infinite steps(2, start);
-  transition: background-color 0.8s ease, box-shadow 0.8s ease;
+  transition: background-color 0.8s ease;
 }
 
 .header-label-right {
@@ -164,22 +161,18 @@
   font-size: 2.8rem;
   letter-spacing: 1px;
   color: #ffffff;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.1), 0 0 10px var(--accent-color);
-  transition: text-shadow 0.8s ease;
 }
 
 .time-part.seconds {
   font-size: 1.8rem;
   color: var(--accent-color);
   margin-left: 2px;
-  text-shadow: 0 0 12px var(--accent-color);
 }
 
 .time-separator {
   font-size: 2.4rem;
   margin: 0 2px;
   color: rgba(255, 255, 255, 0.7);
-  text-shadow: 0 0 10px var(--accent-color);
 }
 
 .ampm-label {
@@ -187,7 +180,6 @@
   font-weight: bold;
   color: var(--accent-color);
   margin-left: 6px;
-  text-shadow: 0 0 5px var(--accent-color);
 }
 
 /* Date Display */
@@ -216,8 +208,7 @@
 .progress-bar-clock {
   height: 100%;
   background-color: var(--accent-color);
-  box-shadow: 0 0 8px var(--accent-color);
-  transition: width 0.2s linear, background-color 0.8s ease, box-shadow 0.8s ease;
+  transition: width 0.2s linear, background-color 0.8s ease;
 }
 
 .progress-bar-glow-clock {
@@ -247,8 +238,7 @@
   width: 4px;
   height: 4px;
   background-color: var(--accent-color);
-  box-shadow: 0 0 4px var(--accent-color);
-  transition: background-color 0.8s ease, box-shadow 0.8s ease;
+  transition: background-color 0.8s ease;
 }
 
 .footer-status-text {
@@ -266,13 +256,12 @@
   letter-spacing: 5px;
   color: var(--accent-color);
   opacity: 0.65;
-  text-shadow: 0 0 6px var(--accent-color);
   font-weight: 900;
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
   z-index: 5;
-  transition: color 0.8s ease, text-shadow 0.8s ease;
+  transition: color 0.8s ease;
 }
 
 /* Blinking animations */

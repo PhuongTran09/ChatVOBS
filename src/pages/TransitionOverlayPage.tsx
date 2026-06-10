@@ -31,7 +31,7 @@ export function TransitionOverlayPage() {
   const [isBelled, setIsBelled] = useState<boolean>(false);
   const [ringBell, setRingBell] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(true);
-  const [loopTime, setLoopTime] = useState<number>(180); // Loop every 180 seconds (3 minutes) by default
+  const [loopTime, setLoopTime] = useState<number>(50); // Loop every 50 seconds by default
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [showLike, setShowLike] = useState<boolean>(false);
 

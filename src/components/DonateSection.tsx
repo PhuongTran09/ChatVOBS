@@ -27,42 +27,45 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
       </div>
       
       <div className="donate-container">
-        <div className={`donate-card glass-card method-${activeDonate.id}`}>
-          <div className="donate-info">
-            <div className="method-header">
-              <span className="donate-method-tag" style={{ borderColor: activeDonate.color, color: activeDonate.color }}>
-                {activeDonate.name}
-              </span>
-              <div className="method-status">
-                <span className="blink-dot"></span> {t('donate.online')}
+        <div className={`donate-carousel glass-card method-${activeDonate.id}`}>
+          <div 
+            className="donate-track" 
+            style={{ transform: `translateX(-${activeDonateIdx * 100}%)` }}
+          >
+            {donateMethods.map((method) => (
+              <div key={method.id} className={`donate-slide method-${method.id}`}>
+                <div className="donate-info">
+                  <div className="method-header">
+                    <span className="donate-method-tag" style={{ borderColor: method.color, color: method.color }}>
+                      {method.name}
+                    </span>
+                    <div className="method-status">
+                      <span className="blink-dot"></span> {t('donate.online')}
+                    </div>
+                  </div>
+                  
+                  <p className="sys-text">{t('donate.description', { method: method.name })}</p>
+                  
+                  <div className="donate-actions">
+                    <a href={method.url} target="_blank" rel="noopener noreferrer" className={`cyber-btn ${method.btnClass}`}>
+                      {t('donate.action', { method: method.name })}
+                    </a>
+                  </div>
+                </div>
+                
+                <div className="donate-qr-wrapper">
+                  <div className="qr-container">
+                    <div className="qr-frame">
+                      <img 
+                        src={method.qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${method.url}`} 
+                        alt={`QR ${method.name}`} 
+                      />
+                    </div>
+                    <span className="qr-label">{t('donate.scan')}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <p className="sys-text">{t('donate.description', { method: activeDonate.name })}</p>
-            
-            <div className="donate-actions">
-              <a href={activeDonate.url} target="_blank" rel="noopener noreferrer" className={`cyber-btn ${activeDonate.btnClass}`}>
-                {t('donate.action', { method: activeDonate.name })}
-              </a>
-            </div>
-            
-            <div className="donate-msg">
-              <span className="msg-tag">[MEMO]</span>
-              <p>{t('donate.memo')}</p>
-            </div>
-          </div>
-          
-          <div className="donate-qr-wrapper">
-            <div className="qr-container">
-              <div className="qr-frame">
-                <img 
-                  key={activeDonate.id}
-                  src={activeDonate.qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${activeDonate.url}`} 
-                  alt={`QR ${activeDonate.name}`} 
-                />
-              </div>
-              <span className="qr-label">{t('donate.scan')}</span>
-            </div>
+            ))}
           </div>
 
           <button className="donate-next-btn" onClick={nextDonate} title="Switch Method">
