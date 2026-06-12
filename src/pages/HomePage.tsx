@@ -37,6 +37,7 @@ export function StreamerProfilePage({
     closeTerminal,
     reopenTerminals,
     handleMouseDown,
+    handleTouchDown,
     resetPosition,
   } = useTerminals()
 
@@ -131,7 +132,7 @@ export function StreamerProfilePage({
       />
       {profileMode === 'streamer' ? (
         <>
-          <section className="cyber-section" id="overlays-activity" style={{ zIndex: 9999 }}>
+          <section className="cyber-section" id="overlays-activity" style={{ zIndex: 0 }}>
             <ChatEditorSection onOpenChat={onOpenChat} />
             <TerminalsBand
               terminals={terminals}
@@ -139,6 +140,7 @@ export function StreamerProfilePage({
               draggingId={dragging?.id}
               bringToFront={bringToFront}
               handleMouseDown={handleMouseDown}
+              handleTouchDown={handleTouchDown}
               toggleMinimize={toggleMinimize}
               toggleMaximize={toggleMaximize}
               closeTerminal={closeTerminal}

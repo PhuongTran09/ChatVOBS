@@ -2,7 +2,7 @@ import { Terminal } from "./Terminal";
 import { MusicPlayerBody } from "./MusicPlayerBody";
 import { ObsSetupBody } from "./ObsSetupBody";
 import type { TerminalId, TerminalState } from "../types/terminal";
-import type { MouseEvent } from "react";
+import type { MouseEvent, TouchEvent } from "react";
 import { useI18n } from "../i18n";
 import "./TerminalsBand.css";
 
@@ -12,6 +12,7 @@ interface TerminalsBandProps {
   draggingId: TerminalId | undefined;
   bringToFront: (id: TerminalId) => void;
   handleMouseDown: (id: TerminalId, e: MouseEvent) => void;
+  handleTouchDown: (id: TerminalId, e: TouchEvent) => void;
   toggleMinimize: (id: TerminalId) => void;
   toggleMaximize: (id: TerminalId) => void;
   closeTerminal: (id: TerminalId) => void;
@@ -24,6 +25,7 @@ export const TerminalsBand = ({
   draggingId,
   bringToFront,
   handleMouseDown,
+  handleTouchDown,
   toggleMinimize,
   toggleMaximize,
   closeTerminal,
@@ -52,6 +54,7 @@ export const TerminalsBand = ({
               isDragging={draggingId === "music"}
               onMouseDown={() => bringToFront("music")}
               onHeaderMouseDown={(e) => handleMouseDown("music", e)}
+              onHeaderTouchStart={(e) => handleTouchDown("music", e)}
               onHeaderDoubleClick={() => resetPosition("music")}
               onMinimize={() => toggleMinimize("music")}
               onMaximize={() => toggleMaximize("music")}
@@ -71,6 +74,7 @@ export const TerminalsBand = ({
               isDragging={draggingId === "obs"}
               onMouseDown={() => bringToFront("obs")}
               onHeaderMouseDown={(e) => handleMouseDown("obs", e)}
+              onHeaderTouchStart={(e) => handleTouchDown("obs", e)}
               onHeaderDoubleClick={() => resetPosition("obs")}
               onMinimize={() => toggleMinimize("obs")}
               onMaximize={() => toggleMaximize("obs")}
