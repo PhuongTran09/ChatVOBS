@@ -32,10 +32,20 @@ export const TerminalsBand = ({
   resetPosition,
 }: TerminalsBandProps) => {
   const { t } = useI18n();
+  const isMusicDocked = terminals.music.isOpen && !terminals.music.isDetached;
+  const isObsDocked = terminals.obs.isOpen && !terminals.obs.isDetached;
+  const dockedCount = (isMusicDocked ? 1 : 0) + (isObsDocked ? 1 : 0);
+
   const isAnyOpen = terminals.music.isOpen || terminals.obs.isOpen;
+  const isSingleDocked = dockedCount === 1;
+  const isNoDocked = dockedCount === 0;
 
   return (
-    <div className={`cyber-split ${!isAnyOpen ? 'is-standby' : ''}`} id="activity" style={{ marginTop: '20px' }}>
+    <div 
+      className={`cyber-split ${!isAnyOpen ? 'is-standby' : ''} ${isSingleDocked ? 'single-docked' : ''} ${isNoDocked && isAnyOpen ? 'no-docked' : ''}`} 
+      id="activity" 
+      style={{ marginTop: '20px' }}
+    >
       {!isAnyOpen ? (
         <div className="terminal-standby">
           <div className="standby-content">
@@ -45,45 +55,49 @@ export const TerminalsBand = ({
         </div>
       ) : (
         <>
-          <div className="term-slot">
-            <Terminal
-              id="music"
-              title="MUSIC_CHILL.exe"
-              terminalState={terminals.music}
-              isActive={activeTerminal === "music"}
-              isDragging={draggingId === "music"}
-              onMouseDown={() => bringToFront("music")}
-              onHeaderMouseDown={(e) => handleMouseDown("music", e)}
-              onHeaderTouchStart={(e) => handleTouchDown("music", e)}
-              onHeaderDoubleClick={() => resetPosition("music")}
-              onMinimize={() => toggleMinimize("music")}
-              onMaximize={() => toggleMaximize("music")}
-              onClose={() => closeTerminal("music")}
-              headClass="head-green"
-            >
-              <MusicPlayerBody isOpen={terminals.music.isOpen} />
-            </Terminal>
-          </div>
+          {terminals.music.isOpen && (
+            <div className={`term-slot ${terminals.music.isMinimized || terminals.music.isDetached ? 'is-collapsed' : ''}`}>
+              <Terminal
+                id="music"
+                title="MUSIC_CHILL.exe"
+                terminalState={terminals.music}
+                isActive={activeTerminal === "music"}
+                isDragging={draggingId === "music"}
+                onMouseDown={() => bringToFront("music")}
+                onHeaderMouseDown={(e) => handleMouseDown("music", e)}
+                onHeaderTouchStart={(e) => handleTouchDown("music", e)}
+                onHeaderDoubleClick={() => resetPosition("music")}
+                onMinimize={() => toggleMinimize("music")}
+                onMaximize={() => toggleMaximize("music")}
+                onClose={() => closeTerminal("music")}
+                headClass="head-green"
+              >
+                <MusicPlayerBody isOpen={terminals.music.isOpen} />
+              </Terminal>
+            </div>
+          )}
 
-          <div className="term-slot">
-            <Terminal
-              id="obs"
-              title="OBS_SETUP.txt"
-              terminalState={terminals.obs}
-              isActive={activeTerminal === "obs"}
-              isDragging={draggingId === "obs"}
-              onMouseDown={() => bringToFront("obs")}
-              onHeaderMouseDown={(e) => handleMouseDown("obs", e)}
-              onHeaderTouchStart={(e) => handleTouchDown("obs", e)}
-              onHeaderDoubleClick={() => resetPosition("obs")}
-              onMinimize={() => toggleMinimize("obs")}
-              onMaximize={() => toggleMaximize("obs")}
-              onClose={() => closeTerminal("obs")}
-              headClass="head-cyan"
-            >
-              <ObsSetupBody />
-            </Terminal>
-          </div>
+          {terminals.obs.isOpen && (
+            <div className={`term-slot ${terminals.obs.isMinimized || terminals.obs.isDetached ? 'is-collapsed' : ''}`}>
+              <Terminal
+                id="obs"
+                title="OBS_SETUP.txt"
+                terminalState={terminals.obs}
+                isActive={activeTerminal === "obs"}
+                isDragging={draggingId === "obs"}
+                onMouseDown={() => bringToFront("obs")}
+                onHeaderMouseDown={(e) => handleMouseDown("obs", e)}
+                onHeaderTouchStart={(e) => handleTouchDown("obs", e)}
+                onHeaderDoubleClick={() => resetPosition("obs")}
+                onMinimize={() => toggleMinimize("obs")}
+                onMaximize={() => toggleMaximize("obs")}
+                onClose={() => closeTerminal("obs")}
+                headClass="head-cyan"
+              >
+                <ObsSetupBody />
+              </Terminal>
+            </div>
+          )}
         </>
       )}
     </div>

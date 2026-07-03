@@ -72,12 +72,14 @@ export function useTerminals() {
     bringToFront(id);
     setTerminals((prev) => {
       const terminal = prev[id];
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
       if (terminal.isMaximized) {
         return {
           ...prev,
           [id]: {
             ...terminal,
             isMaximized: false,
+            isDetached: isMobile ? false : terminal.isDetached,
             pos: terminal.oldPos,
           },
         };
@@ -144,6 +146,7 @@ export function useTerminals() {
   const handleMouseDown = (id: TerminalId, e: React.MouseEvent) => {
     bringToFront(id);
     if ((e.target as HTMLElement).closest(".term-controls")) return;
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) return; // Disable dragging on mobile
 
     if (terminals[id].isMaximized) {
       const restoredPos = terminals[id].oldPos;
@@ -177,6 +180,7 @@ export function useTerminals() {
   const handleTouchDown = (id: TerminalId, e: React.TouchEvent) => {
     bringToFront(id);
     if ((e.target as HTMLElement).closest(".term-controls")) return;
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) return; // Disable dragging on mobile
 
     const touch = e.touches[0];
 
@@ -274,6 +278,62 @@ export function useTerminals() {
       window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [dragging]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const termW = Math.min(480, vw * 0.9);
+      
+      // Re-calculate default positions
+      const musicX = Math.max(16, (vw - termW * 2 - 24) / 2);
+      const musicY = Math.max(80, vh * 0.12);
+      const obsX = Math.min(musicX + termW + 16, vw - termW - 16);
+      const obsY = Math.max(80, vh * 0.12) + 20;
+
+      setTerminals((prev) => {
+        const next = { ...prev };
+        const isMobile = vw <= 768;
+
+        next.music.defaultPos = { x: musicX, y: musicY };
+        next.obs.defaultPos = { x: obsX, y: obsY };
+
+        (Object.keys(next) as TerminalId[]).forEach((key) => {
+          const term = next[key];
+          if (isMobile) {
+            // Auto-dock on mobile to prevent offscreen/floating issues
+            term.isDetached = false;
+            term.isMaximized = false;
+            term.pos = term.defaultPos;
+          } else {
+            if (term.isDetached && !term.isMaximized) {
+              // Clamp coordinates within screen boundaries
+              const el = document.getElementById(key);
+              const w = el ? el.getBoundingClientRect().width : 300;
+              const h = el ? el.getBoundingClientRect().height : 400;
+              
+              const newX = Math.max(0, Math.min(term.pos.x, vw - w));
+              const newY = Math.max(0, Math.min(term.pos.y, vh - h));
+              
+              term.pos = { x: newX, y: newY };
+            } else if (!term.isDetached) {
+              term.pos = term.defaultPos;
+            }
+          }
+        });
+
+        return next;
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    // Run once on mount to handle initial layout checks
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const isAnyTerminalClosed = !terminals.music.isOpen || !terminals.obs.isOpen;
 

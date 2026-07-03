@@ -7,6 +7,19 @@
   transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.cyber-split.single-docked {
+  grid-template-columns: 1fr;
+  min-height: 400px;
+}
+
+.cyber-split.no-docked {
+  min-height: 0;
+  height: 0;
+  margin-top: 0 !important;
+  gap: 0;
+  overflow: hidden;
+}
+
 .cyber-split.is-standby {
   display: flex;
   align-items: center;
@@ -17,6 +30,12 @@
 .term-slot {
   position: relative;
   min-height: 400px;
+  transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.term-slot.is-collapsed {
+  min-height: 0;
+  height: 0;
 }
 
 .standby-text {

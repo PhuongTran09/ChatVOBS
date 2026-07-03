@@ -139,6 +139,7 @@
 /* MUSIC OVERLAY MODE */
 .cyber-terminal.minimized#music {
   width: 300px !important;
+  max-width: 100%;
   border-color: var(--green);
   box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
 }
@@ -358,5 +359,9 @@
   .terminal-content-wrapper {
     /* Use native smooth scrolling on mobile */
     -webkit-overflow-scrolling: touch;
+  }
+
+  .term-body {
+    padding: 12px;
   }
 }

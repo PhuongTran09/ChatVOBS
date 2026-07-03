@@ -184,19 +184,19 @@
 .discord-logo-wrap {
   width: 70px;
   height: 70px;
-  background: #5865F2;
+  background: transparent;
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 50px rgba(88, 101, 242, 0.6);
+  border: 2px solid var(--cyan);
   margin-bottom: 5px;
   transition: transform 0.3s;
 }
 
 .discord-icon {
   width: 45px;
-  fill: #fff;
+  fill: var(--cyan);
 }
 
 .discord-panel h3 {

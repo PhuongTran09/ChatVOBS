@@ -224,11 +224,67 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0; /* Fix flex item shrinking */
 }
 
 .s-time {
   opacity: 0.6;
   font-size: 0.7rem;
+}
+
+/* RESPONSIVE LAYOUT FOR MOBILE SCREENS */
+@media (max-width: 520px) {
+  .cyber-terminal:not(.minimized) .music-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .cyber-terminal:not(.minimized) .song-title {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .cyber-terminal:not(.minimized) .song-artist {
+    font-size: 0.7rem;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+  
+  .cyber-terminal:not(.minimized) .visualizer-container {
+    width: 140px;
+    height: 30px;
+    margin: 0 auto;
+  }
+  
+  .cyber-terminal:not(.minimized) .music-controls {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  
+  .cyber-terminal:not(.minimized) .volume-slider {
+    width: auto;
+    margin-left: 10px;
+    justify-content: flex-start;
+    padding-top: 0;
+    border-top: none;
+    font-size: 0.65rem;
+  }
+  
+  .cyber-terminal:not(.minimized) .vol-input-green {
+    flex: none;
+    width: 45px;
+  }
+
+  .cyber-terminal:not(.minimized) .song-item {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .cyber-terminal:not(.minimized) .s-time {
+    font-size: 0.6rem;
+  }
 }
 
 

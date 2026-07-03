@@ -33,10 +33,14 @@ html[lang="vi"] {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
+  width: 100%;
   background-color: var(--bg-dark) !important;
   /* Lưới Grid nền nhạt */
   background-image: 
@@ -176,8 +180,12 @@ button {
 }
 
 @media (max-width: 640px) {
-  body {
+  html {
     font-size: 13px;
+  }
+
+  body {
+    font-size: 12px;
   }
   
   .glitch-text {
