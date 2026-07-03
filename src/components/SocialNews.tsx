@@ -28,6 +28,16 @@ export function SocialNews() {
     return () => unsubscribe();
   }, []);
 
+  // Sync selectedNews with updated article in the articles list when real-time updates occur
+  useEffect(() => {
+    if (selectedNews) {
+      const updated = newsArticles.find((art) => art.id === selectedNews.id);
+      if (updated && JSON.stringify(updated) !== JSON.stringify(selectedNews)) {
+        setSelectedNews(updated);
+      }
+    }
+  }, [newsArticles, selectedNews]);
+
   // Automatically open shared news article if newsId is in the URL search params or path
   useEffect(() => {
     if (!loading && newsArticles.length > 0) {
@@ -229,7 +239,7 @@ export function SocialNews() {
                   </div>
 
                   {/* Content */}
-                  <p className="news-content">{item.content}</p>
+                  <div className="news-content" dangerouslySetInnerHTML={{ __html: item.content }} />
 
                   {/* Card Actions */}
                   <div className="card-footer" style={{ display: 'flex', gap: '10px' }}>
@@ -287,17 +297,7 @@ export function SocialNews() {
             </div>
 
             <div className="modal-terminal-body custom-scrollbar">
-              <div className="terminal-log-row">
-                <span className="terminal-prompt">&gt; ACCESS_PATH:</span>
-                <span className="terminal-value">/root/feed/{getArticleType(selectedNews)}/{selectedNews.id}/new</span>
-              </div>
-              <div className="terminal-log-row">
-                <span className="terminal-prompt">&gt; STATUS:</span>
-                <span className="terminal-value active">ONLINE_DIRECTORY</span>
-              </div>
-              <div className="terminal-divider" />
-              
-              <p className="modal-description">{selectedNews.content}</p>
+              <div className="modal-description" dangerouslySetInnerHTML={{ __html: selectedNews.content }} />
               
               <div className="terminal-divider" />
               <div className="terminal-log-row blink-text" style={{ fontSize: '0.75rem', color: 'var(--cyan)' }}>
