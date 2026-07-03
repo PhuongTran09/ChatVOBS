@@ -1,74 +1,110 @@
 .features-wrapper {
   border: 1px solid rgba(0, 255, 255, 0.15);
   border-radius: 0;
-  padding: 25px;
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
-  margin-top: 40px;
-}
-
-.feature-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  padding: 20px 25px;
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
-.cyber-card {
-  border: 1px solid var(--cyan);
-  border-radius: 0;
-  padding: 25px;
-  background: rgba(0, 255, 255, 0.08);
-  backdrop-filter: blur(2px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.icon-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.icon-group-title {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+  border-left: 2px solid var(--magenta);
+  padding-left: 8px;
+}
+
+.icon-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.cyber-icon-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
 }
 
-.cyber-card.card-magenta {
+.cyber-icon-btn .icon-svg {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Individual Brand Colors & Glows on Hover */
+.cyber-icon-btn.obs:hover {
+  border-color: var(--cyan);
+  background: rgba(0, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+.cyber-icon-btn.obs:hover .icon-svg {
+  filter: drop-shadow(0 0 5px var(--cyan));
+}
+
+.cyber-icon-btn.facebook:hover {
+  border-color: #1877f2;
+  background: rgba(24, 119, 242, 0.08);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(24, 119, 242, 0.3);
+  transform: translateY(-2px);
+}
+.cyber-icon-btn.facebook:hover .icon-svg {
+  filter: drop-shadow(0 0 5px #1877f2);
+}
+
+.cyber-icon-btn.tiktok:hover {
   border-color: var(--magenta);
   background: rgba(255, 0, 255, 0.08);
-  box-shadow: 0 0 25px rgba(255, 0, 255, 0.2), inset 0 0 10px rgba(255, 0, 255, 0.1);
-}
-
-.cyber-card.card-green {
-  border-color: var(--green);
-  background: rgba(0, 255, 0, 0.08);
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.2), inset 0 0 10px rgba(0, 255, 0, 0.1);
-}
-
-.cyber-card h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.2rem;
   color: #fff;
-  transition: all 0.3s;
-  text-shadow: 0 0 12px var(--cyan);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+  transform: translateY(-2px);
+}
+.cyber-icon-btn.tiktok:hover .icon-svg {
+  filter: drop-shadow(0 0 5px var(--magenta));
 }
 
-.cyber-card.card-cyan h3 { text-shadow: 0 0 12px var(--cyan); color: #fff; }
-.cyber-card.card-magenta h3 { color: #fff; text-shadow: 0 0 12px var(--magenta); }
-.cyber-card.card-yellow h3 { color: #fff; text-shadow: 0 0 12px #ff0; }
-.cyber-card.card-purple h3 { color: #fff; text-shadow: 0 0 12px #a0f; }
-.cyber-card.card-green h3 { color: #fff; text-shadow: 0 0 12px var(--green); }
-
-.cyber-card p {
+.cyber-icon-btn.twitter:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  margin-bottom: 0;
-  transition: all 0.3s;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+.cyber-icon-btn.twitter:hover .icon-svg {
+  filter: drop-shadow(0 0 5px #ffffff);
 }
 
-@media (max-width: 640px) {
-  .cyber-card {
-    padding: 12px;
-  }
-  
-  .cyber-card h3 {
-    font-size: 0.9rem;
-  }
-  
-  .cyber-card p {
-    font-size: 0.75rem;
+@media (max-width: 480px) {
+  .cyber-icon-btn {
+    width: 100%;
+    justify-content: center;
   }
 }

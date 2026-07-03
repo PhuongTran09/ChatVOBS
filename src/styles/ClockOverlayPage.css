@@ -1,0 +1,272 @@
+.clock-overlay-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: transparent !important; /* Transparent for OBS Overlay */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.clock-overlay-card {
+  --accent-color: #00f0ff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 25px;
+  width: 320px;
+  background: rgba(8, 8, 12, 0.9); /* Semitransparent dark cyberpunk backdrop */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-family: 'Courier New', Courier, monospace;
+  color: #ffffff;
+  overflow: visible; /* to allow rotated text outside */
+  transition: border-color 0.8s ease;
+}
+
+/* Theme variations */
+.clock-overlay-card.theme-cyan {
+  --accent-color: #00f0ff;
+}
+
+.clock-overlay-card.theme-magenta {
+  --accent-color: #ff0055;
+}
+
+.clock-overlay-card.theme-amber {
+  --accent-color: #ffaa00;
+}
+
+/* subtle cyberpunk grid overlay */
+.cyber-grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 15px 15px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* scanline scan effect */
+.scanline-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.4)
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0.35;
+  z-index: 10;
+}
+
+/* Corner decorations */
+.corner-decor {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent-color);
+  transition: border-color 0.8s ease;
+  z-index: 3;
+}
+.top-left {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+.top-right {
+  top: -2px;
+  right: -2px;
+  border-left: none;
+  border-bottom: none;
+}
+.bottom-left {
+  bottom: -2px;
+  left: -2px;
+  border-right: none;
+  border-top: none;
+}
+.bottom-right {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Header */
+.clock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 6px;
+  z-index: 2;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.header-label-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-color);
+  transition: color 0.8s ease;
+}
+
+.dot-blink {
+  width: 5px;
+  height: 5px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  animation: blink 1s infinite steps(2, start);
+  transition: background-color 0.8s ease;
+}
+
+.header-label-right {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Main Display */
+.clock-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  z-index: 2;
+  margin: 10px 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 900;
+}
+
+.time-part {
+  font-size: 2.8rem;
+  letter-spacing: 1px;
+  color: #ffffff;
+}
+
+.time-part.seconds {
+  font-size: 1.8rem;
+  color: var(--accent-color);
+  margin-left: 2px;
+}
+
+.time-separator {
+  font-size: 2.4rem;
+  margin: 0 2px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ampm-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin-left: 6px;
+}
+
+/* Date Display */
+.clock-date {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 14px;
+  z-index: 2;
+  text-align: center;
+}
+
+/* Progress bar tracking seconds */
+.progress-container-clock {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.progress-bar-clock {
+  height: 100%;
+  background-color: var(--accent-color);
+  transition: width 0.2s linear, background-color 0.8s ease;
+}
+
+.progress-bar-glow-clock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--accent-color);
+  opacity: 0.35;
+  filter: blur(3px);
+  transition: width 0.2s linear, background-color 0.8s ease;
+}
+
+/* Footer */
+.clock-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  z-index: 2;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-deco-square {
+  width: 4px;
+  height: 4px;
+  background-color: var(--accent-color);
+  transition: background-color 0.8s ease;
+}
+
+.footer-status-text {
+  font-weight: 800;
+}
+
+/* Side vertical label */
+.side-vertical-label-clock {
+  position: absolute;
+  right: -45px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+  font-size: 0.65rem;
+  letter-spacing: 5px;
+  color: var(--accent-color);
+  opacity: 0.65;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+  transition: color 0.8s ease;
+}
+
+/* Blinking animations */
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}

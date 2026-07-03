@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './SocialSchedule.css';
 import { useI18n } from '../i18n';
 import { API_CONFIG } from '../config/api';
+import { subscribeToAllWeeks, subscribeToEventsByWeekId, getWeekNumberAndYear, type WeekDoc } from '../services';
 
 export function SocialSchedule() {
   const { t } = useI18n();
-  const [weekOffset, setWeekOffset] = useState(0);
+  const [weeksList, setWeeksList] = useState<WeekDoc[]>([]);
+  const [currentWeekIndex, setCurrentWeekIndex] = useState<number>(-1);
   const [discordData, setDiscordData] = useState<any>(null);
+  const [weekTasks, setWeekTasks] = useState<any[]>([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(false);
 
   useEffect(() => {
     async function fetchDiscord() {
@@ -23,18 +27,51 @@ export function SocialSchedule() {
     fetchDiscord();
   }, []);
 
-  // Hàm lấy ngày trong tuần dựa trên offset
-  const getWeekDates = (offset: number) => {
-    const now = new Date();
-    // Thêm offset tuần (7 ngày mỗi tuần)
-    now.setDate(now.getDate() + offset * 7);
+  // Subscribe to all weeks configurations in real-time
+  useEffect(() => {
+    setLoadingSchedule(true);
+    const unsubscribe = subscribeToAllWeeks(
+      (list) => {
+        setWeeksList(list);
+        if (list.length > 0) {
+          const today = new Date();
+          const todayCal = getWeekNumberAndYear(today);
+          
+          setCurrentWeekIndex((prevIndex) => {
+            // If we already have a valid selected index, retain it
+            if (prevIndex >= 0 && prevIndex < list.length) {
+              return prevIndex;
+            }
+            
+            // Otherwise, default to today's week or the latest week
+            const index = list.findIndex(
+              (w) => w.week === todayCal.week && w.year === String(todayCal.year)
+            );
+            return index !== -1 ? index : list.length - 1;
+          });
+        } else {
+          setCurrentWeekIndex(-1);
+        }
+        setLoadingSchedule(false);
+      },
+      (error) => {
+        console.error('Error loading weeks:', error);
+        setLoadingSchedule(false);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  // Helper to generate Mon-Sun dates based on ISO Week & Year
+  const getWeekDatesFromWeekNumber = (week: number, year: number) => {
+    const jan1 = new Date(year, 0, 1);
+    const dayOfJan1 = jan1.getDay();
+    const jan1ThursdayOffset = (4 - dayOfJan1 + 7) % 7;
+    const firstThursday = new Date(year, 0, 1 + jan1ThursdayOffset);
+    const targetThursday = new Date(firstThursday.getTime() + (week - 1) * 7 * 24 * 60 * 60 * 1000);
+    const monday = new Date(targetThursday.getTime() - 3 * 24 * 60 * 60 * 1000);
     
-    const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
-    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-    
-    const monday = new Date(now.setDate(diff));
     const dates = [];
-    
     for (let i = 0; i < 7; i++) {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
@@ -43,24 +80,120 @@ export function SocialSchedule() {
     return dates;
   };
 
-  const weekDates = getWeekDates(weekOffset);
-  const today = new Date();
-  const todayStr = today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  
-  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-  const tasks = [
-    { key: 'schedule.task.code', time: '21:00' },
-    { key: 'schedule.task.code', time: '21:00' },
-    { key: 'schedule.task.code', time: '21:00' },
-    { key: 'schedule.task.gaming', time: '22:30', highlight: true },
-    { key: 'schedule.task.gaming', time: '22:30', highlight: true },
-    { key: 'schedule.task.community', time: '14:00' },
-    { key: 'schedule.task.reboot', time: t('schedule.time.offline') },
-  ];
+  const activeWeek = useMemo(() => {
+    if (currentWeekIndex >= 0 && currentWeekIndex < weeksList.length) {
+      return weeksList[currentWeekIndex];
+    }
+    return null;
+  }, [currentWeekIndex, weeksList]);
 
-  const handlePrevWeek = () => setWeekOffset(prev => prev - 1);
-  const handleNextWeek = () => setWeekOffset(prev => prev + 1);
-  const handleToday = () => setWeekOffset(0);
+  // Monday is index 0, Sunday is index 6
+  const weekDates = useMemo(() => {
+    if (activeWeek) {
+      return getWeekDatesFromWeekNumber(activeWeek.week, Number(activeWeek.year));
+    }
+    // Fallback to current calendar week dates
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    const monday = new Date(now.setDate(diff));
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  }, [activeWeek]);
+
+  // Subscribe to events for active week in real-time
+  useEffect(() => {
+    if (!activeWeek) {
+      const emptyTasks = Array(7).fill(null).map(() => ({
+        title: t('schedule.time.offline'),
+        description: '',
+        time: '',
+        highlight: false
+      }));
+      setWeekTasks(emptyTasks);
+      return;
+    }
+
+    setLoadingSchedule(true);
+    const unsubscribe = subscribeToEventsByWeekId(
+      activeWeek.id,
+      (fetchedTasks) => {
+        if (fetchedTasks) {
+          const translatedTasks = fetchedTasks.map((task) => ({
+            title: task.titleKey ? t(task.titleKey) : (task.title || t('schedule.time.offline')),
+            description: task.descriptionKey ? t(task.descriptionKey) : (task.description || ''),
+            time: task.time || '',
+            highlight: task.highlight
+          }));
+          setWeekTasks(translatedTasks);
+        } else {
+          const emptyTasks = Array(7).fill(null).map(() => ({
+            title: t('schedule.time.offline'),
+            description: '',
+            time: '',
+            highlight: false
+          }));
+          setWeekTasks(emptyTasks);
+        }
+        setLoadingSchedule(false);
+      },
+      (error) => {
+        console.error('Error fetching schedule events:', error);
+        const emptyTasks = Array(7).fill(null).map(() => ({
+          title: t('schedule.time.offline'),
+          description: '',
+          time: '',
+          highlight: false
+        }));
+        setWeekTasks(emptyTasks);
+        setLoadingSchedule(false);
+      }
+    );
+    return () => unsubscribe();
+  }, [activeWeek, t]);
+
+  const handlePrevWeek = () => {
+    if (currentWeekIndex > 0) {
+      setCurrentWeekIndex((prev) => prev - 1);
+    }
+  };
+
+  const handleNextWeek = () => {
+    if (currentWeekIndex < weeksList.length - 1) {
+      setCurrentWeekIndex((prev) => prev + 1);
+    }
+  };
+
+  const handleToday = () => {
+    if (weeksList.length > 0) {
+      const today = new Date();
+      const todayCal = getWeekNumberAndYear(today);
+      const index = weeksList.findIndex(
+        (w) => w.week === todayCal.week && w.year === String(todayCal.year)
+      );
+      if (index !== -1) {
+        setCurrentWeekIndex(index);
+      } else {
+        setCurrentWeekIndex(weeksList.length - 1);
+      }
+    }
+  };
+
+  const today = useMemo(() => new Date(), []);
+  const todayCal = useMemo(() => getWeekNumberAndYear(today), [today]);
+  const isCurrentWeekActive = useMemo(() => {
+    return !!(activeWeek && 
+      activeWeek.week === todayCal.week && 
+      activeWeek.year === String(todayCal.year));
+  }, [activeWeek, todayCal]);
+
+  const todayStr = useMemo(() => today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }), [today]);
+  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
   // Hàm format ngày DD/MM
   const formatDate = (date: Date) => {
@@ -99,31 +232,56 @@ export function SocialSchedule() {
         
         <div className="schedule-controls">
           <div className="week-navigation">
-            <button className="nav-btn" onClick={handlePrevWeek}>&lt; PREV</button>
-            <button className="nav-btn today-btn" onClick={handleToday}>WEEK {weekOffset === 0 ? 'NOW' : (weekOffset > 0 ? `+${weekOffset}` : weekOffset)}</button>
-            <button className="nav-btn" onClick={handleNextWeek}>NEXT &gt;</button>
+            <button className="nav-btn" onClick={handlePrevWeek} disabled={currentWeekIndex <= 0} aria-label="Previous Week">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button className="nav-btn today-btn" onClick={handleToday}>
+              {isCurrentWeekActive ? 'WEEK NOW' : (activeWeek ? `WEEK ${activeWeek.week}` : 'WEEK NOW')}
+            </button>
+            <button className="nav-btn" onClick={handleNextWeek} disabled={currentWeekIndex === -1 || currentWeekIndex >= weeksList.length - 1} aria-label="Next Week">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
           <div className="week-range">
-            {formatDate(weekDates[0])} - {formatDate(weekDates[6])}
+            {activeWeek ? activeWeek.name : `${formatDate(weekDates[0])} - ${formatDate(weekDates[6])}`}
           </div>
         </div>
 
         <div className="panel-body">
           <div className="schedule-table-wrapper custom-scrollbar">
-            <div className="schedule-table">
-              {weekDates.map((date, index) => (
-                <div key={index} className={`sched-row ${checkIsToday(date) ? 'highlight' : ''}`}>
-                  <div className="day-info">
-                    <span className="day">{t(`schedule.${dayKeys[index]}`)}</span>
-                    <span className="full-date">
-                      {date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                    </span>
-                  </div>
-                  <span className="task">{t(tasks[index].key)}</span>
-                  <span className="time">{tasks[index].time}</span>
-                </div>
-              ))}
-            </div>
+            {loadingSchedule ? (
+              <div className="schedule-loading">
+                <span className="blink-text">&gt; LOADING_DATABASE_LOGS...</span>
+                <div className="loading-scanner" />
+              </div>
+            ) : (
+              <div className="schedule-table">
+                {weekDates.map((date, index) => {
+                  const task = weekTasks[index];
+                  return (
+                    <div key={index} className={`sched-row ${checkIsToday(date) ? 'highlight' : ''} ${task?.highlight ? 'event-highlight' : ''}`}>
+                      <div className="day-info">
+                        <span className="day">{t(`schedule.${dayKeys[index]}`)}</span>
+                        <span className="full-date">
+                          {date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <div className="task-container">
+                        <span className="task">{task ? task.title : t('schedule.time.offline')}</span>
+                        {task?.description && (
+                          <span className="task-desc">{task.description}</span>
+                        )}
+                      </div>
+                      <span className="time">{task ? task.time : ''}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
