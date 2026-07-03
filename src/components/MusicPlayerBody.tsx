@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useI18n } from '../i18n';
 import './MusicPlayerBody.css';
+import { subscribeToActiveSongs, type SongDoc } from '../services';
 
 // Keep audio context and player persistent across unmount/remount (e.g. portal transition on maximize)
 let globalAudio: HTMLAudioElement | null = null;
@@ -11,6 +12,7 @@ let globalActiveSongIdx = 0;
 let globalVolume = 80;
 let globalCurrentTime = 0;
 let globalDuration = 0;
+let globalSongList: SongDoc[] = [];
 let globalMountedInstances = 0;
 
 interface MusicPlayerBodyProps {
@@ -24,20 +26,51 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
   const [isPlaying, setIsPlaying] = useState(globalIsPlaying);
   const [currentTime, setCurrentTime] = useState(globalCurrentTime);
   const [duration, setDuration] = useState(globalDuration);
+  const [songList, setSongList] = useState<SongDoc[]>(globalSongList);
 
-  const songs = [
-    { name: "No Sleep", artist: "Kontraa", time: "02:13", url: "/kontraa-no-sleep-hiphop-music-473847.mp3" },
-    { name: "Rainy Night in Tokyo", artist: "Lofi Girl / Chillhop", time: "06:12", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-    { name: "Cyberpunk City Lights", artist: "Synthwave Master", time: "07:05", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-    { name: "Neon Dreams (Slowed)", artist: "Nightcrawler", time: "05:44", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-    { name: "Midnight Protocol", artist: "Hacker.wav", time: "05:02", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
-  ];
+  useEffect(() => {
+    const unsubscribe = subscribeToActiveSongs(
+      (data) => {
+        setSongList(data);
+        globalSongList = data;
+      },
+      (error) => {
+        console.error('Error loading songs:', error);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const songs = useMemo(() => {
+    return songList.map((item) => ({
+      name: item.title,
+      artist: item.artist,
+      time: item.duration,
+      url: item.url,
+    }));
+  }, [songList]);
 
   const audioRef = useRef<HTMLAudioElement | null>(globalAudio);
   const audioCtxRef = useRef<AudioContext | null>(globalAudioCtx);
   const analyserRef = useRef<AnalyserNode | null>(globalAnalyser);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
+
+  // Track mounting instances to pause audio when closed (but not on portal/maximize transition)
+  useEffect(() => {
+    globalMountedInstances++;
+    return () => {
+      globalMountedInstances--;
+      setTimeout(() => {
+        if (globalMountedInstances === 0) {
+          if (globalAudio) {
+            globalAudio.pause();
+            globalIsPlaying = false;
+          }
+        }
+      }, 50);
+    };
+  }, []);
 
   // Sync state to global variables
   useEffect(() => {
@@ -78,7 +111,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
         source.connect(analyser);
         analyser.connect(ctx.destination);
       } catch (e) {
-        console.warn("Failed to connect media element source:", e);
+        console.warn("Audio Context initialization failed or source already connected:", e);
       }
     }
 
@@ -104,12 +137,16 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       globalAudio = audioRef.current;
     }
 
+    if (songs.length === 0) return;
+    const currentSong = songs[activeSongIdx];
+    if (!currentSong) return;
+
     const audio = audioRef.current;
     
     // Only set src if it's different to prevent resetting playback position on mount
-    const targetUrl = new URL(songs[activeSongIdx].url, window.location.href).href;
+    const targetUrl = new URL(currentSong.url, window.location.href).href;
     if (audio.src !== targetUrl) {
-      audio.src = songs[activeSongIdx].url;
+      audio.src = currentSong.url;
       audio.load();
     }
 
@@ -122,8 +159,15 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
     };
 
     const handleEnded = () => {
-      setActiveSongIdx((prev) => (prev < songs.length - 1 ? prev + 1 : 0));
-      setIsPlaying(true);
+      setActiveSongIdx((prev) => {
+        if (prev < songs.length - 1) {
+          setIsPlaying(true);
+          return prev + 1;
+        } else {
+          setIsPlaying(false);
+          return 0;
+        }
+      });
     };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -148,7 +192,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [activeSongIdx]);
+  }, [activeSongIdx, songs, isPlaying]);
 
   // Play/Pause effect
   useEffect(() => {
@@ -178,123 +222,66 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
     }
   }, [isOpen]);
 
-  // Clean up animation and handle conditional pause on unmount
+  // Canvas visualizer rendering loop
   useEffect(() => {
-    globalMountedInstances++;
-    return () => {
-      globalMountedInstances--;
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      // If no other instances of the player are mounted after 50ms (i.e. not a Portal transition),
-      // we pause the audio and reset the global state.
-      setTimeout(() => {
-        if (globalMountedInstances === 0) {
-          if (globalAudio) {
-            globalAudio.pause();
-            globalIsPlaying = false;
-          }
-        }
-      }, 50);
-    };
-  }, []);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  // Animation loop for horizontal waveform visualizer
-  useEffect(() => {
-    const dataArray = new Uint8Array(64);
-    let lastTime = performance.now();
-    let volumeFactor = 0;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     const drawWaveform = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) {
-        animationRef.current = requestAnimationFrame(drawWaveform);
-        return;
-      }
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        animationRef.current = requestAnimationFrame(drawWaveform);
-        return;
-      }
-
-      const now = performance.now();
-      const dt = (now - lastTime) / 1000;
-      lastTime = now;
-
-      // Smooth play/pause volume transition
-      if (isPlaying) {
-        volumeFactor = Math.min(1, volumeFactor + dt * 4);
-      } else {
-        volumeFactor = Math.max(0, volumeFactor - dt * 2);
-      }
-
       const width = canvas.width;
       const height = canvas.height;
 
       ctx.clearRect(0, 0, width, height);
 
-      const bufferLength = analyserRef.current ? analyserRef.current.frequencyBinCount : 64;
-      let hasRealData = false;
-
-      if (isPlaying && analyserRef.current) {
-        analyserRef.current.getByteFrequencyData(dataArray);
-        // Check if data has real non-zero values
-        for (let i = 0; i < 8; i++) {
-          if (dataArray[i] > 0) {
-            hasRealData = true;
-            break;
-          }
+      // Render static cyberpunk background bars if paused
+      if (!isPlaying || !analyserRef.current) {
+        ctx.fillStyle = 'rgba(0, 255, 255, 0.15)';
+        const barWidth = 4;
+        const barGap = 3;
+        const totalBars = Math.floor(width / (barWidth + barGap));
+        for (let i = 0; i < totalBars; i++) {
+          const barHeight = 8 + Math.sin(i * 0.15) * 6;
+          const x = i * (barWidth + barGap);
+          const y = height - barHeight;
+          ctx.fillRect(x, y, barWidth, barHeight);
         }
+        animationRef.current = requestAnimationFrame(drawWaveform);
+        return;
       }
 
-      // Simulated beat if offline / CORS blocks / loading
-      if (!hasRealData) {
-        const beatPeriod = 60000 / 80; // 80 BPM lofi pulse
-        const timeInBeat = (Date.now() % beatPeriod) / beatPeriod;
-        const simulatedPulse = Math.pow(Math.max(0, 1 - timeInBeat * 3.5), 2.5);
+      const bufferLength = analyserRef.current.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyserRef.current.getByteFrequencyData(dataArray);
 
-        for (let i = 0; i < 64; i++) {
-          const freqFactor = 1 - i / 64;
-          const wave = Math.sin(i * 0.2 + Date.now() * 0.005) * 20 + 20;
-          const pulse = simulatedPulse * 150 * freqFactor;
-          dataArray[i] = (wave + pulse) * volumeFactor;
-        }
-      } else {
-        // Apply volumeFactor transition to real data to fade in/out smoothly
-        for (let i = 0; i < bufferLength; i++) {
-          dataArray[i] = dataArray[i] * volumeFactor;
-        }
+      const barWidth = (width / bufferLength) * 1.5;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const val = dataArray[i];
+        // Scale frequency value to canvas height
+        const percent = val / 255;
+        const barHeight = Math.max(4, percent * height * 0.85);
+
+        // Cyberpunk green-cyan gradient colors
+        const greenShade = Math.floor(200 + percent * 55);
+        const blueShade = Math.floor(100 + percent * 155);
+        ctx.fillStyle = `rgb(0, ${greenShade}, ${blueShade})`;
+
+        // Glow effect
+        ctx.shadowColor = `rgba(0, ${greenShade}, ${blueShade}, 0.5)`;
+        ctx.shadowBlur = isPlaying ? 4 : 0;
+
+        const y = height - barHeight;
+        ctx.fillRect(x, y, barWidth - 2, barHeight);
+
+        x += barWidth;
       }
 
-      // Draw horizontal spectrum bars
-      const barCount = 24;
-      const barWidth = 8;
-      const barGap = 5;
-      const maxBarHeight = height - 12;
-      const totalWidth = barCount * barWidth + (barCount - 1) * barGap;
-      const startX = (width - totalWidth) / 2;
-
-      for (let i = 0; i < barCount; i++) {
-        const dataIdx = Math.floor((i / barCount) * 45); // Focus on low-to-mid range frequencies
-        const val = dataArray[dataIdx] || 0;
-        const barHeight = (val / 255) * maxBarHeight;
-
-        const x = startX + i * (barWidth + barGap);
-
-        // 1. Draw background slot/grid bar
-        ctx.fillStyle = 'rgba(0, 255, 0, 0.06)';
-        ctx.fillRect(x, 6, barWidth, maxBarHeight);
-
-        // 2. Draw active glowing vertical bar
-        if (barHeight > 0) {
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = 'rgba(0, 255, 0, 0.5)';
-          ctx.fillStyle = '#00ff00';
-          ctx.fillRect(x, height - barHeight - 6, barWidth, barHeight);
-          ctx.shadowBlur = 0;
-        }
-      }
+      // Reset shadows
+      ctx.shadowBlur = 0;
 
       animationRef.current = requestAnimationFrame(drawWaveform);
     };
@@ -330,13 +317,15 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
   };
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  
+  const currentSong = songs[activeSongIdx] || { name: 'NO_TRACK_LOADED', artist: 'UNKNOWN' };
 
   return (
     <div className="term-body music-player-body">
       <div className="music-main">
         <div className="music-info">
-          <p className="song-title">{songs[activeSongIdx].name}</p>
-          <p className="song-artist">{songs[activeSongIdx].artist}</p>
+          <p className="song-title">{currentSong.name}</p>
+          <p className="song-artist">{currentSong.artist}</p>
           <div className="music-progress">
             <div className="progress-bar" onClick={handleProgressClick} style={{ cursor: 'pointer' }}>
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -353,6 +342,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       </div>
       <div className="music-controls">
         <button className="m-btn" onClick={() => {
+          if (songs.length === 0) return;
           setActiveSongIdx((prev) => (prev > 0 ? prev - 1 : songs.length - 1));
           setIsPlaying(true);
         }}>{'<<'}</button>
@@ -360,6 +350,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
           {isPlaying ? t('music.pause') : t('music.play')}
         </button>
         <button className="m-btn" onClick={() => {
+          if (songs.length === 0) return;
           setActiveSongIdx((prev) => (prev < songs.length - 1 ? prev + 1 : 0));
           setIsPlaying(true);
         }}>{'>>'}</button>

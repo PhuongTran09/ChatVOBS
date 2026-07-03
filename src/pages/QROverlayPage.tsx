@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../styles/QROverlayPage.css';
+import { subscribeToActiveDonates } from '../services';
 
 interface DonateMethod {
   id: string;
@@ -7,24 +8,11 @@ interface DonateMethod {
   url: string;
   color: string;
   qrImage?: string;
+  description?: string;
 }
 
-const donateMethods: DonateMethod[] = [
-  {
-    id: 'zypage',
-    name: 'ZYPAGE',
-    url: 'https://zypage.com/yatokenji',
-    color: '#00f0ff', // cyan
-  },
-  {
-    id: 'playerduo',
-    name: 'PLAYERDUO',
-    url: 'https://playerduo.net/yatokenji',
-    color: '#ff0055', // magenta
-  }
-];
-
 export function QROverlayPage() {
+  const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [methodParam, setMethodParam] = useState<string | null>(null);
   const [intervalParam, setIntervalParam] = useState<number>(40); // Default 40s as requested
@@ -32,19 +20,9 @@ export function QROverlayPage() {
 
   useEffect(() => {
     document.body.classList.add('overlay-mode');
-
+    
     const params = new URLSearchParams(window.location.search);
-    const method = params.get('method')?.toLowerCase();
     const cycleTime = params.get('interval');
-
-    if (method && donateMethods.some(m => m.id === method)) {
-      setMethodParam(method);
-      const idx = donateMethods.findIndex(m => m.id === method);
-      setActiveIdx(idx);
-    } else {
-      setMethodParam('all');
-    }
-
     if (cycleTime) {
       const parsed = parseInt(cycleTime, 10);
       if (!isNaN(parsed) && parsed > 0) {
@@ -57,8 +35,32 @@ export function QROverlayPage() {
     };
   }, []);
 
+  // Fetch active donate methods from Firebase
   useEffect(() => {
-    if (methodParam !== 'all') return;
+    const unsubscribe = subscribeToActiveDonates(
+      (list) => {
+        setDonateMethods(list);
+        
+        const params = new URLSearchParams(window.location.search);
+        const method = params.get('method')?.toLowerCase();
+        
+        if (method && list.some(m => m.id === method)) {
+          setMethodParam(method);
+          const idx = list.findIndex(m => m.id === method);
+          setActiveIdx(idx);
+        } else {
+          setMethodParam('all');
+        }
+      },
+      (error) => {
+        console.error('Failed to load active donates:', error);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (methodParam !== 'all' || donateMethods.length === 0) return;
 
     const interval = setInterval(() => {
       // Trigger slide out animation
@@ -72,9 +74,13 @@ export function QROverlayPage() {
     }, intervalParam * 1000);
 
     return () => clearInterval(interval);
-  }, [methodParam, intervalParam]);
+  }, [methodParam, intervalParam, donateMethods]);
 
   const activeDonate = donateMethods[activeIdx];
+
+  if (!activeDonate) {
+    return null;
+  }
 
   return (
     <div className="qr-overlay-wrapper">

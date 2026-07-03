@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import '../styles/HomePage.css'
+import { subscribeToActiveDonates, subscribeToMedia, type MediaDoc } from '../services'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { FeatureCards } from '../components/FeatureCards'
@@ -7,6 +8,7 @@ import { SystemOverlays } from '../components/SystemOverlays'
 import { DonateSection } from '../components/DonateSection'
 import { PhotoGallery } from '../components/PhotoGallery'
 import { SocialSchedule } from '../components/SocialSchedule'
+import { SocialNews } from '../components/SocialNews'
 import { ImageModal } from '../components/ImageModal'
 import { FloatingButtons } from '../components/FloatingButtons'
 import { TerminalsBand } from '../components/TerminalsBand'
@@ -60,25 +62,24 @@ export function StreamerProfilePage({
     return () => { document.body.style.overflow = 'unset'; };
   }, [terminals]);
 
-  const donateMethods = [
-    {
-      id: 'zypage',
-      name: 'ZYPAGE',
-      url: 'https://zypage.com/yatokenji',
-      color: 'var(--cyan)',
-      btnClass: 'primary-cyan'
-    },
-    {
-      id: 'playerduo',
-      name: 'PLAYERDUO',
-      url: 'https://playerduo.net/yatokenji',
-      color: 'var(--magenta)',
-      btnClass: 'outline-magenta'
-    }
-  ]
+  const [donateMethods, setDonateMethods] = useState<any[]>([])
   const [activeDonateIdx, setActiveDonateIdx] = useState(0)
 
+  useEffect(() => {
+    const unsubscribe = subscribeToActiveDonates(
+      (list) => {
+        setDonateMethods(list)
+        setActiveDonateIdx(0)
+      },
+      (err) => {
+        console.error('Failed to load active donates:', err)
+      }
+    )
+    return () => unsubscribe()
+  }, [])
+
   const nextDonate = () => {
+    if (donateMethods.length === 0) return
     setActiveDonateIdx((prev) => (prev + 1) % donateMethods.length)
   }
 
@@ -101,12 +102,29 @@ export function StreamerProfilePage({
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const galleryItems = [
-    { id: 1, src: "https://picsum.photos/id/1/1200/900", thumb: "https://picsum.photos/id/1/400/300", name: "CHAT_THEME_01.PNG", date: "10.05.2026" },
-    { id: 2, src: "https://picsum.photos/id/2/1200/900", thumb: "https://picsum.photos/id/2/400/300", name: "NEON_PREVIEW.PNG", date: "09.05.2026" },
-    { id: 3, src: "https://picsum.photos/id/3/1200/900", thumb: "https://picsum.photos/id/3/400/300", name: "GLASS_EFFECT.PNG", date: "08.05.2026" },
-    { id: 4, src: "https://picsum.photos/id/4/1200/900", thumb: "https://picsum.photos/id/4/400/300", name: "SETUP_OBS.PNG", date: "07.05.2026" },
-  ]
+  const [mediaItems, setMediaItems] = useState<MediaDoc[]>([])
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMedia(
+      (list) => {
+        setMediaItems(list)
+      },
+      (err) => {
+        console.error('Failed to load media:', err)
+      }
+    );
+    return () => unsubscribe();
+  }, [])
+
+  const galleryItems = useMemo(() => {
+    return mediaItems.map(item => ({
+      id: item.id,
+      src: item.url,
+      thumb: item.url,
+      name: item.name,
+      date: item.uploadedDate
+    }));
+  }, [mediaItems]);
 
   return (
     <main className={`cyber-home mode-${profileMode}`}>
@@ -153,6 +171,8 @@ export function StreamerProfilePage({
               <span className="badge badge-primary">SOCIAL HUB</span>
             </div>
             <SocialSchedule />
+            
+            <SocialNews />
             
             <PhotoGallery
               galleryItems={galleryItems}

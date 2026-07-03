@@ -6,8 +6,9 @@ interface DonateMethod {
   name: string;
   url: string;
   color: string;
-  btnClass: string;
+  btnClass?: string;
   qrImage?: string;
+  description?: string;
 }
 
 interface DonateSectionProps {
@@ -20,6 +21,8 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
   const { t } = useI18n();
   const activeDonate = donateMethods[activeDonateIdx];
 
+  if (!activeDonate) return null;
+
   return (
     <section className="cyber-section donate-section" id="donate">
       <div className="section-head">
@@ -27,7 +30,14 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
       </div>
       
       <div className="donate-container">
-        <div className={`donate-carousel glass-card method-${activeDonate.id}`}>
+        <div 
+          className={`donate-carousel glass-card method-${activeDonate.id}`}
+          style={{
+            '--carousel-accent': activeDonate.color,
+            '--carousel-border': `${activeDonate.color}4D`, // 30% transparency
+            '--carousel-bg-hover': `${activeDonate.color}1A`, // 10% transparency
+          } as React.CSSProperties}
+        >
           <div 
             className="donate-track" 
             style={{ transform: `translateX(-${activeDonateIdx * 100}%)` }}
@@ -44,10 +54,31 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
                     </div>
                   </div>
                   
-                  <p className="sys-text">{t('donate.description', { method: method.name })}</p>
+                  <p className="sys-text">{method.description || t('donate.description', { method: method.name })}</p>
                   
                   <div className="donate-actions">
-                    <a href={method.url} target="_blank" rel="noopener noreferrer" className={`cyber-btn ${method.btnClass}`}>
+                    <a 
+                      href={method.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="cyber-btn"
+                      style={{
+                        background: 'transparent',
+                        color: method.color,
+                        border: `1px solid ${method.color}`,
+                        boxShadow: `0 0 10px ${method.color}33`,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = method.color;
+                        e.currentTarget.style.color = '#000';
+                        e.currentTarget.style.boxShadow = `0 0 20px ${method.color}`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = method.color;
+                        e.currentTarget.style.boxShadow = `0 0 10px ${method.color}33`;
+                      }}
+                    >
                       {t('donate.action', { method: method.name })}
                     </a>
                   </div>
@@ -56,8 +87,9 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
                 <div className="donate-qr-wrapper">
                   <div className="qr-container">
                     <div className="qr-frame">
+                      <div className="scan-line-anim" />
                       <img 
-                        src={method.qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${method.url}`} 
+                        src={method.qrImage || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(method.url)}`} 
                         alt={`QR ${method.name}`} 
                       />
                     </div>
@@ -79,3 +111,4 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
     </section>
   );
 }
+

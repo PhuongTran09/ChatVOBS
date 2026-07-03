@@ -2,7 +2,7 @@ import './PhotoGallery.css';
 import { useI18n } from '../i18n';
 
 interface GalleryItem {
-  id: number;
+  id: string | number;
   src: string;
   thumb: string;
   name: string;
