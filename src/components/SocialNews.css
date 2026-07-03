@@ -277,6 +277,20 @@
   color: var(--text-dim);
   line-height: 1.5;
   text-transform: none; /* Keep natural case for readable paragraph */
+  white-space: pre-wrap;
+  word-break: break-word;
+  
+  /* Truncate to 3 lines with ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 4.5em; /* 3 lines * 1.5 line-height */
+}
+.news-content a {
+  color: var(--cyan);
+  text-decoration: underline;
 }
 
 /* Card Actions */
@@ -441,6 +455,7 @@
   box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
   width: 90%;
   max-width: 600px;
+  max-height: 85vh;
   padding: 35px 25px 25px 25px;
   display: flex;
   flex-direction: column;
@@ -580,8 +595,9 @@
   padding: 20px;
   font-family: var(--font-mono);
   font-size: 0.85rem;
-  max-height: 250px;
   overflow-y: auto;
+  flex: 1;
+  min-height: 150px;
   box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
 }
 
@@ -617,6 +633,23 @@
   font-size: 0.85rem;
   text-transform: none; /* Keep capitalization normal for paragraphs */
   letter-spacing: 0.5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.modal-description a {
+  color: var(--cyan);
+  text-decoration: underline;
+}
+.modal-description p {
+  margin: 10px 0;
+}
+.modal-description ul,
+.modal-description ol {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+.modal-description li {
+  margin: 5px 0;
 }
 
 /* Modal Footer controls */

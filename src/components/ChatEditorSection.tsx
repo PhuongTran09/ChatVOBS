@@ -10,7 +10,7 @@ export function ChatEditorSection({ onOpenChat }: ChatEditorSectionProps) {
   const { t } = useI18n();
   const [messages, setMessages] = useState([
     { id: 1, user: 'DevStreamer', text: 'Chào mừng các bạn đến với luồng stream!', role: 'owner' },
-    { id: 2, user: 'CyberFan', text: 'Chat overlay nhìn ngầu quá anh ơi 😎', role: 'viewer' },
+    { id: 2, user: 'CyberFan', text: 'Chat overlay nhìn ngầu quá anh ơi', role: 'viewer' },
     { id: 3, user: 'CodeLive', text: 'CSS này có nặng không ạ?', role: 'viewer' },
   ]);
 
@@ -32,7 +32,7 @@ export function ChatEditorSection({ onOpenChat }: ChatEditorSectionProps) {
         counter = 0; // Loop the demo
         setMessages([
           { id: Date.now(), user: 'CyberFan', text: 'Ủa nó tự lặp lại kìa haha', role: 'viewer' },
-          { id: Date.now() + 1, user: 'System', text: 'Đang chạy demo animation đó 🚀', role: 'mod' },
+          { id: Date.now() + 1, user: 'System', text: 'Đang chạy demo animation đó', role: 'mod' },
           { id: Date.now() + 2, user: 'NeonRider', text: 'Tuyệt vời, để mình thử cài luôn.', role: 'viewer' },
         ]);
       }
