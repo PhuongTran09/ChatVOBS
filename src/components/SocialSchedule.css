@@ -34,8 +34,8 @@
 }
 
 .community-icon {
-  color: var(--magenta);
-  filter: drop-shadow(0 0 5px var(--magenta));
+  color: var(--cyan);
+  filter: drop-shadow(0 0 5px var(--cyan));
 }
 
 .current-day-tag {
@@ -74,15 +74,28 @@
 }
 
 .nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--cyan-dim);
   border: 1px solid var(--cyan-dim);
   color: #fff;
   padding: 4px 10px;
+  min-height: 26px;
   font-size: 0.75rem;
   font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 0 10px var(--cyan-dim);
+}
+
+.nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
 }
 
 .today-btn {
@@ -149,10 +162,13 @@
 }
 
 .discord-panel {
-  border: 1px solid var(--magenta);
+  border: 1px solid var(--cyan-dim);
   background: linear-gradient(135deg, #000, #111);
   transition: all 0.3s;
-  box-shadow: 0 0 25px var(--magenta-dim);
+}
+
+.discord-panel .panel-head {
+  color: var(--cyan);
 }
 
 .discord-content {
@@ -168,19 +184,19 @@
 .discord-logo-wrap {
   width: 70px;
   height: 70px;
-  background: #5865F2;
+  background: transparent;
   border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 50px rgba(88, 101, 242, 0.6);
+  border: 2px solid var(--cyan);
   margin-bottom: 5px;
   transition: transform 0.3s;
 }
 
 .discord-icon {
   width: 45px;
-  fill: #fff;
+  fill: var(--cyan);
 }
 
 .discord-panel h3 {
@@ -265,3 +281,60 @@
     padding: 8px 12px;
   }
 }
+
+/* Schedule Firebase Loading & Highlight styles */
+.schedule-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  gap: 15px;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+}
+
+.loading-scanner {
+  width: 80%;
+  height: 2px;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  position: relative;
+  overflow: hidden;
+  animation: scan 1.5s infinite ease-in-out;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+}
+
+.sched-row.event-highlight {
+  border-left: 3px solid var(--cyan);
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.task-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: none;
+  font-family: var(--font-mono);
+  opacity: 0.85;
+}
+
+

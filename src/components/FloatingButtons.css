@@ -29,7 +29,6 @@
 .scroll-top-btn:hover {
   background: var(--cyan);
   color: #000;
-  box-shadow: 0 0 20px var(--cyan);
   transform: scale(1.1);
 }
 
@@ -96,7 +95,6 @@
 .restore-terminals-btn:hover {
   background: var(--green);
   color: #000;
-  box-shadow: 0 0 20px var(--green);
 }
 
 .restore-terminals-btn:active .btn-inner {

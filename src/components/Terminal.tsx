@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import type { ReactNode, MouseEvent } from 'react';
+import type { ReactNode, MouseEvent, TouchEvent } from 'react';
 import type { TerminalId, TerminalState } from '../types/terminal';
 import './Terminals.css';
 
@@ -10,7 +10,8 @@ interface TerminalProps {
   isActive: boolean;
   isDragging: boolean;
   onMouseDown: (e: MouseEvent) => void;
-  onHeaderMouseDown: (e: any) => void; // Using any for combined Mouse/Touch events
+  onHeaderMouseDown: (e: MouseEvent) => void;
+  onHeaderTouchStart: (e: TouchEvent) => void;
   onHeaderDoubleClick?: () => void;
   onMinimize: () => void;
   onMaximize: () => void;
@@ -27,6 +28,7 @@ export function Terminal({
   isDragging,
   onMouseDown,
   onHeaderMouseDown,
+  onHeaderTouchStart,
   onHeaderDoubleClick,
   onMinimize,
   onMaximize,
@@ -36,27 +38,28 @@ export function Terminal({
 }: TerminalProps) {
   if (!terminalState.isOpen) return null;
 
-  // Handler for touch start
-  const handleTouchStart = (e: React.TouchEvent) => {
-    // Prevent scrolling when dragging
-    const touch = e.touches[0];
-    const syntheticEvent = {
-      target: e.target,
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      closest: (selector: string) => (e.target as HTMLElement).closest(selector)
-    };
-    onHeaderMouseDown(syntheticEvent);
-  };
+  const { isDetached, isMinimized, isMaximized, pos, zIndex } = terminalState;
+
+  const className = [
+    'cyber-terminal',
+    isDetached ? 'detached' : 'docked',
+    isMinimized ? 'minimized' : '',
+    isMaximized ? 'maximized' : '',
+    isDragging ? 'dragging' : '',
+    isActive ? 'active' : '',
+  ].filter(Boolean).join(' ');
+
+  // Detached: position fixed via inline transform from top-left (0,0)
+  // Docked: position static inside .term-slot, no transform
+  const style = isDetached
+    ? { transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`, zIndex }
+    : { zIndex };
 
   const content = (
-    <div 
+    <div
       id={id}
-      className={`cyber-terminal ${terminalState.isMinimized ? 'minimized' : ''} ${terminalState.isMaximized ? 'maximized' : ''} ${isDragging ? 'dragging' : ''} ${isActive ? 'active' : ''}`}
-      style={{ 
-        transform: `translate(${terminalState.pos.x}px, ${terminalState.pos.y}px)`,
-        zIndex: terminalState.zIndex
-      }}
+      className={className}
+      style={style}
       onMouseDown={onMouseDown}
     >
       {/* 3D DECORATIVE LAYERS */}
@@ -64,11 +67,11 @@ export function Terminal({
       <div className="terminal-scanline" />
       <div className="terminal-corner-top-left" />
       <div className="terminal-corner-bottom-right" />
-      
-      <div 
-        className={`term-head ${headClass}`} 
+
+      <div
+        className={`term-head ${headClass}`}
         onMouseDown={onHeaderMouseDown}
-        onTouchStart={handleTouchStart}
+        onTouchStart={onHeaderTouchStart}
         onDoubleClick={onHeaderDoubleClick}
       >
         <div className="head-label">
@@ -87,9 +90,11 @@ export function Terminal({
     </div>
   );
 
-  if (terminalState.isMaximized) {
+  // Detached or maximized → portal into body so it's truly fixed on screen
+  if (isDetached || isMaximized) {
     return createPortal(content, document.body);
   }
 
+  // Docked → render inline inside .term-slot
   return content;
 }

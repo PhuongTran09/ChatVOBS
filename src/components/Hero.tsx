@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Metric } from './Metric';
 import './Hero.css';
 import { useI18n } from '../i18n';
-import { getChannelStats, getLatestNotification, formatCompactNumber, type YouTubeStats, type YouTubeNotification } from '../services/youtubeService';
+import { getChannelStats, getLatestNotifications, formatCompactNumber, type YouTubeStats, type YouTubeNotification } from '../services/youtubeService';
 
 interface HeroProps {
   profileMode: 'streamer' | 'developer';
@@ -12,15 +12,15 @@ interface HeroProps {
 export function Hero({ profileMode }: HeroProps) {
   const { t } = useI18n();
   const [stats, setStats] = useState<YouTubeStats | null>(null);
-  const [notification, setNotification] = useState<YouTubeNotification | null>(null);
+  const [notifications, setNotifications] = useState<YouTubeNotification[]>([]);
 
   useEffect(() => {
     async function loadStats() {
       const data = await getChannelStats('@YatoKenji');
       if (data) {
         setStats(data);
-        const notif = await getLatestNotification(data.id);
-        if (notif) setNotification(notif);
+        const notifs = await getLatestNotifications(data.id, 5);
+        setNotifications(notifs);
       }
     }
     loadStats();
@@ -43,6 +43,9 @@ export function Hero({ profileMode }: HeroProps) {
 
         <div className="platform-tags">
           <a href="https://youtube.com/@YatoKenji" target="_blank" rel="noopener noreferrer" className="channel-profile-tag" title="Visit YouTube Channel">
+            <div className="click-indicator">
+              <span>CLICK</span>
+            </div>
             <img src={stats?.thumbnailUrl || "/icon.png"} alt="Channel Avatar" className="channel-avatar" />
             <div className="channel-info-hero">
               <span className="channel-name-hero">{stats?.title ? stats.title.toUpperCase() : 'YATO KENJI'}</span>
@@ -58,7 +61,7 @@ export function Hero({ profileMode }: HeroProps) {
         <div className="cyber-metrics" aria-label="Channel metrics">
           <Metric label={t('metrics.subscribers.label')} value={stats ? formatCompactNumber(stats.subscriberCount) : t('metrics.subscribers.value')} />
           <Metric label="TOTAL VIEWS" value={stats ? formatCompactNumber(stats.viewCount) : '...'} />
-          <Metric label={t('metrics.uptime.label')} value={t('metrics.uptime.value')} />
+          <Metric label={t('metrics.videos.label')} value={stats ? formatCompactNumber(stats.videoCount) : t('metrics.videos.value')} />
         </div>
       </div>
 
@@ -76,33 +79,45 @@ export function Hero({ profileMode }: HeroProps) {
           <strong>{t('panel.live')}</strong>
         </div>
         <div className="panel-body">
-          {notification ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                {notification.thumbnailUrl && (
-                  <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer">
-                    <img src={notification.thumbnailUrl} alt="Thumbnail" style={{ width: '90px', height: '50px', objectFit: 'cover', borderRadius: '2px', border: '1px solid var(--magenta)' }} />
-                  </a>
-                )}
-                <div style={{ flex: 1 }}>
-                  <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer" className="highlight-text" style={{ fontSize: '0.85rem', lineHeight: '1.3', textDecoration: 'none', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0 }}>
-                    {notification.title}
-                  </a>
-                  {notification.description && (
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '4px', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: '1.2' }}>
-                      {notification.description}
-                    </p>
+          {notifications && notifications.length > 0 ? (
+            <div className="notifications-list">
+              {notifications.map((notification, index) => {
+                const isLatest = index === 0;
+                return (
+                  <div key={notification.videoId} className={`notification-item ${isLatest ? 'latest' : ''}`}>
+                    <div className="notification-main">
+                      {notification.thumbnailUrl && (
+                        <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer" className="notification-thumb-link">
+                          <img src={notification.thumbnailUrl} alt="Thumbnail" className="notification-thumb" />
+                        </a>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <a href={`https://youtube.com/watch?v=${notification.videoId}`} target="_blank" rel="noopener noreferrer" className="highlight-text notification-title">
+                          {notification.title}
+                        </a>
+                        {notification.description && (
+                          <p className="notification-desc">
+                            {notification.description}
+                          </p>
+                        )}
+                        {notification.publishedAt && (
+                          <span className="notification-date">
+                            {new Date(notification.publishedAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  {notification.tags && notification.tags.length > 0 && (
+                    <div className="tech-tags" style={{ marginTop: '2px' }}>
+                      {notification.tags.slice(0, 3).map((tag, i) => (
+                        <span key={i}>#{tag.replace(/\s+/g, '')}</span>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </div>
-              {notification.tags && notification.tags.length > 0 && (
-                <div className="tech-tags" style={{ marginTop: '5px' }}>
-                  {notification.tags.slice(0, 4).map((tag, i) => (
-                    <span key={i}>#{tag.replace(/\s+/g, '')}</span>
-                  ))}
-                </div>
-              )}
-            </div>
+              );
+            })}
+          </div>
           ) : (
             <>
               <p className="highlight-text" style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>

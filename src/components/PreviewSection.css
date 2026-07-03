@@ -61,24 +61,17 @@
 
 .status-dot.green {
   background-color: var(--neon-green);
-  box-shadow: 0 0 8px var(--neon-green);
 }
 
 .pulse-anim {
-  animation: pulseGreen 2s infinite;
+  animation: pulseGreen 2s infinite ease-in-out;
 }
 
 @keyframes pulseGreen {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+  0%, 100% {
+    opacity: 0.4;
   }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(0, 255, 0, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+  50% {
+    opacity: 1;
   }
 }
