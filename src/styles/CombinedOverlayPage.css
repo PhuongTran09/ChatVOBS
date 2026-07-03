@@ -1,0 +1,116 @@
+.combined-overlay-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Reset full-screen styling on individual wrappers when in combined mode */
+.combined-overlay-container .clock-overlay-wrapper,
+.combined-overlay-container .qr-overlay-wrapper,
+.combined-overlay-container .sub-overlay-wrapper,
+.combined-overlay-container .social-overlay-wrapper,
+.combined-overlay-container .transition-overlay-container {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Absolute placement for the clock overlay on the bottom-left (scaled to 72%) */
+.combined-overlay-container .clock-overlay-wrapper {
+  position: absolute !important;
+  left: 30px !important;
+  bottom: 30px !important;
+  width: 320px !important;
+  height: auto !important;
+  display: block !important;
+  transform: scale(0.72) !important;
+  transform-origin: bottom left !important;
+}
+
+/* Right sidebar container to stack items cleanly */
+.combined-right-sidebar {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  width: 300px;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.combined-overlay-container .qr-overlay-wrapper {
+  width: 174px !important; /* 290px * 0.6 */
+  height: 228px !important; /* ~380px * 0.6 */
+  display: block !important;
+  position: relative !important;
+}
+.combined-overlay-container .qr-overlay-wrapper .qr-overlay-card {
+  transform: scale(0.6) !important;
+  transform-origin: top right !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  width: 290px !important;
+}
+
+.combined-overlay-container .sub-overlay-wrapper {
+  width: 150px !important; /* 250px * 0.6 */
+  height: 60px !important;  /* 100px * 0.6 */
+  display: block !important;
+  position: relative !important;
+}
+.combined-overlay-container .sub-overlay-wrapper .sub-stats-card-container {
+  transform: scale(0.6) !important;
+  transform-origin: top right !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  width: 250px !important;
+}
+
+.combined-overlay-container .social-overlay-wrapper {
+  width: 137px !important; /* 190px * 0.72 */
+  height: 167px !important; /* ~232px * 0.72 */
+  display: block !important;
+  position: relative !important;
+}
+.combined-overlay-container .social-overlay-wrapper .holo-social-card {
+  transform: scale(0.72) !important;
+  transform-origin: top right !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  width: 190px !important;
+}
+
+/* Absolute placement for Transition overlay on the bottom-right (scaled to 72%) */
+.combined-overlay-container .transition-overlay-container {
+  position: absolute !important;
+  right: 30px !important;
+  bottom: 30px !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  transform: scale(0.72) !important;
+  transform-origin: bottom right !important;
+}
+
+/* Ensure interactive controls inside card containers can capture clicks */
+.combined-right-sidebar > div {
+  pointer-events: none;
+}
+.combined-right-sidebar > div > div {
+  pointer-events: auto;
+}
+.combined-overlay-container .transition-overlay-container > div {
+  pointer-events: auto;
+}
