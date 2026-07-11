@@ -2,14 +2,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  min-height: 420px;
+  height: 400px;
   position: relative;
   transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .cyber-split.single-docked {
   grid-template-columns: 1fr;
-  min-height: 400px;
+  height: 400px;
 }
 
 .cyber-split.no-docked {
@@ -29,13 +29,15 @@
 
 .term-slot {
   position: relative;
-  min-height: 400px;
+  min-height: 280px;
   transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .term-slot.is-collapsed {
   min-height: 0;
-  height: 0;
+  height: auto;
 }
 
 .standby-text {
@@ -49,5 +51,13 @@
   .cyber-split {
     grid-template-columns: 1fr;
     min-height: auto;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .term-slot {
+    height: 320px;
+    min-height: 320px;
   }
 }

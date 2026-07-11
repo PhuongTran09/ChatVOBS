@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Share+Tech+Mono&family=Chakra+Petch:wght@400;600;700&display=swap');
 @import './animations.css';
 
 :root {
@@ -16,7 +16,7 @@
   /* Text */
   --text-main: #e0e0e0;
   --text-dim: #8892b0;
-  --font-mono: 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
+  --font-mono: 'Space Mono', 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
   
   /* Grid Colors */
   --grid-base: rgba(0, 255, 255, 0.02);
@@ -24,7 +24,7 @@
 }
 
 html[lang="vi"] {
-  --font-mono: 'Chakra Petch', 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
+  --font-mono: 'Space Mono', 'Chakra Petch', 'Share Tech Mono', 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
 }
 
 * {
@@ -71,10 +71,11 @@ button {
   padding: 30px 20px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 25px;
 }
 
-.cyber-section {
+.cyber-section,
+.cyber-hero {
   position: relative;
   padding: 40px;
   background: linear-gradient(135deg, rgba(15, 20, 30, 0.8), rgba(5, 8, 12, 0.95));
@@ -82,6 +83,8 @@ button {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   border-radius: 0;
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .cyber-section:hover {
@@ -194,11 +197,14 @@ button {
   
   .cyber-section {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
   }
   
   .cyber-home {
-    gap: 15px;
     padding: 15px 10px;
+    gap: 10px;
   }
 
   .panel-body {
@@ -243,7 +249,6 @@ button {
   justify-content: center;
   align-items: center;
   min-height: 400px;
-  margin-top: 40px;
 }
 
 .coming-soon-container {

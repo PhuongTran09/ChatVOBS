@@ -1,17 +1,45 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import './SocialNews.css';
 import { useI18n } from '../i18n';
-import { subscribeToNews, type CombinedNewsArticle } from '../services';
+import { subscribeToNews, db, type CombinedNewsArticle } from '../services';
+
+interface CategoryItem {
+  id: string;
+  name: string;
+  description: string;
+}
 
 export function SocialNews() {
   const { t } = useI18n();
-  const [filter, setFilter] = useState<'all' | 'announcement' | 'milestone' | 'media'>('all');
+  const [filter, setFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNews, setSelectedNews] = useState<CombinedNewsArticle | null>(null);
   const [newsArticles, setNewsArticles] = useState<CombinedNewsArticle[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Subscribe to newsCategories
+  useEffect(() => {
+    const categoriesQuery = query(collection(db, 'newsCategories'));
+    const unsubscribe = onSnapshot(categoriesQuery, (snap) => {
+      const cats: CategoryItem[] = [];
+      snap.forEach((doc) => {
+        const data = doc.data();
+        cats.push({
+          id: doc.id,
+          name: data.name || '',
+          description: data.description || '',
+        });
+      });
+      setCategories(cats);
+    }, (error) => {
+      console.error('Error loading news categories:', error);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -78,7 +106,7 @@ export function SocialNews() {
   const getArticlePlatform = (article: CombinedNewsArticle): 'system' | 'youtube' | 'discord' | 'github' => {
     const icon = (article.icon || '').toLowerCase().trim();
     if (icon === 'youtube' || icon === 'discord' || icon === 'github' || icon === 'system') {
-      return icon as any;
+      return icon as 'system' | 'youtube' | 'discord' | 'github';
     }
     return 'system';
   };
@@ -107,7 +135,7 @@ export function SocialNews() {
     return `${origin}/feed/${type}/${newsId}/new`;
   };
 
-  const handleShare = async (e: React.MouseEvent, item: CombinedNewsArticle) => {
+  const handleShare = async (e: MouseEvent, item: CombinedNewsArticle) => {
     e.stopPropagation();
     const type = getArticleType(item);
     const shareUrl = getShareLink(item.id, type);
@@ -135,8 +163,7 @@ export function SocialNews() {
 
   const filteredNews = useMemo(() => {
     return newsArticles.filter((item) => {
-      const type = getArticleType(item);
-      const matchesFilter = filter === 'all' || type === filter;
+      const matchesFilter = filter === 'all' || item.categoryId === filter;
       const title = (item.title || '').toLowerCase();
       const content = (item.content || '').toLowerCase();
       const query = searchQuery.toLowerCase();
@@ -170,11 +197,27 @@ export function SocialNews() {
     )
   };
 
+  const getCategoryNameDisplay = (catName: string): string => {
+    const nameLower = catName.toLowerCase().trim();
+    let type = '';
+    if (nameLower === 'thông báo' || nameLower === 'announcement' || nameLower === 'announcements') {
+      type = 'announcement';
+    } else if (nameLower === 'cột mốc' || nameLower === 'milestone' || nameLower === 'milestones') {
+      type = 'milestone';
+    } else if (nameLower === 'media' || nameLower === 'phương tiện') {
+      type = 'media';
+    }
+    if (type) {
+      return t(`social.news.filter.${type}`);
+    }
+    return catName.toUpperCase();
+  };
+
   return (
     <div className="social-news-container" id="news">
       <div className="news-header">
         <div className="news-header-left">
-          <span className="badge badge-primary">{t('social.news.badge')}</span>
+          <span className="badge badge-secondary">{t('social.news.badge')}</span>
           <h2>{t('social.news.title')}</h2>
         </div>
         
@@ -187,7 +230,7 @@ export function SocialNews() {
           <input
             type="text"
             className="news-search-input"
-            placeholder={t('nav.brand') + '_SEARCH_LOG...'}
+            placeholder={t('news.search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -196,13 +239,19 @@ export function SocialNews() {
 
       {/* Filter Tabs */}
       <div className="news-filters">
-        {(['all', 'announcement', 'milestone', 'media'] as const).map((tab) => (
+        <button
+          className={`filter-tab ${filter === 'all' ? 'active' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          {t('social.news.filter.all')}
+        </button>
+        {categories.map((cat) => (
           <button
-            key={tab}
-            className={`filter-tab ${filter === tab ? 'active' : ''}`}
-            onClick={() => setFilter(tab)}
+            key={cat.id}
+            className={`filter-tab ${filter === cat.id ? 'active' : ''}`}
+            onClick={() => setFilter(cat.id)}
           >
-            {t(`social.news.filter.${tab}`)}
+            {getCategoryNameDisplay(cat.name)}
           </button>
         ))}
       </div>
@@ -269,7 +318,7 @@ export function SocialNews() {
           </div>
         ) : (
           <div className="empty-feed">
-            <span className="blink-text">&gt; NO_LOGS_FOUND_MATCHING_CRITERIA</span>
+            <span className="blink-text">&gt; NO_LOGS</span>
           </div>
         )}
       </div>

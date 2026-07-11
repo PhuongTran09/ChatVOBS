@@ -15,20 +15,101 @@
   position: absolute;
   top: 0;
   left: 50%;
+  transform: translateX(-50%) perspective(300px) rotateX(25deg);
+  transform-origin: top center;
+  width: 360px;
+  height: 100%;
+  /* Volumetric 3D light beam: narrow bright core + wide ambient flare */
+  background: 
+    radial-gradient(
+      ellipse at top,
+      rgba(0, 255, 255, 0.32) 0%,
+      rgba(0, 255, 255, 0.1) 35%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse at top,
+      rgba(0, 255, 255, 0.12) 0%,
+      rgba(0, 255, 255, 0.03) 60%,
+      transparent 90%
+    );
+  /* Clip it to a spotlight shape and blur the edges */
+  clip-path: polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 1;
+  animation: lightPulse 5s infinite alternate ease-in-out;
+}
+
+.cyber-footer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 2px;
-  background: var(--cyan);
-  box-shadow: 0 0 10px var(--cyan);
+  width: 110px;
+  height: 4px;
+  background: #00ffff;
+  box-shadow: 
+    0 0 12px #00ffff,
+    0 0 25px rgba(0, 255, 255, 0.8),
+    0 0 45px rgba(0, 255, 255, 0.4);
+  z-index: 2;
+  border-radius: 2px;
+  animation: lightPulse 5s infinite alternate ease-in-out;
 }
 
 .cyber-footer p {
   margin: 0;
   letter-spacing: 1px;
+  position: relative;
+  z-index: 3;
+  color: #ffffff; /* Bright white under the light */
+  text-shadow: 
+    0 0 8px rgba(0, 255, 255, 0.65),
+    0 0 15px rgba(0, 255, 255, 0.25);
 }
 
 .cyber-footer .author-name {
   font-weight: bold;
-  color: var(--magenta);
+  color: #0ff; /* Bright illuminated magenta */
   font-size: 0.85rem;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 255, 0.7),
+    0 0 15px rgba(0, 255, 255, 0.3);
 }
+
+@keyframes lightPulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.72;
+  }
+  /* Subtle rapid neon flickers */
+  23% {
+    opacity: 0.82;
+  }
+  24% {
+    opacity: 0.45;
+  }
+  26% {
+    opacity: 0.85;
+  }
+  78% {
+    opacity: 0.88;
+  }
+  79% {
+    opacity: 0.5;
+  }
+  81% {
+    opacity: 0.85;
+  }
+}
+
+@media (max-width: 768px) {
+  .cyber-footer::before {
+    width: 250px;
+  }
+}
+

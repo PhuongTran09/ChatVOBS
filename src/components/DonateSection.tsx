@@ -24,8 +24,8 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
   if (!activeDonate) return null;
 
   return (
-    <section className="cyber-section donate-section" id="donate">
-      <div className="section-head">
+    <>
+      <div className="section-header">
         <span className="badge badge-primary">{t('donate.support')}</span>
       </div>
       
@@ -108,7 +108,7 @@ export function DonateSection({ donateMethods, activeDonateIdx, nextDonate }: Do
           </button>
         </div>
       </div>
-    </section>
+    </>
   );
 }
 

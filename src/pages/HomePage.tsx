@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import '../styles/HomePage.css'
-import { subscribeToActiveDonates, subscribeToMedia, type MediaDoc } from '../services'
+import { subscribeToActiveDonates, subscribeToMedia, type MediaDoc, type DonateMethod } from '../services'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { FeatureCards } from '../components/FeatureCards'
@@ -15,6 +15,7 @@ import { TerminalsBand } from '../components/TerminalsBand'
 import { useTerminals } from '../hooks/useTerminals'
 import { ChatEditorSection } from '../components/ChatEditorSection'
 import { Footer } from '../components/Footer'
+import { useI18n } from '../i18n'
 
 export function StreamerProfilePage({
   onOpenChat,
@@ -22,6 +23,7 @@ export function StreamerProfilePage({
   onOpenFonts?: () => void
   onOpenChat?: () => void
 }) {
+  const { t } = useI18n()
   const [profileMode, setProfileMode] = useState<'streamer' | 'developer'>('streamer')
   const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -62,7 +64,7 @@ export function StreamerProfilePage({
     return () => { document.body.style.overflow = 'unset'; };
   }, [terminals]);
 
-  const [donateMethods, setDonateMethods] = useState<any[]>([])
+  const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([])
   const [activeDonateIdx, setActiveDonateIdx] = useState(0)
 
   useEffect(() => {
@@ -168,7 +170,7 @@ export function StreamerProfilePage({
 
           <section className="cyber-section" id="social-hub">
             <div style={{ textAlign: 'left', marginBottom: '25px' }}>
-              <span className="badge badge-primary">SOCIAL HUB</span>
+              <span className="badge badge-primary">{t('badge.social_hub')}</span>
             </div>
             <SocialSchedule />
             
@@ -179,12 +181,13 @@ export function StreamerProfilePage({
               setSelectedImage={setSelectedImage}
             />
           </section>
-
+          <section className="cyber-section" id="donate" style={{ position: 'relative', zIndex: 1 }}>
           <DonateSection
             donateMethods={donateMethods}
             activeDonateIdx={activeDonateIdx}
             nextDonate={nextDonate}
           />
+          </section>
         </>
       ) : (
         <section className="cyber-section coming-soon-section">

@@ -72,7 +72,7 @@ export function useTerminals() {
     bringToFront(id);
     setTerminals((prev) => {
       const terminal = prev[id];
-      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 900;
       if (terminal.isMaximized) {
         return {
           ...prev,
@@ -146,7 +146,7 @@ export function useTerminals() {
   const handleMouseDown = (id: TerminalId, e: React.MouseEvent) => {
     bringToFront(id);
     if ((e.target as HTMLElement).closest(".term-controls")) return;
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) return; // Disable dragging on mobile
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) return; // Disable dragging on mobile
 
     if (terminals[id].isMaximized) {
       const restoredPos = terminals[id].oldPos;
@@ -180,7 +180,7 @@ export function useTerminals() {
   const handleTouchDown = (id: TerminalId, e: React.TouchEvent) => {
     bringToFront(id);
     if ((e.target as HTMLElement).closest(".term-controls")) return;
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) return; // Disable dragging on mobile
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) return; // Disable dragging on mobile
 
     const touch = e.touches[0];
 
@@ -295,7 +295,7 @@ export function useTerminals() {
 
       setTerminals((prev) => {
         const next = { ...prev };
-        const isMobile = vw <= 768;
+        const isMobile = vw <= 900;
 
         next.music.defaultPos = { x: musicX, y: musicY };
         next.obs.defaultPos = { x: obsX, y: obsY };

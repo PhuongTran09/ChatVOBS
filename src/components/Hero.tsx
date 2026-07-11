@@ -30,7 +30,7 @@ export function Hero({ profileMode }: HeroProps) {
     <div className="hero-top-grid">
       <div className="hero-content">
         <div className="badge-wrapper">
-          <span className="cyber-badge">{t('hero.badge')} {t(`mode.${profileMode}` as any)}</span>
+          <span className="cyber-badge">{t('hero.badge')} {t(`mode.${profileMode}` as Parameters<typeof t>[0])}</span>
         </div>
         <h1 className="glitch-text" data-text={t('hero.title')}>
           {t('hero.title')}
@@ -60,7 +60,7 @@ export function Hero({ profileMode }: HeroProps) {
 
         <div className="cyber-metrics" aria-label="Channel metrics">
           <Metric label={t('metrics.subscribers.label')} value={stats ? formatCompactNumber(stats.subscriberCount) : t('metrics.subscribers.value')} />
-          <Metric label="TOTAL VIEWS" value={stats ? formatCompactNumber(stats.viewCount) : '...'} />
+          <Metric label={t('metrics.views.label')} value={stats ? formatCompactNumber(stats.viewCount) : '...'} />
           <Metric label={t('metrics.videos.label')} value={stats ? formatCompactNumber(stats.videoCount) : t('metrics.videos.value')} />
         </div>
       </div>
