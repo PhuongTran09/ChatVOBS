@@ -71,7 +71,7 @@ button {
   padding: 30px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 25px;
 }
 
 .cyber-section,
