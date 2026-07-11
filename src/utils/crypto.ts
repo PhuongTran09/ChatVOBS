@@ -81,7 +81,7 @@ export async function decryptText(encryptedBase64: string, secret: string): Prom
     );
     
     return new TextDecoder().decode(decrypted);
-  } catch (e) {
+  } catch {
     // Return original string if it is plain-text (fails decryption)
     return encryptedBase64;
   }

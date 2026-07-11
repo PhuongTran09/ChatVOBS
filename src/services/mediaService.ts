@@ -16,7 +16,7 @@ export interface MediaDoc {
  */
 export function subscribeToMedia(
   onUpdate: (mediaList: MediaDoc[]) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   const mediaQuery = query(collection(db, 'media'));
 

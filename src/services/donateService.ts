@@ -7,6 +7,7 @@ export interface DonateMethod {
   url: string;
   color: string;
   description?: string;
+  descriptionKey?: string;
   isActive: string;
   btnClass?: string;
 }
@@ -17,7 +18,7 @@ export interface DonateMethod {
  */
 export function subscribeToActiveDonates(
   onUpdate: (donates: DonateMethod[]) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   const donatesQuery = query(
     collection(db, 'donates'),
@@ -36,6 +37,7 @@ export function subscribeToActiveDonates(
           url: data.link_donate || '',
           color: data.color || '#6366f1',
           description: data.description || '',
+          descriptionKey: data.descriptionKey || '',
           isActive: data.isActive || '1',
           btnClass: 'custom-dynamic'
         });
@@ -65,6 +67,7 @@ export async function fetchActiveDonates(): Promise<DonateMethod[]> {
       url: data.link_donate || '',
       color: data.color || '#6366f1',
       description: data.description || '',
+      descriptionKey: data.descriptionKey || '',
       isActive: data.isActive || '1',
       btnClass: 'custom-dynamic'
     });

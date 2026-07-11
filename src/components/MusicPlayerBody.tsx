@@ -97,7 +97,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
   const initAudio = () => {
     if (audioCtxRef.current) return;
 
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return;
 
     const ctx = new AudioContextClass();
@@ -133,7 +133,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
     if (!audioRef.current) {
       audioRef.current = new Audio();
       audioRef.current.crossOrigin = "anonymous";
-      audioRef.current.volume = volume / 100;
+      audioRef.current.volume = globalVolume / 100;
       globalAudio = audioRef.current;
     }
 

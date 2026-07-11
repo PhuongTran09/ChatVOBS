@@ -1,4 +1,4 @@
-import { collection, query, where, onSnapshot, doc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, QuerySnapshot, QueryDocumentSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 import { decryptText } from '../utils/crypto';
 
@@ -50,7 +50,7 @@ export function getWeekNumberAndYear(d: Date): { week: number; year: number } {
  */
 export function subscribeToAllWeeks(
   onUpdate: (weeks: WeekDoc[]) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   const weeksQuery = query(collection(db, 'weeks'));
   
@@ -89,7 +89,7 @@ export function subscribeToAllWeeks(
 export function subscribeToEventsByWeekId(
   weekId: string,
   onUpdate: (events: ScheduleEvent[] | null) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   // Query 1: String-based weekId filter
   const eventsQuery = query(
@@ -99,14 +99,14 @@ export function subscribeToEventsByWeekId(
   
   const unsubscribes: (() => void)[] = [];
   
-  const processSnap = async (snap: any) => {
+  const processSnap = async (snap: QuerySnapshot) => {
     const fetchedTasks: ScheduleEvent[] = Array(7).fill(null).map(() => ({
       title: '',
       time: '',
       highlight: false
     }));
 
-    const tasksPromises = snap.docs.map(async (docSnap: any) => {
+    const tasksPromises = snap.docs.map(async (docSnap: QueryDocumentSnapshot) => {
       const data = docSnap.data();
       const dayName = (data.day || '').toLowerCase().trim();
       const dayIndex = dayMapping[dayName];
@@ -140,7 +140,7 @@ export function subscribeToEventsByWeekId(
     onUpdate(fetchedTasks);
   };
 
-  const handleSnapshot = async (eventsSnap: any) => {
+  const handleSnapshot = async (eventsSnap: QuerySnapshot) => {
     if (eventsSnap.empty) {
       // Query 2: Fallback to DocumentReference if string query yields no events
       const weekDocRef = doc(db, 'weeks', weekId);

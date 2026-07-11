@@ -18,7 +18,7 @@ export interface SongDoc {
  */
 export function subscribeToActiveSongs(
   onUpdate: (songs: SongDoc[]) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   const songsQuery = query(
     collection(db, 'songs'),

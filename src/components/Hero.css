@@ -59,12 +59,6 @@
   transition: all 0.3s;
 }
 
-.cyber-badge:hover {
-  box-shadow: 0 0 20px var(--green);
-  background: rgba(0, 255, 0, 0.1);
-  text-shadow: 0 0 5px #fff;
-}
-
 .glitch-text {
   font-size: 3.5rem;
   font-weight: 900;

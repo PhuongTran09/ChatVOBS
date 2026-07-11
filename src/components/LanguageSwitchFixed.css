@@ -6,11 +6,61 @@
   opacity: 0.8;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-switch-fixed.collapsed {
+  transform: translateX(calc(100% - 30px)); /* slide off-screen except for the toggle button */
 }
 
 .language-switch-fixed:hover {
   opacity: 1;
+}
+
+.language-switch-fixed.open:hover {
   transform: translateY(2px);
+}
+
+.language-switch-fixed.collapsed:hover {
+  transform: translateX(calc(100% - 30px)) translateY(2px);
+}
+
+.language-switch-fixed .switch-container {
+  transition: opacity 0.3s ease;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.language-switch-fixed.collapsed .switch-container {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-collapse-btn {
+  background: transparent;
+  border: none;
+  color: var(--green);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.toggle-collapse-btn:hover {
+  background: transparent;
+  color: #fff;
+  filter: drop-shadow(0 0 5px var(--green));
+}
+
+.toggle-collapse-btn .arrow-icon {
+  transition: transform 0.3s ease;
 }
 
 @media (max-width: 768px) {

@@ -35,7 +35,7 @@ export function TransitionOverlayPage() {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [showLike, setShowLike] = useState<boolean>(false);
 
-  const [prevSubs, setPrevSubs] = useState<number>(0);
+  const prevSubsRef = useRef<number>(0);
 
   useEffect(() => {
     document.body.classList.add('overlay-mode');
@@ -86,14 +86,21 @@ export function TransitionOverlayPage() {
     // Start initial sequence
     triggerFullSequence();
 
+    const clickSubTimer = clickSubTimerRef.current;
+    const clickBellTimer = clickBellTimerRef.current;
+    const stopBellTimer = stopBellTimerRef.current;
+    const animateTimer = animateTimerRef.current;
+    const showLikeTimer = showLikeTimerRef.current;
+    const clickLikeTimer = clickLikeTimerRef.current;
+
     return () => {
       document.body.classList.remove('overlay-mode');
-      if (clickSubTimerRef.current) clearTimeout(clickSubTimerRef.current);
-      if (clickBellTimerRef.current) clearTimeout(clickBellTimerRef.current);
-      if (stopBellTimerRef.current) clearTimeout(stopBellTimerRef.current);
-      if (animateTimerRef.current) clearTimeout(animateTimerRef.current);
-      if (showLikeTimerRef.current) clearTimeout(showLikeTimerRef.current);
-      if (clickLikeTimerRef.current) clearTimeout(clickLikeTimerRef.current);
+      if (clickSubTimer) clearTimeout(clickSubTimer);
+      if (clickBellTimer) clearTimeout(clickBellTimer);
+      if (stopBellTimer) clearTimeout(stopBellTimer);
+      if (animateTimer) clearTimeout(animateTimer);
+      if (showLikeTimer) clearTimeout(showLikeTimer);
+      if (clickLikeTimer) clearTimeout(clickLikeTimer);
     };
   }, []);
 
@@ -122,7 +129,7 @@ export function TransitionOverlayPage() {
     }, pollInterval * 1000);
 
     return () => clearInterval(intervalId);
-  }, [handle, pollInterval]);
+  }, [handle, pollInterval, customSubs, simulate]);
 
   // Determine active subscriber count
   const subscriberCount = simulate && simulatedSubs !== null
@@ -141,7 +148,7 @@ export function TransitionOverlayPage() {
 
     if (simulatedSubs === null) {
       setSimulatedSubs(baseSubs);
-      setPrevSubs(baseSubs);
+      prevSubsRef.current = baseSubs;
     }
 
     const timer = setInterval(() => {
@@ -155,12 +162,12 @@ export function TransitionOverlayPage() {
     return () => clearInterval(timer);
   }, [simulate, ytStats, customSubs, simulatedSubs]);
 
-  const clickSubTimerRef = useRef<any>(null);
-  const clickBellTimerRef = useRef<any>(null);
-  const stopBellTimerRef = useRef<any>(null);
-  const animateTimerRef = useRef<any>(null);
-  const showLikeTimerRef = useRef<any>(null);
-  const clickLikeTimerRef = useRef<any>(null);
+  const clickSubTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clickBellTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopBellTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const animateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showLikeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clickLikeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Run the animated timeline sequence
   const triggerFullSequence = () => {
@@ -212,11 +219,11 @@ export function TransitionOverlayPage() {
 
   // Watch subscriber count change to trigger a notification popup
   useEffect(() => {
-    if (subscriberCount > 0 && subscriberCount !== prevSubs) {
+    if (subscriberCount > 0 && subscriberCount !== prevSubsRef.current) {
       triggerFullSequence();
-      setPrevSubs(subscriberCount);
+      prevSubsRef.current = subscriberCount;
     }
-  }, [subscriberCount, prevSubs]);
+  }, [subscriberCount]);
 
   // Loop control
   useEffect(() => {

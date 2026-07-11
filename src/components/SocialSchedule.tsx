@@ -2,14 +2,24 @@ import { useState, useEffect, useMemo } from 'react';
 import './SocialSchedule.css';
 import { useI18n } from '../i18n';
 import { API_CONFIG } from '../config/api';
-import { subscribeToAllWeeks, subscribeToEventsByWeekId, getWeekNumberAndYear, type WeekDoc } from '../services';
+import { subscribeToAllWeeks, subscribeToEventsByWeekId, getWeekNumberAndYear, type WeekDoc, type ScheduleEvent } from '../services';
+
+interface DiscordWidgetData {
+  guild?: {
+    id: string;
+    icon?: string;
+    name?: string;
+    description?: string;
+  };
+  approximate_presence_count?: number;
+}
 
 export function SocialSchedule() {
   const { t } = useI18n();
   const [weeksList, setWeeksList] = useState<WeekDoc[]>([]);
   const [currentWeekIndex, setCurrentWeekIndex] = useState<number>(-1);
-  const [discordData, setDiscordData] = useState<any>(null);
-  const [weekTasks, setWeekTasks] = useState<any[]>([]);
+  const [discordData, setDiscordData] = useState<DiscordWidgetData | null>(null);
+  const [weekTasks, setWeekTasks] = useState<ScheduleEvent[]>([]);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
 
   useEffect(() => {
@@ -225,7 +235,7 @@ export function SocialSchedule() {
             <strong>{t('schedule.title')}</strong>
           </div>
           <div className="head-right current-day-tag">
-            <span className="tag-label">TODAY:</span>
+            <span className="tag-label">{t('schedule.today')}</span>
             <span className="tag-value">{todayStr}</span>
           </div>
         </div>
@@ -238,7 +248,7 @@ export function SocialSchedule() {
               </svg>
             </button>
             <button className="nav-btn today-btn" onClick={handleToday}>
-              {isCurrentWeekActive ? 'WEEK NOW' : (activeWeek ? `WEEK ${activeWeek.week}` : 'WEEK NOW')}
+              {isCurrentWeekActive ? t('schedule.week_now') : (activeWeek ? t('schedule.week_num', { num: activeWeek.week }) : t('schedule.week_now'))}
             </button>
             <button className="nav-btn" onClick={handleNextWeek} disabled={currentWeekIndex === -1 || currentWeekIndex >= weeksList.length - 1} aria-label="Next Week">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -255,7 +265,7 @@ export function SocialSchedule() {
           <div className="schedule-table-wrapper custom-scrollbar">
             {loadingSchedule ? (
               <div className="schedule-loading">
-                <span className="blink-text">&gt; LOADING_DATABASE_LOGS...</span>
+                <span className="blink-text">&gt; LOADING...</span>
                 <div className="loading-scanner" />
               </div>
             ) : (

@@ -41,7 +41,7 @@ export interface CombinedNewsArticle {
  */
 export function subscribeToNews(
   onUpdate: (articles: CombinedNewsArticle[]) => void,
-  onError: (err: any) => void
+  onError: (err: Error) => void
 ): () => void {
   let categories: NewsCategory[] = [];
   let articles: NewsArticle[] = [];

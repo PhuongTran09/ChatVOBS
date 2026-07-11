@@ -21,6 +21,19 @@ export interface YouTubeNotification {
   tags: string[];
 }
 
+interface YouTubePlaylistItem {
+  snippet: {
+    title?: string;
+    resourceId?: { videoId?: string };
+    publishedAt?: string;
+    description?: string;
+    thumbnails?: {
+      medium?: { url?: string };
+      default?: { url?: string };
+    };
+  };
+}
+
 const CACHE_KEYS = {
   STATS: 'youtube_stats_cache',
   NOTIFICATIONS: 'youtube_notifications_cache'
@@ -128,7 +141,7 @@ export async function getLatestNotifications(channelId: string, maxResults: numb
     const data = await response.json();
     
     if (data.items && data.items.length > 0) {
-      const list = data.items.map((item: any) => ({
+      const list = data.items.map((item: YouTubePlaylistItem) => ({
         title: item.snippet.title || '',
         videoId: item.snippet.resourceId?.videoId || '',
         publishedAt: item.snippet.publishedAt || '',
