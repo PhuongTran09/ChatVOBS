@@ -40,24 +40,7 @@ export function MiniMusicController() {
 
   const handlePlayPause = () => {
     const nextState = !isPlaying;
-    setIsPlaying(nextState);
-    
-    // Dispatch control event
     window.dispatchEvent(new CustomEvent(nextState ? 'music-control-play' : 'music-control-pause'));
-    
-    // Backup direct control
-    // @ts-ignore
-    const audio = window.globalAudio || (window as any).globalAudio;
-    if (audio) {
-      if (nextState) {
-        audio.play().catch(() => {});
-        // @ts-ignore
-        const ctx = window.globalAudioCtx;
-        if (ctx && ctx.state === 'suspended') ctx.resume();
-      } else {
-        audio.pause();
-      }
-    }
   };
 
   const handleNext = () => {
@@ -69,15 +52,7 @@ export function MiniMusicController() {
   };
 
   const handleVolumeChange = (v: number) => {
-    setVolume(v);
     window.dispatchEvent(new CustomEvent('music-control-set-volume', { detail: v }));
-    
-    // Backup direct control
-    // @ts-ignore
-    const audio = window.globalAudio || (window as any).globalAudio;
-    if (audio) {
-      audio.volume = v / 100;
-    }
   };
 
   // Pointer drag/swipe gesture detection

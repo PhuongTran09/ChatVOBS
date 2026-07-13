@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
 import './MusicPlayerBody.css';
 import { subscribeToActiveSongs, type SongDoc } from '../services';
 
-// Keep audio context and player persistent across unmount/remount (e.g. portal transition on maximize)
+// Persistent audio state across unmount/remount
 let globalAudio: HTMLAudioElement | null = null;
 let globalAudioCtx: AudioContext | null = null;
 let globalAnalyser: AnalyserNode | null = null;
@@ -13,276 +13,296 @@ let globalVolume = 80;
 let globalCurrentTime = 0;
 let globalDuration = 0;
 let globalSongList: SongDoc[] = [];
-let globalMountedInstances = 0;
+
+// Helper to map SongDoc to the Song format used in controllers
+const mapSongs = (list: SongDoc[]) => {
+  return list.map((item) => ({
+    name: item.title,
+    artist: item.artist,
+    time: item.duration,
+    url: item.url,
+  }));
+};
+
+let globalSongs = mapSongs(globalSongList);
+
+// Helper to broadcast state to all listening components
+const broadcastState = () => {
+  const currentSong = globalSongs[globalActiveSongIdx] || null;
+  const state = {
+    isPlaying: globalIsPlaying,
+    activeSongIdx: globalActiveSongIdx,
+    volume: globalVolume,
+    currentSong,
+    songs: globalSongs,
+    currentTime: globalCurrentTime,
+    duration: globalDuration
+  };
+  
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('music-state-changed', { detail: state }));
+  }
+};
+
+// Subscribe to Firebase songs at module level to keep song list always in sync
+if (typeof window !== 'undefined') {
+  subscribeToActiveSongs(
+    (data) => {
+      globalSongList = data;
+      globalSongs = mapSongs(data);
+      broadcastState();
+    },
+    (error) => {
+      console.error('Error loading songs globally:', error);
+    }
+  );
+}
+
+// Initialize Web Audio API analyser
+const initAnalyser = (audio: HTMLAudioElement) => {
+  if (globalAudioCtx) return;
+
+  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  try {
+    const ctx = new AudioContextClass();
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 128;
+
+    audio.crossOrigin = "anonymous";
+    const source = ctx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(ctx.destination);
+
+    globalAudioCtx = ctx;
+    globalAnalyser = analyser;
+    
+    // Set on window so other components can access it if needed
+    (window as any).globalAudioCtx = ctx;
+  } catch (e) {
+    console.warn("Audio Context initialization failed or source already connected:", e);
+  }
+};
+
+// Ensure audio element is created and event listeners are bound
+const ensureAudioInitialized = () => {
+  if (globalAudio) return globalAudio;
+
+  const audio = new Audio();
+  audio.crossOrigin = "anonymous";
+  audio.volume = globalVolume / 100;
+  globalAudio = audio;
+  (window as any).globalAudio = audio;
+
+  audio.addEventListener('timeupdate', () => {
+    globalCurrentTime = audio.currentTime;
+    broadcastState();
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    globalDuration = audio.duration;
+    broadcastState();
+  });
+
+  audio.addEventListener('ended', () => {
+    if (globalSongs.length === 0) return;
+    
+    globalActiveSongIdx = (globalActiveSongIdx + 1) % globalSongs.length;
+    globalIsPlaying = true;
+    
+    const nextSong = globalSongs[globalActiveSongIdx];
+    if (nextSong) {
+      audio.src = nextSong.url;
+      audio.load();
+      audio.play().catch((err) => {
+        console.warn("Playback failed on ended:", err);
+        globalIsPlaying = false;
+        broadcastState();
+      });
+    }
+    broadcastState();
+  });
+
+  return audio;
+};
+
+// Bind global control events
+if (typeof window !== 'undefined') {
+  window.addEventListener('music-control-play', () => {
+    const audio = ensureAudioInitialized();
+    globalIsPlaying = true;
+    
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume();
+    }
+    
+    const currentSong = globalSongs[globalActiveSongIdx];
+    if (currentSong) {
+      const targetUrl = new URL(currentSong.url, window.location.href).href;
+      if (audio.src !== targetUrl) {
+        audio.src = currentSong.url;
+        audio.load();
+      }
+    }
+    
+    audio.play().catch((err) => {
+      console.warn("Global play failed:", err);
+    });
+    
+    broadcastState();
+  });
+
+  window.addEventListener('music-control-pause', () => {
+    const audio = ensureAudioInitialized();
+    globalIsPlaying = false;
+    audio.pause();
+    broadcastState();
+  });
+
+  window.addEventListener('music-control-next', () => {
+    const audio = ensureAudioInitialized();
+    if (globalSongs.length === 0) return;
+    
+    globalActiveSongIdx = (globalActiveSongIdx + 1) % globalSongs.length;
+    globalIsPlaying = true;
+    
+    const currentSong = globalSongs[globalActiveSongIdx];
+    if (currentSong) {
+      audio.src = currentSong.url;
+      audio.load();
+      audio.play().catch((err) => {
+        console.warn("Global next failed:", err);
+      });
+    }
+    broadcastState();
+  });
+
+  window.addEventListener('music-control-prev', () => {
+    const audio = ensureAudioInitialized();
+    if (globalSongs.length === 0) return;
+    
+    globalActiveSongIdx = (globalActiveSongIdx - 1 + globalSongs.length) % globalSongs.length;
+    globalIsPlaying = true;
+    
+    const currentSong = globalSongs[globalActiveSongIdx];
+    if (currentSong) {
+      audio.src = currentSong.url;
+      audio.load();
+      audio.play().catch((err) => {
+        console.warn("Global prev failed:", err);
+      });
+    }
+    broadcastState();
+  });
+
+  window.addEventListener('music-control-select-song', (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (typeof customEvent.detail === 'number') {
+      const idx = customEvent.detail;
+      if (idx < 0 || idx >= globalSongs.length) return;
+      
+      const audio = ensureAudioInitialized();
+      globalActiveSongIdx = idx;
+      globalIsPlaying = true;
+      
+      const currentSong = globalSongs[globalActiveSongIdx];
+      if (currentSong) {
+        audio.src = currentSong.url;
+        audio.load();
+        audio.play().catch((err) => {
+          console.warn("Select song play failed:", err);
+        });
+      }
+      broadcastState();
+    }
+  });
+
+  window.addEventListener('music-control-seek', (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (typeof customEvent.detail === 'number') {
+      const time = customEvent.detail;
+      const audio = ensureAudioInitialized();
+      audio.currentTime = time;
+      globalCurrentTime = time;
+      broadcastState();
+    }
+  });
+
+  window.addEventListener('music-control-set-volume', (e: Event) => {
+    const customEvent = e as CustomEvent;
+    if (typeof customEvent.detail === 'number') {
+      const vol = customEvent.detail;
+      globalVolume = vol;
+      const audio = ensureAudioInitialized();
+      audio.volume = vol / 100;
+      broadcastState();
+    }
+  });
+
+  window.addEventListener('request-music-state', () => {
+    broadcastState();
+  });
+
+  window.addEventListener('play-global-music', () => {
+    window.dispatchEvent(new CustomEvent('music-control-play'));
+  });
+}
 
 interface MusicPlayerBodyProps {
   isOpen?: boolean;
 }
 
-export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
+export function MusicPlayerBody(_props: MusicPlayerBodyProps) {
   const { t } = useI18n();
   const [activeSongIdx, setActiveSongIdx] = useState(globalActiveSongIdx);
   const [volume, setVolume] = useState(globalVolume);
   const [isPlaying, setIsPlaying] = useState(globalIsPlaying);
   const [currentTime, setCurrentTime] = useState(globalCurrentTime);
   const [duration, setDuration] = useState(globalDuration);
-  const [songList, setSongList] = useState<SongDoc[]>(globalSongList);
+  const [songs, setSongs] = useState(globalSongs);
 
-  useEffect(() => {
-    const unsubscribe = subscribeToActiveSongs(
-      (data) => {
-        setSongList(data);
-        globalSongList = data;
-      },
-      (error) => {
-        console.error('Error loading songs:', error);
-      }
-    );
-    return () => unsubscribe();
-  }, []);
-
-  // Listen to global play-music events (e.g. from lock screen)
-  useEffect(() => {
-    const handleGlobalPlay = () => {
-      setIsPlaying(true);
-    };
-    window.addEventListener('play-global-music', handleGlobalPlay);
-    return () => {
-      window.removeEventListener('play-global-music', handleGlobalPlay);
-    };
-  }, []);
-
-  const songs = useMemo(() => {
-    return songList.map((item) => ({
-      name: item.title,
-      artist: item.artist,
-      time: item.duration,
-      url: item.url,
-    }));
-  }, [songList]);
-
-  // Listen to quick controller actions
-  useEffect(() => {
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleNext = () => {
-      setActiveSongIdx((prev) => (songs.length > 0 ? (prev + 1) % songs.length : prev));
-      setIsPlaying(true);
-    };
-    const handlePrev = () => {
-      setActiveSongIdx((prev) => (songs.length > 0 ? (prev - 1 + songs.length) % songs.length : prev));
-      setIsPlaying(true);
-    };
-    const handleSetVolume = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (typeof customEvent.detail === 'number') {
-        setVolume(customEvent.detail);
-      }
-    };
-
-    window.addEventListener('music-control-play', handlePlay);
-    window.addEventListener('music-control-pause', handlePause);
-    window.addEventListener('music-control-next', handleNext);
-    window.addEventListener('music-control-prev', handlePrev);
-    window.addEventListener('music-control-set-volume', handleSetVolume);
-
-    return () => {
-      window.removeEventListener('music-control-play', handlePlay);
-      window.removeEventListener('music-control-pause', handlePause);
-      window.removeEventListener('music-control-next', handleNext);
-      window.removeEventListener('music-control-prev', handlePrev);
-      window.removeEventListener('music-control-set-volume', handleSetVolume);
-    };
-  }, [songs]);
-
-  // Broadcast current state when changed or requested
-  useEffect(() => {
-    const currentSong = songs[activeSongIdx] || null;
-    const state = { isPlaying, activeSongIdx, volume, currentSong, songs };
-    
-    const broadcast = () => {
-      window.dispatchEvent(new CustomEvent('music-state-changed', { detail: state }));
-    };
-
-    broadcast(); // broadcast on change
-
-    window.addEventListener('request-music-state', broadcast);
-    return () => {
-      window.removeEventListener('request-music-state', broadcast);
-    };
-  }, [isPlaying, activeSongIdx, volume, songs]);
-
-  const audioRef = useRef<HTMLAudioElement | null>(globalAudio);
-  const audioCtxRef = useRef<AudioContext | null>(globalAudioCtx);
-  const analyserRef = useRef<AnalyserNode | null>(globalAnalyser);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
 
-  // Track mounting instances to pause audio when closed (but not on portal/maximize transition)
+  // Sync state with global audio player
   useEffect(() => {
-    globalMountedInstances++;
+    const handleStateChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        const { 
+          isPlaying: playing, 
+          activeSongIdx: idx, 
+          volume: vol, 
+          currentTime: time, 
+          duration: dur, 
+          songs: list 
+        } = customEvent.detail;
+        
+        setIsPlaying(playing);
+        setActiveSongIdx(idx);
+        setVolume(vol);
+        setCurrentTime(time);
+        setDuration(dur);
+        setSongs(list);
+      }
+    };
+
+    window.addEventListener('music-state-changed', handleStateChange);
+    // Request initial state on mount
+    window.dispatchEvent(new CustomEvent('request-music-state'));
+
     return () => {
-      globalMountedInstances--;
-      setTimeout(() => {
-        if (globalMountedInstances === 0) {
-          if (globalAudio) {
-            globalAudio.pause();
-            globalIsPlaying = false;
-          }
-        }
-      }, 50);
+      window.removeEventListener('music-state-changed', handleStateChange);
     };
   }, []);
 
-  // Sync state to global variables
+  // Initialize analyser if playing
   useEffect(() => {
-    globalActiveSongIdx = activeSongIdx;
-  }, [activeSongIdx]);
-
-  useEffect(() => {
-    globalVolume = volume;
-  }, [volume]);
-
-  useEffect(() => {
-    globalIsPlaying = isPlaying;
-  }, [isPlaying]);
-
-  useEffect(() => {
-    globalCurrentTime = currentTime;
-  }, [currentTime]);
-
-  useEffect(() => {
-    globalDuration = duration;
-  }, [duration]);
-
-  // Initialize Web Audio API
-  const initAudio = () => {
-    if (audioCtxRef.current) return;
-
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    const ctx = new AudioContextClass();
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 128; // gives us 64 frequency bins
-
-    if (audioRef.current) {
-      audioRef.current.crossOrigin = "anonymous";
-      try {
-        const source = ctx.createMediaElementSource(audioRef.current);
-        source.connect(analyser);
-        analyser.connect(ctx.destination);
-      } catch (e) {
-        console.warn("Audio Context initialization failed or source already connected:", e);
-      }
-    }
-
-    audioCtxRef.current = ctx;
-    analyserRef.current = analyser;
-    globalAudioCtx = ctx;
-    globalAnalyser = analyser;
-  };
-
-  // Sync volume
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-    }
-  }, [volume]);
-
-  // Sync source and handle song change
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.crossOrigin = "anonymous";
-      audioRef.current.volume = globalVolume / 100;
-      globalAudio = audioRef.current;
-    }
-
-    if (songs.length === 0) return;
-    const currentSong = songs[activeSongIdx];
-    if (!currentSong) return;
-
-    const audio = audioRef.current;
-    
-    // Only set src if it's different to prevent resetting playback position on mount
-    const targetUrl = new URL(currentSong.url, window.location.href).href;
-    if (audio.src !== targetUrl) {
-      audio.src = currentSong.url;
-      audio.load();
-    }
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
-
-    const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
-    };
-
-    const handleEnded = () => {
-      setActiveSongIdx((prev) => {
-        if (prev < songs.length - 1) {
-          setIsPlaying(true);
-          return prev + 1;
-        } else {
-          setIsPlaying(false);
-          return 0;
-        }
-      });
-    };
-
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('ended', handleEnded);
-
-    // Sync metadata immediately on mount if already loaded
-    if (audio.duration) {
-      setDuration(audio.duration);
-    }
-    setCurrentTime(audio.currentTime);
-
-    if (isPlaying) {
-      audio.play().catch((err) => {
-        console.warn("Playback failed:", err);
-        setIsPlaying(false);
-      });
-    }
-
-    return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, [activeSongIdx, songs, isPlaying]);
-
-  // Play/Pause effect
-  useEffect(() => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      initAudio();
-      if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
-      audioRef.current.play().catch((err) => {
-        console.warn("Playback failed:", err);
-        setIsPlaying(false);
-      });
-    } else {
-      audioRef.current.pause();
+    if (isPlaying && globalAudio) {
+      initAnalyser(globalAudio);
     }
   }, [isPlaying]);
-
-  // Stop audio if terminal is explicitly closed
-  useEffect(() => {
-    if (!isOpen) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      setIsPlaying(false);
-      globalIsPlaying = false;
-    }
-  }, [isOpen]);
 
   // Canvas visualizer rendering loop
   useEffect(() => {
@@ -299,7 +319,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       ctx.clearRect(0, 0, width, height);
 
       // Render static cyberpunk background bars if paused
-      if (!isPlaying || !analyserRef.current) {
+      if (!isPlaying || !globalAnalyser) {
         ctx.fillStyle = 'rgba(0, 255, 255, 0.15)';
         const barWidth = 4;
         const barGap = 3;
@@ -314,25 +334,22 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
         return;
       }
 
-      const bufferLength = analyserRef.current.frequencyBinCount;
+      const bufferLength = globalAnalyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
-      analyserRef.current.getByteFrequencyData(dataArray);
+      globalAnalyser.getByteFrequencyData(dataArray);
 
       const barWidth = (width / bufferLength) * 1.5;
       let x = 0;
 
       for (let i = 0; i < bufferLength; i++) {
         const val = dataArray[i];
-        // Scale frequency value to canvas height
         const percent = val / 255;
         const barHeight = Math.max(4, percent * height * 0.85);
 
-        // Cyberpunk green-cyan gradient colors
         const greenShade = Math.floor(200 + percent * 55);
         const blueShade = Math.floor(100 + percent * 155);
         ctx.fillStyle = `rgb(0, ${greenShade}, ${blueShade})`;
 
-        // Glow effect
         ctx.shadowColor = `rgba(0, ${greenShade}, ${blueShade}, 0.5)`;
         ctx.shadowBlur = isPlaying ? 4 : 0;
 
@@ -342,9 +359,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
         x += barWidth;
       }
 
-      // Reset shadows
       ctx.shadowBlur = 0;
-
       animationRef.current = requestAnimationFrame(drawWaveform);
     };
 
@@ -358,17 +373,16 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
   }, [isPlaying]);
 
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    window.dispatchEvent(new CustomEvent(isPlaying ? 'music-control-pause' : 'music-control-play'));
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || duration === 0) return;
+    if (duration === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const width = rect.width;
     const newTime = (clickX / width) * duration;
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
+    window.dispatchEvent(new CustomEvent('music-control-seek', { detail: newTime }));
   };
 
   const formatTime = (secs: number) => {
@@ -404,17 +418,13 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       </div>
       <div className="music-controls">
         <button className="m-btn" onClick={() => {
-          if (songs.length === 0) return;
-          setActiveSongIdx((prev) => (prev > 0 ? prev - 1 : songs.length - 1));
-          setIsPlaying(true);
+          window.dispatchEvent(new CustomEvent('music-control-prev'));
         }}>{'<<'}</button>
         <button className="m-btn play-btn" onClick={togglePlay}>
           {isPlaying ? t('music.pause') : t('music.play')}
         </button>
         <button className="m-btn" onClick={() => {
-          if (songs.length === 0) return;
-          setActiveSongIdx((prev) => (prev < songs.length - 1 ? prev + 1 : 0));
-          setIsPlaying(true);
+          window.dispatchEvent(new CustomEvent('music-control-next'));
         }}>{'>>'}</button>
         <div className="volume-slider">
           <span>{t('music.vol')}</span>
@@ -424,7 +434,9 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
             min="0" 
             max="100" 
             value={volume} 
-            onChange={(e) => setVolume(Number(e.target.value))} 
+            onChange={(e) => {
+              window.dispatchEvent(new CustomEvent('music-control-set-volume', { detail: Number(e.target.value) }));
+            }} 
             style={{ '--vol-percent': `${volume}%` } as React.CSSProperties}
           />
         </div>
@@ -435,8 +447,7 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
             key={idx} 
             className={`song-item ${activeSongIdx === idx ? 'active' : ''}`}
             onClick={() => {
-              setActiveSongIdx(idx);
-              setIsPlaying(true);
+              window.dispatchEvent(new CustomEvent('music-control-select-song', { detail: idx }));
             }}
           >
             <span className="status-icon">{activeSongIdx === idx ? '▶' : ' '}</span>
