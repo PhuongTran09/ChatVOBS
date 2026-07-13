@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './InitialLoadingOverlay.css';
 import { useI18n } from '../i18n';
 
@@ -15,6 +15,114 @@ export function InitialLoadingOverlay({
 }: InitialLoadingOverlayProps) {
   const { t } = useI18n();
   const [isUnlocking, setIsUnlocking] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [hasGyro, setHasGyro] = useState(false);
+  const initialBetaRef = useRef<number | null>(null);
+  const initialGammaRef = useRef<number | null>(null);
+
+  // Handle device orientation (gyroscope) for mobile
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      const { beta, gamma } = e;
+      if (beta === null || gamma === null) return;
+      
+      setHasGyro(true);
+
+      if (initialBetaRef.current === null) {
+        initialBetaRef.current = beta;
+      }
+      if (initialGammaRef.current === null) {
+        initialGammaRef.current = gamma;
+      }
+
+      // Smoothly drift the reference to center around current position
+      initialBetaRef.current = initialBetaRef.current * 0.98 + beta * 0.02;
+      initialGammaRef.current = initialGammaRef.current * 0.98 + gamma * 0.02;
+
+      const diffBeta = beta - initialBetaRef.current;
+      const diffGamma = gamma - initialGammaRef.current;
+
+      // Limit/map tilt values to maximum of 25deg
+      const targetX = Math.max(-25, Math.min(25, diffBeta * 0.8));
+      const targetY = Math.max(-25, Math.min(25, diffGamma * 0.8));
+
+      setTilt({ x: targetX, y: targetY });
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, []);
+
+  // Request permission for iOS devices
+  const requestOrientationPermission = async () => {
+    if (
+      typeof window !== 'undefined' &&
+      typeof DeviceOrientationEvent !== 'undefined' &&
+      // @ts-ignore
+      typeof DeviceOrientationEvent.requestPermission === 'function'
+    ) {
+      try {
+        // @ts-ignore
+        const state = await DeviceOrientationEvent.requestPermission();
+        if (state === 'granted') {
+          // Re-register / register orientation event listener
+          const handleOrientation = (e: DeviceOrientationEvent) => {
+            const { beta, gamma } = e;
+            if (beta === null || gamma === null) return;
+            setHasGyro(true);
+            if (initialBetaRef.current === null) initialBetaRef.current = beta;
+            if (initialGammaRef.current === null) initialGammaRef.current = gamma;
+            initialBetaRef.current = initialBetaRef.current * 0.98 + beta * 0.02;
+            initialGammaRef.current = initialGammaRef.current * 0.98 + gamma * 0.02;
+            const diffBeta = beta - initialBetaRef.current;
+            const diffGamma = gamma - initialGammaRef.current;
+            setTilt({
+              x: Math.max(-25, Math.min(25, diffBeta * 0.8)),
+              y: Math.max(-25, Math.min(25, diffGamma * 0.8))
+            });
+          };
+          window.addEventListener('deviceorientation', handleOrientation);
+        }
+      } catch (err) {
+        console.warn('DeviceOrientation permission request failed:', err);
+      }
+    }
+  };
+
+  const handleInteraction = () => {
+    requestOrientationPermission();
+  };
+
+  // Fallback: Handle mouse move for desktop users
+  useEffect(() => {
+    if (hasGyro) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const dx = (e.clientX - innerWidth / 2) / (innerWidth / 2);
+      const dy = (e.clientY - innerHeight / 2) / (innerHeight / 2);
+
+      setTilt({
+        x: -dy * 20, // Pitch (tilt up/down)
+        y: dx * 20,  // Roll (tilt left/right)
+      });
+    };
+
+    const handleMouseLeave = () => {
+      setTilt({ x: 0, y: 0 });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [hasGyro]);
 
   // Absolute scroll locking (touch, mouse wheel, keyboard keys) during loading
   useEffect(() => {
@@ -42,7 +150,8 @@ export function InitialLoadingOverlay({
     };
   }, [isInitialLoading]);
 
-  const handleUnlock = () => {
+  const handleUnlock = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Avoid triggering parent overlay interaction click
     if (isUnlocking) return;
     setIsUnlocking(true);
 
@@ -58,7 +167,11 @@ export function InitialLoadingOverlay({
   if (!isInitialLoading) return null;
 
   return (
-    <div className={`reboot-overlay initial-boot ${isUnlocking ? 'overlay-fade-out' : ''}`}>
+    <div 
+      className={`reboot-overlay initial-boot ${isUnlocking ? 'overlay-fade-out' : ''}`}
+      onTouchStart={handleInteraction}
+      onClick={handleInteraction}
+    >
       {loadingProgress < 100 ? (
         <div className="reboot-content">
           <div className="reboot-glitch" data-text={t('system.booting')}>{t('system.booting')}</div>
@@ -74,7 +187,14 @@ export function InitialLoadingOverlay({
         </div>
       ) : (
         <div className="padlock-wrapper">
-          <div className={`padlock-container ${isUnlocking ? 'unlock-anim' : ''}`} onClick={handleUnlock}>
+          <div 
+            className={`padlock-container ${isUnlocking ? 'unlock-anim' : ''}`} 
+            onClick={handleUnlock}
+            style={{
+              ['--tilt-x' as any]: `${tilt.x}deg`,
+              ['--tilt-y' as any]: `${tilt.y}deg`,
+            }}
+          >
             <div className="padlock-shackle">
               <div className="shackle-loop"></div>
             </div>
