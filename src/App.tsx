@@ -9,6 +9,7 @@ import { TransitionOverlayPage } from './pages/TransitionOverlayPage'
 import { SocialOverlayPage } from './pages/SocialOverlayPage'
 import { CombinedOverlayPage } from './pages/CombinedOverlayPage'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
+import { MiniMusicController } from './components/MiniMusicController'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
@@ -67,6 +68,7 @@ function App() {
       ) : (
         <StreamerProfilePage onOpenChat={() => setScreen('chat')} />
       )}
+      <MiniMusicController />
     </>
   )
 }

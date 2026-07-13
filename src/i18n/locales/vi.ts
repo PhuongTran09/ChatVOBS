@@ -98,6 +98,7 @@ export const vi = {
   'system.loading_overlays': '> ĐANG TẢI OVERLAYS...',
   'system.establishing': '> ĐANG THIẾT LẬP KẾT NỐI...',
   'system.ready': '> HỆ THỐNG ĐÃ SẴN SÀNG.',
+  'system.click_to_unlock': 'CLICK ĐỂ MỞ',
   'customizer.title': 'Trình chỉnh Chat Live',
   'customizer.back': 'Quay lại',
   'customizer.import': 'Nhập CSS',

@@ -30,7 +30,7 @@ export function Hero({ profileMode }: HeroProps) {
     <div className="hero-top-grid">
       <div className="hero-content">
         <div className="badge-wrapper">
-          <span className="cyber-badge">{t('hero.badge')} {t(`mode.${profileMode}` as Parameters<typeof t>[0])}</span>
+          <span className="cyber-badge">{t(`mode.${profileMode}` as Parameters<typeof t>[0])} {t('hero.badge')} </span>
         </div>
         <h1 className="glitch-text" data-text={t('hero.title')}>
           {t('hero.title')}

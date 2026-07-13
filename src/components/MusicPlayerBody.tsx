@@ -41,6 +41,17 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
     return () => unsubscribe();
   }, []);
 
+  // Listen to global play-music events (e.g. from lock screen)
+  useEffect(() => {
+    const handleGlobalPlay = () => {
+      setIsPlaying(true);
+    };
+    window.addEventListener('play-global-music', handleGlobalPlay);
+    return () => {
+      window.removeEventListener('play-global-music', handleGlobalPlay);
+    };
+  }, []);
+
   const songs = useMemo(() => {
     return songList.map((item) => ({
       name: item.title,
@@ -49,6 +60,57 @@ export function MusicPlayerBody({ isOpen = true }: MusicPlayerBodyProps) {
       url: item.url,
     }));
   }, [songList]);
+
+  // Listen to quick controller actions
+  useEffect(() => {
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleNext = () => {
+      setActiveSongIdx((prev) => (songs.length > 0 ? (prev + 1) % songs.length : prev));
+      setIsPlaying(true);
+    };
+    const handlePrev = () => {
+      setActiveSongIdx((prev) => (songs.length > 0 ? (prev - 1 + songs.length) % songs.length : prev));
+      setIsPlaying(true);
+    };
+    const handleSetVolume = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (typeof customEvent.detail === 'number') {
+        setVolume(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('music-control-play', handlePlay);
+    window.addEventListener('music-control-pause', handlePause);
+    window.addEventListener('music-control-next', handleNext);
+    window.addEventListener('music-control-prev', handlePrev);
+    window.addEventListener('music-control-set-volume', handleSetVolume);
+
+    return () => {
+      window.removeEventListener('music-control-play', handlePlay);
+      window.removeEventListener('music-control-pause', handlePause);
+      window.removeEventListener('music-control-next', handleNext);
+      window.removeEventListener('music-control-prev', handlePrev);
+      window.removeEventListener('music-control-set-volume', handleSetVolume);
+    };
+  }, [songs]);
+
+  // Broadcast current state when changed or requested
+  useEffect(() => {
+    const currentSong = songs[activeSongIdx] || null;
+    const state = { isPlaying, activeSongIdx, volume, currentSong, songs };
+    
+    const broadcast = () => {
+      window.dispatchEvent(new CustomEvent('music-state-changed', { detail: state }));
+    };
+
+    broadcast(); // broadcast on change
+
+    window.addEventListener('request-music-state', broadcast);
+    return () => {
+      window.removeEventListener('request-music-state', broadcast);
+    };
+  }, [isPlaying, activeSongIdx, volume, songs]);
 
   const audioRef = useRef<HTMLAudioElement | null>(globalAudio);
   const audioCtxRef = useRef<AudioContext | null>(globalAudioCtx);
