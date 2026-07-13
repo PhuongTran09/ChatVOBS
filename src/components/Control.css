@@ -9,7 +9,7 @@
 
 .control-label {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--neon-cyan); /* Màu chữ neon */
   padding: 4px 0;
@@ -253,5 +253,55 @@
   .group-controls,
   .checkbox-group {
     grid-template-columns: 1fr;
+  }
+  
+  .control-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+
+  .modern-input {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .color-range-inputs {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .range-value {
+    font-size: 0.8rem;
+    min-width: 38px;
+  }
+
+  .cyber-toggle-container {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .control-label {
+    font-size: 0.7rem;
+    letter-spacing: 0px;
+  }
+
+  .modern-input {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .color-range-inputs {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .range-value {
+    font-size: 0.75rem;
+    min-width: 32px;
+  }
+
+  .cyber-toggle-container {
+    font-size: 0.7rem;
   }
 }

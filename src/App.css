@@ -3,3 +3,41 @@ body {
   padding: 0;
   background-color: black !important;
 }
+
+/* =========================================
+   GLOBAL CYBERPUNK SCROLLBAR CUSTOMIZATION
+========================================= */
+/* Webkit Browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050508;
+  border-left: 1px solid rgba(0, 255, 255, 0.08);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.25);
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  border-radius: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ffff;
+  box-shadow: 0 0 10px #00ffff;
+  border-color: #ffffff;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #ff00ff;
+  border-color: #ffffff;
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.25) #050508;
+}

@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import '../styles/HomePage.css'
-import { subscribeToActiveDonates, subscribeToMedia, type MediaDoc, type DonateMethod } from '../services'
+import { subscribeToActiveDonates, subscribeToMedia, subscribeToActiveSongs, type MediaDoc, type DonateMethod } from '../services'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { FeatureCards } from '../components/FeatureCards'
 import { SystemOverlays } from '../components/SystemOverlays'
+import { InitialLoadingOverlay } from '../components/InitialLoadingOverlay'
 import { DonateSection } from '../components/DonateSection'
 import { PhotoGallery } from '../components/PhotoGallery'
 import { SocialSchedule } from '../components/SocialSchedule'
@@ -28,6 +29,12 @@ export function StreamerProfilePage({
   const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [dataLoaded, setDataLoaded] = useState({
+    donates: false,
+    media: false,
+    songs: false,
+  })
 
   const {
     terminals,
@@ -45,24 +52,64 @@ export function StreamerProfilePage({
     resetPosition,
   } = useTerminals()
 
-  // Initial loading effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
+  // Calculate target progress based on actual loaded data sources
+  const targetProgress = useMemo(() => {
+    let loadedCount = 0;
+    if (dataLoaded.donates) loadedCount++;
+    if (dataLoaded.media) loadedCount++;
+    if (dataLoaded.songs) loadedCount++;
 
-  // Lock body scroll when any terminal is maximized and open
+    if (loadedCount === 0) return 15; // Core booting state
+    if (loadedCount === 1) return 45; // First data stream connected
+    if (loadedCount === 2) return 75; // Second data stream connected
+    return 100; // All data streams loaded
+  }, [dataLoaded]);
+
+  // Smoothly interpolate the progress counter to match targetProgress
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev >= targetProgress) {
+          // If we reached target, keep it there, wait for updates
+          return prev;
+        }
+        // Increment smoothly (exponential easing toward target)
+        const diff = targetProgress - prev;
+        const step = Math.max(1, Math.floor(diff * 0.12));
+        return Math.min(prev + step, 100);
+      });
+    }, 25);
+
+    return () => clearInterval(interval);
+  }, [targetProgress]);
+
+  // Lock body scroll when loading or when any terminal is maximized and open
   useEffect(() => {
     const isAnyMaximized = Object.values(terminals).some((t) => t.isOpen && t.isMaximized);
-    if (isAnyMaximized) {
+    if (isInitialLoading || isAnyMaximized) {
       document.body.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
     }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [terminals]);
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    };
+  }, [terminals, isInitialLoading]);
 
   const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([])
   const [activeDonateIdx, setActiveDonateIdx] = useState(0)
@@ -72,9 +119,11 @@ export function StreamerProfilePage({
       (list) => {
         setDonateMethods(list)
         setActiveDonateIdx(0)
+        setDataLoaded((prev) => ({ ...prev, donates: true }));
       },
       (err) => {
         console.error('Failed to load active donates:', err)
+        setDataLoaded((prev) => ({ ...prev, donates: true }));
       }
     )
     return () => unsubscribe()
@@ -110,13 +159,29 @@ export function StreamerProfilePage({
     const unsubscribe = subscribeToMedia(
       (list) => {
         setMediaItems(list)
+        setDataLoaded((prev) => ({ ...prev, media: true }));
       },
       (err) => {
         console.error('Failed to load media:', err)
+        setDataLoaded((prev) => ({ ...prev, media: true }));
       }
     );
     return () => unsubscribe();
   }, [])
+
+  // Subscribe to active songs for loading status
+  useEffect(() => {
+    const unsubscribe = subscribeToActiveSongs(
+      () => {
+        setDataLoaded((prev) => ({ ...prev, songs: true }));
+      },
+      (err) => {
+        console.error('Failed to load songs in tracker:', err);
+        setDataLoaded((prev) => ({ ...prev, songs: true }));
+      }
+    );
+    return () => unsubscribe();
+  }, []);
 
   const galleryItems = useMemo(() => {
     return mediaItems.map(item => ({
@@ -146,8 +211,13 @@ export function StreamerProfilePage({
         </section>
       )}
 
-      <SystemOverlays
+      <InitialLoadingOverlay
         isInitialLoading={isInitialLoading}
+        loadingProgress={loadingProgress}
+        onUnlock={() => setIsInitialLoading(false)}
+      />
+
+      <SystemOverlays
         isRebooting={isRebooting}
       />
       {profileMode === 'streamer' ? (

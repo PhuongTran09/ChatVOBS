@@ -32,6 +32,7 @@ html[lang="vi"] {
 
 .chat-customizer-page {
   font-family: var(--font-main);
+  font-size: 14px;
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
@@ -401,6 +402,7 @@ html[lang="vi"] {
 @media (max-width: 768px) {
   .chat-customizer-page {
     padding: 12px;
+    font-size: 13px;
   }
 
   .glass-card {
@@ -412,20 +414,29 @@ html[lang="vi"] {
     font-size: 0.8rem;
   }
 
-  .control-input input, .control-input select {
-    font-size: 0.85rem;
-    padding: 4px 10px;
+  .modern-input, select, input {
+    font-size: 0.8rem !important;
+    padding: 6px 10px !important;
   }
 }
 
 @media (max-width: 480px) {
   .chat-customizer-page {
-    font-size: 13px;
-    padding: 10px 8px;
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .glass-card {
+    padding: 10px;
   }
 
   .badge {
     font-size: 0.65rem;
     padding: 2px 8px;
+  }
+
+  .modern-input, select, input {
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
   }
 }

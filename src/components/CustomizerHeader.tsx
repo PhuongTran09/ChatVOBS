@@ -14,8 +14,11 @@ export const CustomizerHeader = ({
 
   return (
     <header className="page-header glass-card slide-down">
-      <div className="header-left">
-        <button className="btn-icon" onClick={onBackHome}>
+      <div className="header-titles">
+        <h1 className="page-title">{t('customizer.title')}</h1>
+      </div>
+      <div className="header-actions">
+        <button className="btn-icon header-btn-back" onClick={onBackHome}>
           <svg
             width="20"
             height="20"
@@ -30,12 +33,7 @@ export const CustomizerHeader = ({
           </svg>
           <span>{t('customizer.back')}</span>
         </button>
-        <div className="header-titles">
-          <h1 className="page-title">{t('customizer.title')}</h1>
-        </div>
-      </div>
-      <div className="header-actions">
-        <button className="btn-primary" onClick={onImportClick}>
+        <button className="btn-primary header-btn-import" onClick={onImportClick}>
           <svg
             width="18"
             height="18"

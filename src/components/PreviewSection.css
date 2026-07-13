@@ -75,3 +75,39 @@
     opacity: 1;
   }
 }
+
+@media (max-width: 768px) {
+  .chat-preview {
+    min-height: 300px;
+    padding: 12px;
+  }
+  .css-output {
+    min-height: 200px;
+    padding: 12px;
+    font-size: 0.8rem;
+  }
+  .card-header {
+    margin-bottom: 12px;
+  }
+  .live-indicator {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-preview {
+    min-height: 240px;
+    padding: 8px;
+  }
+  .css-output {
+    min-height: 160px;
+    padding: 8px;
+    font-size: 0.75rem;
+  }
+  .card-header {
+    margin-bottom: 8px;
+  }
+  .live-indicator {
+    font-size: 0.75rem;
+  }
+}

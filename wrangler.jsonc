@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "vos",
-  "compatibility_date": "2026-05-12",
+  "compatibility_date": "2026-07-11",
   "observability": {
     "enabled": true
   },

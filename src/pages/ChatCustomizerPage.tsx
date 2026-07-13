@@ -35,6 +35,11 @@ export function ChatCustomizerPage({
     }
   }, [showToast]);
 
+  // Scroll to top on page mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { callbacks, generateStyle } = createChatCustomizerHelpers(values);
 
   const { cssOutput, previewStyle, setLastChangedId, setAnimationTick } = useChatPreview(

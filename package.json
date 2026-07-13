@@ -16,7 +16,7 @@
     "react-dom": "^19.2.5"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.36.4",
+    "@cloudflare/vite-plugin": "^1.44.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
@@ -29,6 +29,6 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10",
-    "wrangler": "^4.90.1"
+    "wrangler": "^4.110.0"
   }
 }

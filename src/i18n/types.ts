@@ -89,6 +89,7 @@ export type TranslationKey =
   | 'system.loading_overlays'
   | 'system.establishing'
   | 'system.ready'
+  | 'system.click_to_unlock'
   | 'customizer.title'
   | 'customizer.back'
   | 'customizer.import'

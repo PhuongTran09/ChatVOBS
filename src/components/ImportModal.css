@@ -86,7 +86,7 @@
   background: #0f172a;
   color: var(--text-main);
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 0.7rem;
   outline: none;
   transition: var(--transition);
   resize: none;
