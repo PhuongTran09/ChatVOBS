@@ -14,6 +14,7 @@ import { MiniMusicController } from './components/MiniMusicController'
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
   const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'sub' | 'transition' | 'social' | 'combined' | null>(null)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,7 +67,11 @@ function App() {
       {screen === 'chat' ? (
         <ChatCustomizerPage onBackHome={() => setScreen('home')} />
       ) : (
-        <StreamerProfilePage onOpenChat={() => setScreen('chat')} />
+        <StreamerProfilePage 
+          onOpenChat={() => setScreen('chat')} 
+          isInitialLoading={isInitialLoading}
+          setIsInitialLoading={setIsInitialLoading}
+        />
       )}
       <MiniMusicController />
     </>

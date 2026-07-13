@@ -22,6 +22,8 @@ export function InitialLoadingOverlay({
 
   // Handle device orientation (gyroscope) for mobile
   useEffect(() => {
+    if (!isInitialLoading) return;
+
     const handleOrientation = (e: DeviceOrientationEvent) => {
       const { beta, gamma } = e;
       if (beta === null || gamma === null) return;
@@ -54,7 +56,7 @@ export function InitialLoadingOverlay({
     return () => {
       window.removeEventListener('deviceorientation', handleOrientation);
     };
-  }, []);
+  }, [isInitialLoading]);
 
   // Request permission for iOS devices
   const requestOrientationPermission = async () => {
@@ -68,23 +70,8 @@ export function InitialLoadingOverlay({
         // @ts-ignore
         const state = await DeviceOrientationEvent.requestPermission();
         if (state === 'granted') {
-          // Re-register / register orientation event listener
-          const handleOrientation = (e: DeviceOrientationEvent) => {
-            const { beta, gamma } = e;
-            if (beta === null || gamma === null) return;
-            setHasGyro(true);
-            if (initialBetaRef.current === null) initialBetaRef.current = beta;
-            if (initialGammaRef.current === null) initialGammaRef.current = gamma;
-            initialBetaRef.current = initialBetaRef.current * 0.98 + beta * 0.02;
-            initialGammaRef.current = initialGammaRef.current * 0.98 + gamma * 0.02;
-            const diffBeta = beta - initialBetaRef.current;
-            const diffGamma = gamma - initialGammaRef.current;
-            setTilt({
-              x: Math.max(-25, Math.min(25, diffBeta * 0.8)),
-              y: Math.max(-25, Math.min(25, diffGamma * 0.8))
-            });
-          };
-          window.addEventListener('deviceorientation', handleOrientation);
+          // Setting permission automatically fires events to the main useEffect listener
+          setHasGyro(true);
         }
       } catch (err) {
         console.warn('DeviceOrientation permission request failed:', err);
@@ -98,7 +85,7 @@ export function InitialLoadingOverlay({
 
   // Fallback: Handle mouse move for desktop users
   useEffect(() => {
-    if (hasGyro) return;
+    if (hasGyro || !isInitialLoading) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
@@ -122,7 +109,7 @@ export function InitialLoadingOverlay({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [hasGyro]);
+  }, [hasGyro, isInitialLoading]);
 
   // Absolute scroll locking (touch, mouse wheel, keyboard keys) during loading
   useEffect(() => {

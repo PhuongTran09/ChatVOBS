@@ -20,15 +20,18 @@ import { useI18n } from '../i18n'
 
 export function StreamerProfilePage({
   onOpenChat,
+  isInitialLoading,
+  setIsInitialLoading,
 }: {
   onOpenFonts?: () => void
   onOpenChat?: () => void
+  isInitialLoading: boolean
+  setIsInitialLoading: (val: boolean) => void
 }) {
   const { t } = useI18n()
   const [profileMode, setProfileMode] = useState<'streamer' | 'developer'>('streamer')
   const [selectedImage, setSelectedImage] = useState<{ src: string; name: string } | null>(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [dataLoaded, setDataLoaded] = useState({
     donates: false,
