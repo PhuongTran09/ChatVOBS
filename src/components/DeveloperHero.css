@@ -1,0 +1,194 @@
+/*
+ * Everything is scoped under `.mode-developer` on purpose: Vite merges all imported
+ * CSS into one stylesheet, so a bare `.status-panel` rule here would restyle the
+ * streamer hero as well.
+ */
+
+.mode-developer .dev-prose {
+  text-transform: none;
+}
+
+.mode-developer .dev-avatar {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  object-fit: cover;
+  border: 2px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  box-shadow: 0 0 10px var(--cyan-dim);
+}
+
+.mode-developer .channel-profile-tag {
+  border-color: var(--cyan-dim);
+  border-left-color: var(--cyan);
+}
+
+.mode-developer .channel-profile-tag:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 5px 20px var(--cyan-dim);
+}
+
+.mode-developer .channel-platform-hero {
+  color: var(--cyan);
+}
+
+.mode-developer .status-panel {
+  border-color: var(--cyan);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.8),
+    0 0 30px var(--cyan-dim);
+  /* floatPanel rocks a panel full of text; at 4s it reads as a screensaver, at 8s as drift. */
+  animation-duration: 8s;
+}
+
+/*
+ * Hero.css draws the two extrusion faces with skewY(-45) and skewX(-45): the right face
+ * leans up while the bottom face leans left, so they describe two different vanishing
+ * points and the panel looks broken instead of deep. Both must lean the same way from
+ * their `left top` origin to read as one box extending to the lower right.
+ */
+.mode-developer .status-panel::before {
+  background: rgba(0, 255, 255, 0.1);
+  border-right-color: rgba(0, 255, 255, 0.2);
+  transform: skewY(45deg);
+}
+
+.mode-developer .status-panel::after {
+  transform: skewX(45deg);
+}
+
+/*
+ * `perspective` on the panel never applied — the property only affects descendants — so
+ * the rotateX/rotateY inside floatPanel rendered flat while the fake faces stayed put.
+ * Declared on the grid that holds the panel, the rotation and the extrusion now agree.
+ */
+.mode-developer .hero-top-grid {
+  perspective: 1200px;
+}
+
+/*
+ * The section frame lifted -2px while the panel inside it lifted -4px, so pointing at one
+ * card moved the whole page. The border glow and shadow still answer on hover.
+ */
+.mode-developer .cyber-section:hover,
+.mode-developer .cyber-hero:hover {
+  transform: none;
+}
+
+.mode-developer .panel-head {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+  background: rgba(0, 255, 255, 0.08);
+}
+
+.mode-developer .panel-corner-tl,
+.mode-developer .panel-corner-br {
+  border-color: var(--cyan);
+}
+
+.mode-developer .notification-item.latest {
+  border-color: var(--cyan-dim);
+  background: rgba(0, 255, 255, 0.04);
+}
+
+/*
+ * An index row wears the same hue as the card it points at, and the magenta dashed
+ * separator Hero.css gives the streamer list becomes a solid hairline in that hue.
+ * :not(:last-child) keeps Hero.css's own `border-bottom: none` on the final row out of
+ * a specificity tie.
+ */
+.mode-developer .notification-item:not(:last-child) {
+  border-bottom: 1px solid var(--dev-accent-soft);
+}
+
+.mode-developer .notification-item .notification-title {
+  color: var(--dev-accent);
+}
+
+.mode-developer .tech-tags {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Hero.css sets .tech-tags span (0,1,1), which would otherwise outrank .dev-chip. */
+.mode-developer .tech-tags .dev-chip {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-right: 0;
+}
+
+/*
+ * Metric tiles inherit a green frame from Metric.css, which reads as a different
+ * product; developer mode is cyan. The ::before sheen exists in Metric.css but is
+ * parked off-screen there because its hover trigger was removed.
+ */
+.mode-developer .cyber-metric {
+  border-color: rgba(0, 255, 255, 0.25);
+  background: rgba(0, 255, 255, 0.04);
+}
+
+.mode-developer .metric-label {
+  color: var(--cyan);
+}
+
+.mode-developer .metric-value {
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px var(--cyan-dim);
+}
+
+.mode-developer .cyber-metric::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.22), transparent);
+  animation: devSheen 6s ease-in-out infinite;
+}
+
+.mode-developer .cyber-metric:nth-child(2)::before {
+  animation-delay: 1.2s;
+}
+
+.mode-developer .cyber-metric:nth-child(3)::before {
+  animation-delay: 2.4s;
+}
+
+/*
+ * The left column had no gap between the profile pill and its stat row, and the streamer's
+ * 25/30 px drops do not suit the shorter developer copy. One 20/24 scale for the column.
+ */
+.mode-developer .hero-lead {
+  margin-bottom: 20px;
+}
+
+.mode-developer .platform-tags {
+  margin-bottom: 20px;
+}
+
+.mode-developer .cyber-metrics {
+  margin-top: 24px;
+}
+
+.mode-developer .glitch-text {
+  animation: neonFlicker 6s infinite;
+}
+
+.mode-developer .hero-lead {
+  text-wrap: balance;
+}
+
+.mode-developer .dev-avatar {
+  animation: devAvatarPulse 4s ease-in-out infinite;
+}
+
+@keyframes devAvatarPulse {
+  0%, 100% {
+    border-color: var(--cyan-dim);
+    box-shadow: 0 0 10px var(--cyan-dim);
+  }
+  50% {
+    border-color: var(--cyan);
+    box-shadow: 0 0 22px var(--cyan);
+  }
+}

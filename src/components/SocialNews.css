@@ -538,11 +538,10 @@
 }
 
 .modal-badge {
-  font-family: var(--font-mono);
+  /* Denser than the section pills on purpose: it sits in a modal header row. The tracking
+     and border it does share come from the pill scale in App.css. */
   font-size: 0.7rem;
-  font-weight: bold;
-  padding: 2px 8px;
-  text-transform: uppercase;
+  padding: 2px calc(8px - var(--pill-tracking)) 2px 8px;
 }
 
 .modal-badge.badge-announcement {

@@ -4,7 +4,8 @@ import "../styles/ChatCustomizerPage.css";
 
 import type { CustomizerValues } from "../types/customizer";
 import { initialValues } from "../data/initialValues";
-import { createChatCustomizerHelpers, parseCssToValues } from "../utils/chatCustomizer";
+import { createChatCustomizerHelpers } from "../utils/chatCssGenerator";
+import { parseCssToValues } from "../utils/chatCssParser";
 
 // Import components
 import { CustomizerHeader } from "../components/CustomizerHeader";

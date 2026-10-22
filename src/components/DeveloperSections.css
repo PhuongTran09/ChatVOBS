@@ -1,0 +1,381 @@
+.dev-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dev-block-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-block-title {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #fff;
+  letter-spacing: 2px;
+  padding-left: 14px;
+  border-left: 4px solid var(--cyan);
+  text-shadow: 0 0 10px var(--cyan-dim);
+  position: relative;
+}
+
+.dev-block-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 100%;
+  height: 1px;
+  background-image: linear-gradient(90deg, var(--cyan), var(--magenta), var(--cyan));
+  background-size: 200% 100%;
+  opacity: 0.55;
+  animation: devBarShift 8s linear infinite;
+}
+
+.dev-block-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  text-transform: none;
+}
+
+.dev-group-grid,
+.dev-project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/*
+ * One accent per panel. Four grey boxes of the same weight read as a single wall, and
+ * hue is the cheapest way to tell BACKEND from DATA & AUTH at a scroll past. The cycle
+ * reuses the only four colours this product already owns — cyan and magenta from the
+ * neon palette, plus the mint and amber the overlay pages ship — so nothing new enters
+ * the brand. *soft* is for hairlines and tints, *veil* for the inset wash.
+ * The hero's project index joins the cycle, so a project is the same hue in both places.
+ */
+.dev-group:nth-child(4n+1),
+.dev-project-card:nth-child(4n+1),
+.mode-developer .notification-item:nth-child(4n+1) {
+  --dev-accent: #00f0ff;
+  --dev-accent-soft: rgba(0, 240, 255, 0.24);
+  --dev-accent-veil: rgba(0, 240, 255, 0.05);
+}
+
+.dev-group:nth-child(4n+2),
+.dev-project-card:nth-child(4n+2),
+.mode-developer .notification-item:nth-child(4n+2) {
+  --dev-accent: var(--magenta);
+  --dev-accent-soft: rgba(255, 0, 255, 0.24);
+  --dev-accent-veil: rgba(255, 0, 255, 0.05);
+}
+
+.dev-group:nth-child(4n+3),
+.dev-project-card:nth-child(4n+3),
+.mode-developer .notification-item:nth-child(4n+3) {
+  --dev-accent: #00ff9d;
+  --dev-accent-soft: rgba(0, 255, 157, 0.24);
+  --dev-accent-veil: rgba(0, 255, 157, 0.05);
+}
+
+.dev-group:nth-child(4n+4),
+.dev-project-card:nth-child(4n+4),
+.mode-developer .notification-item:nth-child(4n+4) {
+  --dev-accent: #ffaa00;
+  --dev-accent-soft: rgba(255, 170, 0, 0.24);
+  --dev-accent-veil: rgba(255, 170, 0, 0.05);
+}
+
+.dev-group {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--dev-accent-soft);
+  border-left: 4px solid var(--dev-accent);
+  padding: 14px 16px;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Corner ticks echo .cyber-section::before/-after at a quarter of the size, so the
+   inner panels look drawn by the same hand as the section that holds them. Same 12 -> 20px
+   travel and the same quiet-at-rest weight as the cards' .panel-corner-* brackets; they sit
+   on the corners the 4px accent bar does not already mark. */
+.dev-group::before,
+.dev-group::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--dev-accent);
+  opacity: 0.55;
+  transition: width 0.3s, height 0.3s, opacity 0.3s;
+  pointer-events: none;
+}
+
+.dev-group::before {
+  top: -2px;
+  right: -2px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.dev-group::after {
+  bottom: -2px;
+  left: -2px;
+  border-top: none;
+  border-right: none;
+}
+
+.dev-group:hover {
+  transform: translateY(-4px);
+  border-color: var(--dev-accent);
+  box-shadow: 0 0 24px var(--dev-accent-soft), inset 0 0 30px var(--dev-accent-veil);
+}
+
+.dev-group:hover::before,
+.dev-group:hover::after {
+  width: 20px;
+  height: 20px;
+  opacity: 1;
+}
+
+.dev-group-title {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--dev-accent-soft);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  color: var(--dev-accent);
+}
+
+.dev-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  /* Asymmetric: the icon needs less air on its own side than the text does. */
+  padding: 4px 10px 4px 8px;
+  /* Named instead of `all`: 79 chips each animating every property, including the padding
+     the icon change made asymmetric, is the kind of work the compositor never needs to do. */
+  transition: color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+/* Icons carry the brand colour at rest; --tech-hex is unset for near-black marks,
+   so those fall through to the panel accent instead of vanishing into the background.
+   No glow: a drop-shadow filter on all 79 chips costs more than it reads. */
+.dev-chip-icon {
+  display: block;
+  flex: 0 0 auto;
+  color: var(--tech-hex, var(--dev-accent, var(--cyan)));
+}
+
+/* --tech-hex is the brand colour and stays unset for the near-black marks. */
+.dev-chip:hover {
+  color: var(--tech-hex, var(--dev-accent, var(--cyan)));
+  border-color: var(--dev-accent, var(--cyan));
+  box-shadow: 0 0 12px var(--dev-accent-soft, var(--cyan-dim));
+  transform: translateY(-2px);
+}
+
+.dev-project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-color: var(--dev-accent-soft);
+}
+
+.dev-project-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--dev-accent);
+  box-shadow: 0 0 24px var(--dev-accent-soft), inset 0 0 30px var(--dev-accent-veil);
+}
+
+/* Three classes: DeveloperHero.css paints every panel corner cyan at two, and Vite's
+   merged stylesheet makes a tie on specificity an ordering accident. */
+.mode-developer .dev-project-card .panel-corner-tl,
+.mode-developer .dev-project-card .panel-corner-br {
+  border-color: var(--dev-accent);
+  opacity: 0.55;
+  transition: width 0.3s, height 0.3s, opacity 0.3s;
+}
+
+.mode-developer .dev-project-card:hover .panel-corner-tl,
+.mode-developer .dev-project-card:hover .panel-corner-br {
+  width: 20px;
+  height: 20px;
+  opacity: 1;
+}
+
+.mode-developer .dev-project-card .panel-head {
+  color: var(--dev-accent);
+  border-bottom-color: var(--dev-accent-soft);
+  background: var(--dev-accent-veil);
+}
+
+.dev-project-role {
+  margin-left: auto;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  color: var(--dev-accent);
+  text-align: right;
+}
+
+/* The one-line "what is this" under the name. Written in title case in the locale file,
+   so it has to opt out of the page-wide uppercase the headings live in. */
+.dev-project-tagline {
+  margin: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  color: var(--dev-accent);
+  text-transform: none;
+}
+
+/* Cards sit on a stretched grid row, so the body has to grow for the footer trick below
+   to mean anything. */
+.mode-developer .dev-project-card .panel-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px 20px 20px;
+}
+
+/* Field titles inside the card: the hairline that trails each one is what keeps the
+   three fields from running together into one paragraph. */
+.dev-field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 7px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--dev-accent);
+}
+
+.dev-field-label::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, var(--dev-accent-soft), transparent);
+}
+
+.dev-project-summary {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  text-transform: none;
+}
+
+/* Keeping the LINKS caption and its buttons in one block is what lets the pair sink to
+   the bottom edge, so two cards of different heights still line their buttons up. */
+.dev-project-foot {
+  margin-top: auto;
+}
+
+.dev-project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dev-link-btn {
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: var(--dev-accent);
+  border: 1px solid var(--dev-accent-soft);
+  background: var(--dev-accent-veil);
+  padding: 4px 12px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.dev-link-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-180%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.dev-link-btn:hover {
+  background: var(--dev-accent);
+  color: var(--bg-dark);
+  box-shadow: 0 0 12px var(--dev-accent-soft);
+}
+
+.dev-link-btn:hover::after {
+  animation: devLinkWipe 0.6s ease;
+}
+
+/* The repo exists but is not published, so it is named without pretending to be reachable. */
+.dev-link-private {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+}
+
+@media (max-width: 900px) {
+  .dev-group-grid,
+  .dev-project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes devBarShift {
+  to { background-position: 200% 0; }
+}
+
+@keyframes devLinkWipe {
+  to { transform: translateX(180%) skewX(-18deg); }
+}
+
+/*
+ * travelled the same -100% -> 220% of the tile as before, expressed on the element's own
+ * width (50% of the tile, so 320% of the tile = 640%): animating `left` re-laid out the
+ * tile on every frame of an infinite animation, `transform` does not.
+ */
+@keyframes devSheen {
+  from { transform: translateX(0) skewX(-20deg); }
+  to { transform: translateX(640%) skewX(-20deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dev-block-title::after,
+  .mode-developer .glitch-text,
+  .mode-developer .dev-avatar,
+  .mode-developer .cyber-metric::before {
+    animation: none;
+  }
+
+  .dev-link-btn:hover::after {
+    animation: none;
+  }
+
+  .dev-chip:hover,
+  .dev-group:hover,
+  .dev-project-card:hover {
+    transform: none;
+  }
+}

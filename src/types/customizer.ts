@@ -1,11 +1,3 @@
-export type ControlType =
-  | "select"
-  | "checkbox"
-  | "color"
-  | "range"
-  | "color-range"
-  | "number";
-
 export interface ControlBase {
   id: string;
   label?: string;

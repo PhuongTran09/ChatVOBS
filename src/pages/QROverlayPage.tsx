@@ -1,38 +1,31 @@
 import { useEffect, useState } from 'react';
 import '../styles/QROverlayPage.css';
-import { subscribeToActiveDonates } from '../services';
-
-interface DonateMethod {
-  id: string;
-  name: string;
-  url: string;
-  color: string;
-  qrImage?: string;
-  description?: string;
-}
+import { subscribeToActiveDonates } from '../services/donateService';
+import type { DonateMethod } from '../services/donateService';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
+import { useOverlayMode } from '../hooks/useOverlayShell';
+import { OverlayDecor } from '../components/OverlayDecor';
+import { useI18n } from '../i18n';
 
 export function QROverlayPage() {
+  const { t } = useI18n();
   const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [methodParam, setMethodParam] = useState<string | null>(null);
   const [intervalParam, setIntervalParam] = useState<number>(40); // Default 40s as requested
   const [isAnimating, setIsAnimating] = useState(false);
 
+  useOverlayMode();
+
   useEffect(() => {
-    document.body.classList.add('overlay-mode');
-    
-    const params = new URLSearchParams(window.location.search);
-    const cycleTime = params.get('interval');
+    const cycleTime = getOverlayParams().get('interval');
     if (cycleTime) {
       const parsed = parseInt(cycleTime, 10);
       if (!isNaN(parsed) && parsed > 0) {
         setIntervalParam(parsed);
       }
     }
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-    };
   }, []);
 
   // Fetch active donate methods from Firebase
@@ -41,7 +34,7 @@ export function QROverlayPage() {
       (list) => {
         setDonateMethods(list);
         
-        const params = new URLSearchParams(window.location.search);
+        const params = getOverlayParams();
         const method = params.get('method')?.toLowerCase();
         
         if (method && list.some(m => m.id === method)) {
@@ -89,13 +82,10 @@ export function QROverlayPage() {
         style={{ '--accent-color': activeDonate.color } as React.CSSProperties}
       >
         {/* Cyberpunk decorative elements */}
-        <div className="corner-decor top-left" />
-        <div className="corner-decor top-right" />
-        <div className="corner-decor bottom-left" />
-        <div className="corner-decor bottom-right" />
+        <OverlayDecor />
         <div className="scanline-overlay" />
         <div className="cyber-grid-overlay" />
-        <div className="side-vertical-label">YATO KENJI</div>
+        <div className="side-vertical-label">{CHANNEL_DISPLAY_NAME}</div>
 
         <div className="overlay-header">
           <div className="method-glow-title">
@@ -104,7 +94,7 @@ export function QROverlayPage() {
           </div>
           <div className="status-indicator">
             <span className="pulse-dot" />
-            LIVE
+            {t('overlay.qr.live')}
           </div>
         </div>
 
@@ -121,7 +111,7 @@ export function QROverlayPage() {
 
         <div className="overlay-footer">
           <div className="donation-name-badge">
-            <span className="badge-prefix">DONATE</span>
+            <span className="badge-prefix">{t('overlay.qr.donate')}</span>
             <span className="badge-name">{activeDonate.name}</span>
           </div>
           <span className="footer-deco-line" />

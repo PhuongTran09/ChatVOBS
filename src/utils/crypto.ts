@@ -25,35 +25,6 @@ async function getKey(password: string): Promise<CryptoKey> {
 }
 
 /**
- * Encrypts a plain-text string using AES-GCM 256-bit encryption.
- * Returns a Base64-encoded string containing both the IV and the ciphertext.
- */
-export async function encryptText(text: string, secret: string): Promise<string> {
-  if (!text) return '';
-  try {
-    const key = await getKey(secret);
-    const iv = window.crypto.getRandomValues(new Uint8Array(12));
-    const enc = new TextEncoder();
-    const encrypted = await window.crypto.subtle.encrypt(
-      { name: AES_ALGO, iv },
-      key,
-      enc.encode(text)
-    );
-    
-    // Combine IV and Ciphertext
-    const combined = new Uint8Array(iv.length + encrypted.byteLength);
-    combined.set(iv, 0);
-    combined.set(new Uint8Array(encrypted), iv.length);
-    
-    // Convert to Base64
-    return btoa(String.fromCharCode(...combined));
-  } catch (e) {
-    console.error('Encryption failed:', e);
-    return text;
-  }
-}
-
-/**
  * Decrypts a Base64-encoded AES-GCM ciphertext.
  * If decryption fails or the payload is not encrypted, returns the original text as-is.
  */

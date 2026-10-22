@@ -114,30 +114,48 @@
   color: var(--text-dim);
 }
 
+/*
+ * Same shape as the mini controller's slider: a 16px box so the drag has a real hit area,
+ * with the groove and its fill drawn as two centred gradients instead of the element
+ * background being the groove itself.
+ */
 .vol-input-green {
   -webkit-appearance: none;
   appearance: none;
   width: 60px;
-  height: 4px;
-  background: #111;
-  border-radius: 2px;
+  height: 16px;
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--green), var(--green)),
+    linear-gradient(#111, #111);
+  background-position: left center, left center;
+  background-size: var(--vol-percent, 80%) 4px, 100% 4px;
+  background-repeat: no-repeat, no-repeat;
   outline: none;
   cursor: pointer;
-  background-image: linear-gradient(var(--green), var(--green));
-  background-size: var(--vol-percent, 80%) 100%;
-  background-repeat: no-repeat;
-  box-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
 }
 
 .vol-input-green::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 8px;
-  height: 12px;
+  width: 10px;
+  height: 16px;
   background: var(--green);
   border-radius: 2px;
-  box-shadow: 0 0 10px var(--green);
-  cursor: pointer;
+}
+
+.vol-input-green::-moz-range-track,
+.vol-input-green::-moz-range-progress {
+  background: transparent;
+  border: none;
+}
+
+.vol-input-green::-moz-range-thumb {
+  width: 10px;
+  height: 16px;
+  border: none;
+  border-radius: 2px;
+  background: var(--green);
 }
 
 .music-list {

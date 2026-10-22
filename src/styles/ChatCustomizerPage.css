@@ -2,15 +2,12 @@
 
 :root {
   --bg-dark: #050508;
-  --glass-bg: rgba(10, 15, 25, 0.85);
-  --glass-border: rgba(0, 255, 255, 0.2); /* Viền Cyan mờ */
-  --glass-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.05);
+  /* --glass-bg, --glass-border, --glass-shadow, --neon-cyan and --neon-magenta are
+     declared in App.css because the profile page reads them too. */
 
   --text-main: #e0e0e0;
   --text-muted: #8892b0;
 
-  --neon-cyan: #0ff;
-  --neon-magenta: #f0f;
   --neon-green: #0f0;
   --neon-red: #f00;
 
@@ -241,48 +238,10 @@ html[lang="vi"] {
 .slide-left { animation: slideLeft 0.6s ease-out forwards; animation-delay: 0.2s; opacity: 0; }
 
 
-.glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  padding: 24px;
-  position: relative;
-}
-
-
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: -1px; left: -1px;
-  width: 20px; height: 20px;
-  border-top: 2px solid var(--neon-cyan);
-  border-left: 2px solid var(--neon-cyan);
-  pointer-events: none;
-}
-
-
-.badge {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  width: fit-content;
-}
-
-.badge-primary {
-  background: rgba(0, 255, 255, 0.1);
-  color: var(--neon-cyan);
-  border: 1px solid var(--neon-cyan);
-}
-
-.badge-secondary {
-  background: rgba(255, 0, 255, 0.1);
-  color: var(--neon-magenta);
-  border: 1px solid var(--neon-magenta);
-}
+/* .glass-card, .badge and the tokens they read (glass background, border, shadow,
+   neon cyan, neon magenta) moved to App.css: they are shared with the profile page, and
+   only the entry stylesheet is guaranteed to load on every route now that the pages are
+   separate chunks. */
 
 
 .btn-icon,
@@ -426,14 +385,7 @@ html[lang="vi"] {
     padding: 8px 6px;
   }
 
-  .glass-card {
-    padding: 10px;
-  }
-
-  .badge {
-    font-size: 0.65rem;
-    padding: 2px 8px;
-  }
+  /* .glass-card and .badge shrink with the rest of the shared pills, in App.css */
 
   .modern-input, select, input {
     font-size: 0.75rem !important;

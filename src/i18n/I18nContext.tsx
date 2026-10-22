@@ -1,19 +1,29 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { getTranslation } from './translations'
+import { getTranslation, translate } from './translations'
 import type { Locale, TranslationKey } from './types'
+import { formatCompactCount, formatDayFirstDate, formatWeekdayShort } from '../utils/format'
 
 const STORAGE_KEY = 'chatvobs-locale'
+
+type Formatters = {
+  compact: (value: number) => string
+  date: (value: Date | string, separator?: string) => string
+  weekday: (value: Date) => string
+}
 
 type I18nContextValue = {
   locale: Locale
   setLocale: (locale: Locale) => void
   toggleLocale: () => void
   t: (key: TranslationKey, params?: Record<string, string | number>) => string
+  tDynamic: (key: string, params?: Record<string, string | number>) => string
+  fmt: Formatters
 }
 
 const I18nContext = createContext<I18nContextValue | undefined>(undefined)
 
-function detectLocale(): Locale {
+function detectLocale(override?: Locale): Locale {
+  if (override) return override
   if (typeof window === 'undefined') return 'en'
   const savedLocale = window.localStorage.getItem(STORAGE_KEY)
   if (savedLocale === 'en' || savedLocale === 'vi') {
@@ -36,15 +46,24 @@ function formatMessage(
   })
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(detectLocale)
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode
+  initialLocale?: Locale
+}) {
+  const [locale, setLocale] = useState<Locale>(() => detectLocale(initialLocale))
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return
+    document.documentElement.lang = locale
+    // An overlay URL is authored by the streamer; it must not overwrite the
+    // language the site visitor picked in their own language switcher.
+    if (!initialLocale) {
       window.localStorage.setItem(STORAGE_KEY, locale)
-      document.documentElement.lang = locale
     }
-  }, [locale])
+  }, [locale, initialLocale])
 
   const value = useMemo<I18nContextValue>(
     () => ({
@@ -52,6 +71,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       setLocale,
       toggleLocale: () => setLocale((current) => (current === 'en' ? 'vi' : 'en')),
       t: (key, params) => formatMessage(getTranslation(locale, key), params),
+      tDynamic: (key, params) => formatMessage(translate(locale, key), params),
+      fmt: {
+        compact: (count) => formatCompactCount(count, locale),
+        date: (date, separator) => formatDayFirstDate(date, locale, separator),
+        weekday: (date) => formatWeekdayShort(date, locale),
+      },
     }),
     [locale],
   )

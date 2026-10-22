@@ -1,4 +1,4 @@
-import { collection, query, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface NewsCategory {
@@ -122,55 +122,4 @@ export function subscribeToNews(
     unsubCategories();
     unsubArticles();
   };
-}
-
-/**
- * Fetches both newsArticles and newsCategories once and returns combined articles.
- */
-export async function fetchNews(): Promise<CombinedNewsArticle[]> {
-  const categoriesQuery = query(collection(db, 'newsCategories'));
-  const articlesQuery = query(collection(db, 'newsArticles'));
-
-  const [categoriesSnap, articlesSnap] = await Promise.all([
-    getDocs(categoriesQuery),
-    getDocs(articlesQuery),
-  ]);
-
-  const categories: NewsCategory[] = [];
-  categoriesSnap.forEach((doc) => {
-    const data = doc.data();
-    categories.push({
-      id: doc.id,
-      name: data.name || '',
-      description: data.description || '',
-    });
-  });
-
-  const categoryMap = new Map<string, NewsCategory>();
-  categories.forEach((cat) => categoryMap.set(cat.id, cat));
-
-  const articles: CombinedNewsArticle[] = [];
-  articlesSnap.forEach((doc) => {
-    const data = doc.data();
-    const category = categoryMap.get(data.categoryId || '');
-    articles.push({
-      id: doc.id,
-      categoryId: data.categoryId || '',
-      content: data.content || '',
-      icon: data.icon || 'system',
-      publishedAt: data.publishedAt || '',
-      title: data.title || '',
-      link: data.link || '',
-      moreLink: data.moreLink || '',
-      moreLinkIcon: data.moreLinkIcon || '',
-      moreLinkName: data.moreLinkName || '',
-      categoryName: category ? category.name : '',
-      categoryDescription: category ? category.description : '',
-    });
-  });
-
-  // Sort by publishedAt in descending order (newest first)
-  articles.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
-
-  return articles;
 }

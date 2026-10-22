@@ -2,6 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import './InitialLoadingOverlay.css';
 import { useI18n } from '../i18n';
 
+type OrientationPermissionState = 'granted' | 'denied' | 'default'
+
+// iOS-only API: requestPermission is absent from lib.dom, so it is typed rather
+// than ignored — @ts-expect-error would hard-fail on TS/lib combos where the
+// line happens to be error-free.
+type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<OrientationPermissionState>;
+}
+
 interface InitialLoadingOverlayProps {
   isInitialLoading: boolean;
   loadingProgress: number;
@@ -60,22 +69,20 @@ export function InitialLoadingOverlay({
 
   // Request permission for iOS devices
   const requestOrientationPermission = async () => {
-    if (
-      typeof window !== 'undefined' &&
-      typeof DeviceOrientationEvent !== 'undefined' &&
-      // @ts-ignore
-      typeof DeviceOrientationEvent.requestPermission === 'function'
-    ) {
-      try {
-        // @ts-ignore
-        const state = await DeviceOrientationEvent.requestPermission();
-        if (state === 'granted') {
-          // Setting permission automatically fires events to the main useEffect listener
-          setHasGyro(true);
-        }
-      } catch (err) {
-        console.warn('DeviceOrientation permission request failed:', err);
+    if (typeof window === 'undefined' || typeof DeviceOrientationEvent === 'undefined') return;
+
+    const orientationEvent =
+      DeviceOrientationEvent as unknown as DeviceOrientationEventWithPermission;
+    if (typeof orientationEvent.requestPermission !== 'function') return;
+
+    try {
+      const state = await orientationEvent.requestPermission();
+      if (state === 'granted') {
+        // Setting permission automatically fires events to the main useEffect listener
+        setHasGyro(true);
       }
+    } catch (err) {
+      console.warn('DeviceOrientation permission request failed:', err);
     }
   };
 
@@ -178,9 +185,9 @@ export function InitialLoadingOverlay({
             className={`padlock-container ${isUnlocking ? 'unlock-anim' : ''}`} 
             onClick={handleUnlock}
             style={{
-              ['--tilt-x' as any]: `${tilt.x}deg`,
-              ['--tilt-y' as any]: `${tilt.y}deg`,
-            }}
+              '--tilt-x': `${tilt.x}deg`,
+              '--tilt-y': `${tilt.y}deg`,
+            } as React.CSSProperties}
           >
             <div className="padlock-shackle">
               <div className="shackle-loop"></div>

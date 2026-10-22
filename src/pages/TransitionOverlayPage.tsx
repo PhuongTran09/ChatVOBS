@@ -1,30 +1,29 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/TransitionOverlayPage.css';
 import { getChannelStats } from '../services/youtubeService';
+import type { YouTubeStats } from '../services/youtubeService';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE } from '../constants/branding';
+import { useOverlayMode, useTransitionTheme } from '../hooks/useOverlayShell';
+import { OverlayDecor } from '../components/OverlayDecor';
+import { useI18n } from '../i18n';
 
-interface YouTubeStats {
-  id: string;
-  subscriberCount: string;
-  viewCount: string;
-  videoCount: string;
-  thumbnailUrl: string;
-  title: string;
-  description: string;
-}
+const FALLBACK_AVATAR = '/assets/images/obs-mockup.png';
 
 export function TransitionOverlayPage() {
-  const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber' | 'rainbow'>('cyan');
+  const { t } = useI18n();
+  const { theme, accentColor, accentGradient } = useTransitionTheme();
   const [ytStats, setYtStats] = useState<YouTubeStats | null>(null);
   const [pollInterval, setPollInterval] = useState<number>(60); // Poll every 60s by default (saves quota)
   const [simulate, setSimulate] = useState<boolean>(false);
   const [simulatedSubs, setSimulatedSubs] = useState<number | null>(null);
-  
+
   // URL configurations
   const [customSubs, setCustomSubs] = useState<number | null>(null);
-  const [handle, setHandle] = useState<string>('@YatoKenji');
+  const [handle, setHandle] = useState<string>(CHANNEL_HANDLE);
   const [customName, setCustomName] = useState<string | null>(null);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
-  
+
   // Call to action animation sequence states
   const [animate, setAnimate] = useState<boolean>(false);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
@@ -35,14 +34,60 @@ export function TransitionOverlayPage() {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [showLike, setShowLike] = useState<boolean>(false);
 
+  // One array instead of six named timer refs: the sequence always replaces the whole timeline.
+  const sequenceTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearSequenceTimers = useCallback(() => {
+    for (const timer of sequenceTimersRef.current) clearTimeout(timer);
+    sequenceTimersRef.current = [];
+  }, []);
+
   const prevSubsRef = useRef<number>(0);
 
-  useEffect(() => {
-    document.body.classList.add('overlay-mode');
+  useOverlayMode();
 
+  // Run the animated timeline sequence
+  const triggerFullSequence = useCallback(() => {
+    clearSequenceTimers();
+
+    // Reset all sub-animation states immediately
+    setAnimate(false);
+    setIsSubscribed(false);
+    setIsBelled(false);
+    setRingBell(false);
+    setIsLiked(false);
+    setShowLike(false);
+
+    // Delay setting animate to true slightly to let React render the "false" state
+    // so the browser sees a DOM update and triggers the CSS animation again.
+    sequenceTimersRef.current.push(
+      setTimeout(() => {
+        setAnimate(true);
+
+        // Timeline for the cursor clicking simulation:
+        // 2.7s: Cursor clicks SUBSCRIBE button
+        sequenceTimersRef.current.push(
+          setTimeout(() => setIsSubscribed(true), 2700),
+          // 4.5s: Cursor clicks Bell icon (bell rings)
+          setTimeout(() => {
+            setIsBelled(true);
+            setRingBell(true);
+          }, 4500),
+          // 5.5s: Stop bell ringing wiggle and trigger Like button sliding up
+          setTimeout(() => {
+            setRingBell(false);
+            setShowLike(true);
+          }, 5500),
+          // 6.5s: Cursor clicks LIKE button
+          setTimeout(() => setIsLiked(true), 6500),
+        );
+      }, 50),
+    );
+  }, [clearSequenceTimers]);
+
+  useEffect(() => {
     // Parse search parameters
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get('theme')?.toLowerCase();
+    const params = getOverlayParams();
     const subsParam = params.get('subs');
     const handleParam = params.get('handle') || params.get('channelId');
     const pollParam = params.get('poll') || params.get('interval');
@@ -51,10 +96,6 @@ export function TransitionOverlayPage() {
     const avatarParam = params.get('avatar');
     const loopParam = params.get('loop');
     const loopTimeParam = params.get('looptime') || params.get('loop_interval');
-
-    if (themeParam === 'magenta') setTheme('magenta');
-    if (themeParam === 'amber') setTheme('amber');
-    if (themeParam === 'rainbow') setTheme('rainbow');
 
     if (subsParam) {
       const parsedSubs = parseInt(subsParam, 10);
@@ -86,23 +127,8 @@ export function TransitionOverlayPage() {
     // Start initial sequence
     triggerFullSequence();
 
-    const clickSubTimer = clickSubTimerRef.current;
-    const clickBellTimer = clickBellTimerRef.current;
-    const stopBellTimer = stopBellTimerRef.current;
-    const animateTimer = animateTimerRef.current;
-    const showLikeTimer = showLikeTimerRef.current;
-    const clickLikeTimer = clickLikeTimerRef.current;
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-      if (clickSubTimer) clearTimeout(clickSubTimer);
-      if (clickBellTimer) clearTimeout(clickBellTimer);
-      if (stopBellTimer) clearTimeout(stopBellTimer);
-      if (animateTimer) clearTimeout(animateTimer);
-      if (showLikeTimer) clearTimeout(showLikeTimer);
-      if (clickLikeTimer) clearTimeout(clickLikeTimer);
-    };
-  }, []);
+    return clearSequenceTimers;
+  }, [triggerFullSequence, clearSequenceTimers]);
 
   // Fetch Channel statistics
   useEffect(() => {
@@ -111,15 +137,11 @@ export function TransitionOverlayPage() {
       return;
     }
 
-    async function fetchStats(isPoll: boolean) {
-      try {
-        const statsData = await getChannelStats(handle, isPoll);
-        if (statsData) {
-          setYtStats(statsData);
-        }
-      } catch (err) {
-        console.error('Error fetching stats in transition overlay:', err);
-      }
+    let cancelled = false;
+
+    async function fetchStats(bypassCache: boolean) {
+      const statsData = await getChannelStats(handle, { bypassCache });
+      if (statsData && !cancelled) setYtStats(statsData);
     }
 
     fetchStats(false);
@@ -128,23 +150,25 @@ export function TransitionOverlayPage() {
       fetchStats(true);
     }, pollInterval * 1000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, [handle, pollInterval, customSubs, simulate]);
 
-  // Determine active subscriber count
-  const subscriberCount = simulate && simulatedSubs !== null
-    ? simulatedSubs
-    : (customSubs !== null 
-        ? customSubs 
-        : (ytStats ? parseInt(ytStats.subscriberCount, 10) : 3530));
+  // Null means the count is unknown, so the card shows a placeholder instead of an invented number
+  const subscriberCount = useMemo(() => {
+    if (simulate && simulatedSubs !== null) return simulatedSubs;
+    if (customSubs !== null) return customSubs;
+    if (ytStats && !ytStats.hiddenSubscriberCount) return ytStats.subscriberCount;
+    return null;
+  }, [simulate, simulatedSubs, customSubs, ytStats]);
 
   // Handle simulation changes
   useEffect(() => {
     if (!simulate) return;
 
-    const baseSubs = customSubs !== null 
-      ? customSubs 
-      : (ytStats ? parseInt(ytStats.subscriberCount, 10) : 3530);
+    const baseSubs = customSubs ?? (ytStats ? ytStats.subscriberCount : 0);
 
     if (simulatedSubs === null) {
       setSimulatedSubs(baseSubs);
@@ -152,7 +176,7 @@ export function TransitionOverlayPage() {
     }
 
     const timer = setInterval(() => {
-      setSimulatedSubs(prev => {
+      setSimulatedSubs((prev) => {
         if (prev === null) return baseSubs;
         // 40% chance to gain 1 sub
         return Math.random() > 0.6 ? prev + 1 : prev;
@@ -162,68 +186,13 @@ export function TransitionOverlayPage() {
     return () => clearInterval(timer);
   }, [simulate, ytStats, customSubs, simulatedSubs]);
 
-  const clickSubTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clickBellTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const stopBellTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const animateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const showLikeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clickLikeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Run the animated timeline sequence
-  const triggerFullSequence = () => {
-    // Clear any existing timers
-    if (clickSubTimerRef.current) clearTimeout(clickSubTimerRef.current);
-    if (clickBellTimerRef.current) clearTimeout(clickBellTimerRef.current);
-    if (stopBellTimerRef.current) clearTimeout(stopBellTimerRef.current);
-    if (animateTimerRef.current) clearTimeout(animateTimerRef.current);
-    if (showLikeTimerRef.current) clearTimeout(showLikeTimerRef.current);
-    if (clickLikeTimerRef.current) clearTimeout(clickLikeTimerRef.current);
-
-    // Reset all sub-animation states immediately
-    setAnimate(false);
-    setIsSubscribed(false);
-    setIsBelled(false);
-    setRingBell(false);
-    setIsLiked(false);
-    setShowLike(false);
-
-    // Delay setting animate to true slightly to let React render the "false" state
-    // so the browser sees a DOM update and triggers the CSS animation again.
-    animateTimerRef.current = setTimeout(() => {
-      setAnimate(true);
-
-      // Timeline for the cursor clicking simulation:
-      // 2.7s: Cursor clicks SUBSCRIBE button
-      clickSubTimerRef.current = setTimeout(() => {
-        setIsSubscribed(true);
-      }, 2700);
-
-      // 4.5s: Cursor clicks Bell icon (bell rings)
-      clickBellTimerRef.current = setTimeout(() => {
-        setIsBelled(true);
-        setRingBell(true);
-      }, 4500);
-
-      // 5.5s: Stop bell ringing wiggle and trigger Like button sliding up
-      stopBellTimerRef.current = setTimeout(() => {
-        setRingBell(false);
-        setShowLike(true);
-      }, 5500);
-
-      // 6.5s: Cursor clicks LIKE button
-      clickLikeTimerRef.current = setTimeout(() => {
-        setIsLiked(true);
-      }, 6500);
-    }, 50);
-  };
-
   // Watch subscriber count change to trigger a notification popup
   useEffect(() => {
-    if (subscriberCount > 0 && subscriberCount !== prevSubsRef.current) {
+    if (subscriberCount !== null && subscriberCount > 0 && subscriberCount !== prevSubsRef.current) {
       triggerFullSequence();
       prevSubsRef.current = subscriberCount;
     }
-  }, [subscriberCount]);
+  }, [subscriberCount, triggerFullSequence]);
 
   // Loop control
   useEffect(() => {
@@ -234,26 +203,18 @@ export function TransitionOverlayPage() {
     }, loopTime * 1000);
 
     return () => clearInterval(intervalId);
-  }, [loop, loopTime]);
+  }, [loop, loopTime, triggerFullSequence]);
 
-  const displayName = customName || ytStats?.title || 'YATO KENJI';
-  const displayAvatar = customAvatar || ytStats?.thumbnailUrl || '/assets/images/obs-mockup.png';
-
-  const themeColors = {
-    cyan: '#00f0ff',
-    magenta: '#ff0055',
-    amber: '#ffaa00',
-    rainbow: 'linear-gradient(90deg, #00f0ff, #ff0055)'
-  };
-  const activeColor = theme === 'rainbow' ? '#00f0ff' : themeColors[theme];
+  const displayName = customName || ytStats?.title || CHANNEL_DISPLAY_NAME;
+  const displayAvatar = customAvatar || ytStats?.thumbnailUrl || FALLBACK_AVATAR;
 
   return (
     <div className="transition-overlay-container">
-      <div 
+      <div
         className={`yato-transition-card theme-${theme} ${animate ? 'animate-in' : ''}`}
-        style={{ 
-          '--accent-color': activeColor,
-          '--accent-gradient': themeColors[theme]
+        style={{
+          '--accent-color': accentColor,
+          '--accent-gradient': accentGradient,
         } as React.CSSProperties}
       >
         {/* Cyber overlays */}
@@ -261,20 +222,17 @@ export function TransitionOverlayPage() {
         <div className="cyber-grid-overlay" />
 
         {/* Decorative corner elements */}
-        <div className="corner-decor top-left" />
-        <div className="corner-decor top-right" />
-        <div className="corner-decor bottom-left" />
-        <div className="corner-decor bottom-right" />
+        <OverlayDecor />
 
         {/* Profile / Greeting Block */}
         <div className="badge-side">
           <div className="avatar-mini-frame">
-            <img src={displayAvatar} alt="Yato Avatar" className="avatar-mini-img" />
+            <img src={displayAvatar} alt={displayName} className="avatar-mini-img" />
           </div>
           <div className="profile-text">
             <div className="channel-title">{displayName.toUpperCase()}</div>
             <div key={showLike ? 'like' : 'sub'} className="cta-subtitle cta-text-animate">
-              {showLike ? 'LIKE VIDEO NHA!' : 'ĐĂNG KÝ KÊNH NHA!'}
+              {showLike ? t('overlay.cta.likePrompt') : t('overlay.cta.subscribePrompt')}
             </div>
           </div>
         </div>
@@ -292,10 +250,10 @@ export function TransitionOverlayPage() {
                   <svg className="check-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                   </svg>
-                  ĐÃ ĐĂNG KÝ
+                  {t('overlay.cta.subscribed')}
                 </>
               ) : (
-                'ĐĂNG KÝ'
+                t('overlay.cta.subscribe')
               )}
             </button>
 

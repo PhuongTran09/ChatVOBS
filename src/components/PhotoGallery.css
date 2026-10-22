@@ -42,10 +42,12 @@
   width: 320px;
   background: #111;
   border: 1px solid var(--magenta);
-  box-shadow: 0 0 15px var(--magenta-dim);
   padding: 10px;
-  transition: all 0.3s;
-  will-change: transform;
+  /* will-change was promoting every photo in a horizontal track to its own compositor
+     layer, which costs more memory than the hover lift is worth. The resting glow went the
+     same way: the viewport scrolls this track, so a blurred shadow per photo was repaint
+     work on every scroll frame, while the hover glow below only ever applies to one. */
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
   flex-shrink: 0;
   cursor: pointer;
 }

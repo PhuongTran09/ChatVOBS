@@ -1,77 +1,90 @@
 import './App.css'
-import { useState, useEffect } from 'react'
-import { StreamerProfilePage } from './pages/HomePage'
-import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
-import { QROverlayPage } from './pages/QROverlayPage'
-import { ClockOverlayPage } from './pages/ClockOverlayPage'
-import { SubOverlayPage } from './pages/SubOverlayPage'
-import { TransitionOverlayPage } from './pages/TransitionOverlayPage'
-import { SocialOverlayPage } from './pages/SocialOverlayPage'
-import { CombinedOverlayPage } from './pages/CombinedOverlayPage'
+import './styles/overlay.css'
+import { lazy, Suspense, useState } from 'react'
+import type { ComponentType } from 'react'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 import { MiniMusicController } from './components/MiniMusicController'
+import { getOverlayParams } from './constants/overlay'
+
+// An OBS browser source and the chat customizer are separate products that used to ship
+// inside the home page's chunk: one file every surface had to download and parse. The home
+// page is split too, otherwise the entry chunk would still carry its hero, terminals,
+// gallery, Firestore client and icon pack into the clock overlay, which needs none of them.
+// App.css keeps `body` black, so the gap between entry and chunk paints dark, not white.
+const StreamerProfilePage = lazy(() =>
+  import('./pages/StreamerProfilePage').then((m) => ({ default: m.StreamerProfilePage }))
+)
+const ChatCustomizerPage = lazy(() =>
+  import('./pages/ChatCustomizerPage').then((m) => ({ default: m.ChatCustomizerPage }))
+)
+const QROverlayPage = lazy(() =>
+  import('./pages/QROverlayPage').then((m) => ({ default: m.QROverlayPage }))
+)
+const ClockOverlayPage = lazy(() =>
+  import('./pages/ClockOverlayPage').then((m) => ({ default: m.ClockOverlayPage }))
+)
+const SubOverlayPage = lazy(() =>
+  import('./pages/SubOverlayPage').then((m) => ({ default: m.SubOverlayPage }))
+)
+const TransitionOverlayPage = lazy(() =>
+  import('./pages/TransitionOverlayPage').then((m) => ({ default: m.TransitionOverlayPage }))
+)
+const SocialOverlayPage = lazy(() =>
+  import('./pages/SocialOverlayPage').then((m) => ({ default: m.SocialOverlayPage }))
+)
+const CombinedOverlayPage = lazy(() =>
+  import('./pages/CombinedOverlayPage').then((m) => ({ default: m.CombinedOverlayPage }))
+)
+
+const OVERLAY_PAGES: Record<string, ComponentType> = {
+  qr: QROverlayPage,
+  clock: ClockOverlayPage,
+  sub: SubOverlayPage,
+  transition: TransitionOverlayPage,
+  social: SocialOverlayPage,
+  combined: CombinedOverlayPage,
+  all: CombinedOverlayPage,
+}
+
+/**
+ * Resolved while the state is initialised rather than in an effect: as a `useEffect` this
+ * chose the route *after* the home page had already rendered, so every browser source
+ * booted the full profile page — subscriptions, boot overlay and all — before swapping.
+ */
+function readOverlayPage(): ComponentType | null {
+  const overlay = getOverlayParams().get('overlay')
+  return overlay ? OVERLAY_PAGES[overlay] ?? null : null
+}
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
-  const [overlayType, setOverlayType] = useState<'qr' | 'clock' | 'sub' | 'transition' | 'social' | 'combined' | null>(null)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [OverlayPage] = useState(readOverlayPage)
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const overlay = params.get('overlay');
-    if (overlay === 'qr') {
-      setOverlayType('qr');
-    } else if (overlay === 'clock') {
-      setOverlayType('clock');
-    } else if (overlay === 'sub') {
-      setOverlayType('sub');
-    } else if (overlay === 'transition') {
-      setOverlayType('transition');
-    } else if (overlay === 'social') {
-      setOverlayType('social');
-    } else if (overlay === 'combined' || overlay === 'all') {
-      setOverlayType('combined');
-    }
-  }, []);
-
-
-
-  if (overlayType === 'qr') {
-    return <QROverlayPage />;
+  // Transparent fallback: a source that has not arrived yet should show nothing, not a frame.
+  if (OverlayPage) {
+    return (
+      <Suspense fallback={null}>
+        <OverlayPage />
+      </Suspense>
+    )
   }
-
-  if (overlayType === 'clock') {
-    return <ClockOverlayPage />;
-  }
-
-  if (overlayType === 'sub') {
-    return <SubOverlayPage />;
-  }
-
-  if (overlayType === 'transition') {
-    return <TransitionOverlayPage />;
-  }
-
-  if (overlayType === 'social') {
-    return <SocialOverlayPage />;
-  }
-
-  if (overlayType === 'combined') {
-    return <CombinedOverlayPage />;
-  }
-
 
   return (
     <>
       <LanguageSwitchFixed />
       {screen === 'chat' ? (
-        <ChatCustomizerPage onBackHome={() => setScreen('home')} />
+        <Suspense fallback={null}>
+          <ChatCustomizerPage onBackHome={() => setScreen('home')} />
+        </Suspense>
       ) : (
-        <StreamerProfilePage 
-          onOpenChat={() => setScreen('chat')} 
-          isInitialLoading={isInitialLoading}
-          setIsInitialLoading={setIsInitialLoading}
-        />
+        <Suspense fallback={null}>
+          <StreamerProfilePage
+            onOpenChat={() => setScreen('chat')}
+            isInitialLoading={isInitialLoading}
+            setIsInitialLoading={setIsInitialLoading}
+          />
+        </Suspense>
       )}
       <MiniMusicController />
     </>

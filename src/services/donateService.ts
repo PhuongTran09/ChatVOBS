@@ -1,4 +1,4 @@
-import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface DonateMethod {
@@ -10,6 +10,9 @@ export interface DonateMethod {
   descriptionKey?: string;
   isActive: string;
   btnClass?: string;
+  // Read by QROverlayPage/DonateSection, but never populated by the mapper
+  // below, so the api.qrserver.com fallback always wins today. See notes.
+  qrImage?: string;
 }
 
 /**
@@ -46,31 +49,4 @@ export function subscribeToActiveDonates(
     },
     onError
   );
-}
-
-/**
- * Fetches active donation methods from Firestore once.
- */
-export async function fetchActiveDonates(): Promise<DonateMethod[]> {
-  const donatesQuery = query(
-    collection(db, 'donates'),
-    where('isActive', '==', '1')
-  );
-  
-  const snap = await getDocs(donatesQuery);
-  const list: DonateMethod[] = [];
-  snap.forEach((doc) => {
-    const data = doc.data();
-    list.push({
-      id: doc.id,
-      name: data.name_donate || '',
-      url: data.link_donate || '',
-      color: data.color || '#6366f1',
-      description: data.description || '',
-      descriptionKey: data.descriptionKey || '',
-      isActive: data.isActive || '1',
-      btnClass: 'custom-dynamic'
-    });
-  });
-  return list;
 }

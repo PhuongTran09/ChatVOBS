@@ -1,57 +1,46 @@
 import { useEffect, useState } from 'react';
 import '../styles/SubOverlayPage.css';
-import { getChannelStats, formatCompactNumber } from '../services/youtubeService';
-
-interface YouTubeStats {
-  id: string;
-  subscriberCount: string;
-  viewCount: string;
-  videoCount: string;
-  title: string;
-}
+import { getChannelStats } from '../services/youtubeService';
+import type { YouTubeStats } from '../services/youtubeService';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_HANDLE } from '../constants/branding';
+import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
+import { useI18n } from '../i18n';
 
 export function SubOverlayPage() {
-  const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber'>('cyan');
+  const { theme, accentColor } = useOverlayTheme();
+  const { t, fmt } = useI18n();
   const [ytStats, setYtStats] = useState<YouTubeStats | null>(null);
   
   // Custom overrides from URL parameters
   const [customSubs, setCustomSubs] = useState<number | null>(null);
   const [customViews, setCustomViews] = useState<number | null>(null);
   const [customVideos, setCustomVideos] = useState<number | null>(null);
-  const [handle, setHandle] = useState<string>('@YatoKenji');
+  const [handle, setHandle] = useState<string>(CHANNEL_HANDLE);
+
+  useOverlayMode();
 
   useEffect(() => {
-    document.body.classList.add('overlay-mode');
-
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get('theme')?.toLowerCase();
+    const params = getOverlayParams();
     const subsParam = params.get('subs');
     const viewsParam = params.get('views');
     const videosParam = params.get('videos');
     const handleParam = params.get('handle') || params.get('channelId');
 
-    if (themeParam === 'magenta') setTheme('magenta');
-    if (themeParam === 'amber') setTheme('amber');
-    
-    if (subsParam) {
-      const parsedSubs = parseInt(subsParam, 10);
-      if (!isNaN(parsedSubs) && parsedSubs >= 0) setCustomSubs(parsedSubs);
-    }
-    if (viewsParam) {
-      const parsedViews = parseInt(viewsParam, 10);
-      if (!isNaN(parsedViews) && parsedViews >= 0) setCustomViews(parsedViews);
-    }
-    if (videosParam) {
-      const parsedVideos = parseInt(videosParam, 10);
-      if (!isNaN(parsedVideos) && parsedVideos >= 0) setCustomVideos(parsedVideos);
-    }
+    const readCount = (value: string | null): number | null => {
+      const parsed = Number(value);
+      return value !== null && Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+    };
+
+    const parsedSubs = readCount(subsParam);
+    if (parsedSubs !== null) setCustomSubs(parsedSubs);
+    const parsedViews = readCount(viewsParam);
+    if (parsedViews !== null) setCustomViews(parsedViews);
+    const parsedVideos = readCount(videosParam);
+    if (parsedVideos !== null) setCustomVideos(parsedVideos);
     if (handleParam) {
       setHandle(handleParam);
     }
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-    };
   }, []);
 
   useEffect(() => {
@@ -59,17 +48,17 @@ export function SubOverlayPage() {
       return;
     }
 
+    let cancelled = false;
+
     async function fetchStats() {
-      try {
-        const statsData = await getChannelStats(handle, false);
-        if (statsData) {
-          setYtStats(statsData as YouTubeStats);
-        }
-      } catch (err) {
-        console.error('Error fetching stats:', err);
-      }
+      const statsData = await getChannelStats(handle);
+      if (statsData && !cancelled) setYtStats(statsData);
     }
     fetchStats();
+
+    return () => {
+      cancelled = true;
+    };
   }, [handle, customSubs, customViews, customVideos]);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -81,30 +70,19 @@ export function SubOverlayPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const subscriberCount = customSubs !== null 
-    ? customSubs 
-    : (ytStats ? parseInt(ytStats.subscriberCount, 10) : 3530);
-    
-  const viewCountStr = customViews !== null 
-    ? customViews.toString() 
-    : (ytStats ? ytStats.viewCount : '1240000');
-    
-  const videoCountStr = customVideos !== null 
-    ? customVideos.toString() 
-    : (ytStats ? ytStats.videoCount : '142');
+  // Null means "unknown" and renders a placeholder: an overlay must never show a made-up count.
+  const subscriberCount = customSubs ?? (ytStats && !ytStats.hiddenSubscriberCount ? ytStats.subscriberCount : null);
+  const viewCount = customViews ?? (ytStats ? ytStats.viewCount : null);
+  const videoCount = customVideos ?? (ytStats ? ytStats.videoCount : null);
 
-  const accentColors = {
-    cyan: '#00f0ff',
-    magenta: '#ff0055',
-    amber: '#ffaa00'
-  };
-  const activeColor = accentColors[theme];
+  const renderCount = (value: number | null) =>
+    value === null ? t('common.placeholder') : fmt.compact(value);
 
   return (
     <div className="sub-overlay-wrapper">
       <div 
         className={`sub-stats-card-container theme-${theme}`}
-        style={{ '--accent-color': activeColor } as React.CSSProperties}
+        style={{ '--accent-color': accentColor } as React.CSSProperties}
       >
         {/* Cyberpunk decorative elements */}
         <div className="sub-corner-decor sub-top-left" />
@@ -120,16 +98,16 @@ export function SubOverlayPage() {
             style={{ transform: `translateY(-${activeIndex * 100}%)` }}
           >
             <div className="stat-slide">
-              <div className="stat-value">{formatCompactNumber(subscriberCount.toString())}</div>
-              <div className="stat-label">SUBSCRIBERS</div>
+              <div className="stat-value">{renderCount(subscriberCount)}</div>
+              <div className="stat-label">{t('metrics.subscribers.label')}</div>
             </div>
             <div className="stat-slide">
-              <div className="stat-value">{formatCompactNumber(viewCountStr)}</div>
-              <div className="stat-label">TOTAL VIEWS</div>
+              <div className="stat-value">{renderCount(viewCount)}</div>
+              <div className="stat-label">{t('metrics.views.label')}</div>
             </div>
             <div className="stat-slide">
-              <div className="stat-value">{videoCountStr}</div>
-              <div className="stat-label">TOTAL VIDEOS</div>
+              <div className="stat-value">{renderCount(videoCount)}</div>
+              <div className="stat-label">{t('metrics.videos.label')}</div>
             </div>
           </div>
         </div>

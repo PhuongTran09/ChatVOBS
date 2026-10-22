@@ -1,15 +1,6 @@
 import './DonateSection.css';
 import { useI18n } from '../i18n';
-
-interface DonateMethod {
-  id: string;
-  name: string;
-  url: string;
-  color: string;
-  btnClass?: string;
-  qrImage?: string;
-  description?: string;
-}
+import type { DonateMethod } from '../services';
 
 interface DonateSectionProps {
   donateMethods: DonateMethod[];

@@ -72,7 +72,7 @@ export const TerminalsBand = ({
                 onClose={() => closeTerminal("music")}
                 headClass="head-green"
               >
-                <MusicPlayerBody isOpen={terminals.music.isOpen} />
+                <MusicPlayerBody />
               </Terminal>
             </div>
           )}

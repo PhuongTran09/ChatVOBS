@@ -15,7 +15,7 @@ interface DiscordWidgetData {
 }
 
 export function SocialSchedule() {
-  const { t } = useI18n();
+  const { t, tDynamic, fmt } = useI18n();
   const [weeksList, setWeeksList] = useState<WeekDoc[]>([]);
   const [currentWeekIndex, setCurrentWeekIndex] = useState<number>(-1);
   const [discordData, setDiscordData] = useState<DiscordWidgetData | null>(null);
@@ -135,8 +135,8 @@ export function SocialSchedule() {
       (fetchedTasks) => {
         if (fetchedTasks) {
           const translatedTasks = fetchedTasks.map((task) => ({
-            title: task.titleKey ? t(task.titleKey) : (task.title || t('schedule.time.offline')),
-            description: task.descriptionKey ? t(task.descriptionKey) : (task.description || ''),
+            title: task.titleKey ? tDynamic(task.titleKey) : (task.title || t('schedule.time.offline')),
+            description: task.descriptionKey ? tDynamic(task.descriptionKey) : (task.description || ''),
             time: task.time || '',
             highlight: task.highlight
           }));
@@ -165,7 +165,7 @@ export function SocialSchedule() {
       }
     );
     return () => unsubscribe();
-  }, [activeWeek, t]);
+  }, [activeWeek, t, tDynamic]);
 
   const handlePrevWeek = () => {
     if (currentWeekIndex > 0) {
@@ -202,8 +202,8 @@ export function SocialSchedule() {
       activeWeek.year === String(todayCal.year));
   }, [activeWeek, todayCal]);
 
-  const todayStr = useMemo(() => today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }), [today]);
-  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  const todayStr = useMemo(() => fmt.date(today, '/'), [today, fmt]);
+  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
   // Hàm format ngày DD/MM
   const formatDate = (date: Date) => {
@@ -242,7 +242,7 @@ export function SocialSchedule() {
         
         <div className="schedule-controls">
           <div className="week-navigation">
-            <button className="nav-btn" onClick={handlePrevWeek} disabled={currentWeekIndex <= 0} aria-label="Previous Week">
+            <button className="nav-btn" onClick={handlePrevWeek} disabled={currentWeekIndex <= 0} aria-label={t('a11y.schedule.prevWeek')}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6"></polyline>
               </svg>
@@ -250,7 +250,7 @@ export function SocialSchedule() {
             <button className="nav-btn today-btn" onClick={handleToday}>
               {isCurrentWeekActive ? t('schedule.week_now') : (activeWeek ? t('schedule.week_num', { num: activeWeek.week }) : t('schedule.week_now'))}
             </button>
-            <button className="nav-btn" onClick={handleNextWeek} disabled={currentWeekIndex === -1 || currentWeekIndex >= weeksList.length - 1} aria-label="Next Week">
+            <button className="nav-btn" onClick={handleNextWeek} disabled={currentWeekIndex === -1 || currentWeekIndex >= weeksList.length - 1} aria-label={t('a11y.schedule.nextWeek')}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
@@ -277,7 +277,7 @@ export function SocialSchedule() {
                       <div className="day-info">
                         <span className="day">{t(`schedule.${dayKeys[index]}`)}</span>
                         <span className="full-date">
-                          {date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                          {fmt.date(date, '/')}
                         </span>
                       </div>
                       <div className="task-container">

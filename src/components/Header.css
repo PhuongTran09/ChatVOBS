@@ -7,14 +7,18 @@
   gap: 20px;
   padding: 15px 25px;
   background: linear-gradient(135deg, rgba(10, 15, 25, 0.85), rgba(0, 5, 10, 0.95));
-  backdrop-filter: blur(6px);
   border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: 0;
   box-shadow:
     inset 1px 1px 0 rgba(255, 255, 255, 0.1), 
     0 6px 0 rgba(0, 100, 100, 0.8),
     0 12px 25px rgba(0, 0, 0, 0.6);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* blur(6px) went: the header is position:relative over an opaque page background, so the
+     blur had nothing informative to sample while costing a full-width pass that the hover
+     lift re-runs. Named properties instead of `all` for the same reason. */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    border-color 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .cyber-header:hover {

@@ -47,9 +47,6 @@ export function ChatEditorSection({ onOpenChat }: ChatEditorSectionProps) {
         {/* Left Column: Content */}
         <div className="chat-editor-info">
           <span className="badge badge-primary" style={{ marginBottom: '15px', display: 'inline-block' }}>{t('badge.stream_overlays')}</span>
-          {/* <h2 className="glitch-text" data-text={t('nav.overlays')}>
-            {t('nav.overlays')}
-          </h2> */}
           <p className="sys-text description" dangerouslySetInnerHTML={{ __html: t('nav.overlays.desc') }} />
           <button type="button" className="cyber-btn primary-cyan large-btn" onClick={onOpenChat}>
             {t('hero.primary') || 'OPEN CHAT EDITOR'}

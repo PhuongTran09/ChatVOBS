@@ -364,7 +364,7 @@ export function useTerminals() {
     handleMouseDown,
     handleTouchDown,
     reopenTerminals,
-    draggingId: dragging?.id || null,
+    draggingId: dragging?.id,
     resetPosition,
   };
 }
