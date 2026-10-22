@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
   OVERLAY_ACCENT_COLORS,
+  TRANSITION_ACCENT_COLORS,
+  TRANSITION_ACCENT_GRADIENTS,
   getOverlayParams,
   readOverlayTheme,
+  readTransitionTheme,
   type OverlayTheme,
+  type TransitionTheme,
 } from '../constants/overlay';
 
 /**
@@ -29,4 +33,23 @@ export function useOverlayTheme(): { theme: OverlayTheme; accentColor: string } 
   }, []);
 
   return { theme, accentColor: OVERLAY_ACCENT_COLORS[theme] };
+}
+
+/** Same `?theme=` source, plus the gradient only the transition card renders. */
+export function useTransitionTheme(): {
+  theme: TransitionTheme;
+  accentColor: string;
+  accentGradient: string;
+} {
+  const [theme, setTheme] = useState<TransitionTheme>('cyan');
+
+  useEffect(() => {
+    setTheme(readTransitionTheme(getOverlayParams().get('theme')?.toLowerCase()));
+  }, []);
+
+  return {
+    theme,
+    accentColor: TRANSITION_ACCENT_COLORS[theme],
+    accentGradient: TRANSITION_ACCENT_GRADIENTS[theme],
+  };
 }

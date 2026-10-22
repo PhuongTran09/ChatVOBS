@@ -4,9 +4,12 @@ const { API_KEY, BASE_URL } = API_CONFIG.YOUTUBE;
 
 export interface YouTubeStats {
   id: string;
-  subscriberCount: string;
-  viewCount: string;
-  videoCount: string;
+  subscriberCount: number;
+  viewCount: number;
+  videoCount: number;
+  hiddenSubscriberCount: boolean;
+  /** `contentDetails.relatedPlaylists.uploads`, so callers never derive it by string surgery. */
+  uploadsPlaylistId: string;
   thumbnailUrl: string;
   title: string;
   description: string;
@@ -18,158 +21,376 @@ export interface YouTubeNotification {
   publishedAt: string;
   description: string;
   thumbnailUrl: string;
-  tags: string[];
 }
 
-interface YouTubePlaylistItem {
-  snippet: {
+export type YouTubeErrorCode =
+  | 'no_api_key'
+  | 'quota_exceeded'
+  | 'not_found'
+  | 'http'
+  | 'network';
+
+export class YouTubeApiError extends Error {
+  readonly code: YouTubeErrorCode;
+  readonly status?: number;
+  readonly retryable: boolean;
+
+  constructor(code: YouTubeErrorCode, message: string, status?: number) {
+    super(message);
+    this.name = 'YouTubeApiError';
+    this.code = code;
+    this.status = status;
+    // Anything the client cannot fix by waiting a few seconds, or that bills quota
+    // to retry, must stop the overlay poll loops.
+    this.retryable = code === 'network' || (status !== undefined && status >= 500);
+  }
+}
+
+interface ChannelItem {
+  id?: string;
+  snippet?: {
     title?: string;
-    resourceId?: { videoId?: string };
+    description?: string;
+    thumbnails?: { default?: { url?: string } };
+  };
+  statistics?: {
+    subscriberCount?: string;
+    viewCount?: string;
+    videoCount?: string;
+    hiddenSubscriberCount?: boolean;
+  };
+  contentDetails?: { relatedPlaylists?: { uploads?: string } };
+}
+
+interface PlaylistItem {
+  snippet?: {
+    title?: string;
     publishedAt?: string;
     description?: string;
-    thumbnails?: {
-      medium?: { url?: string };
-      default?: { url?: string };
-    };
+    resourceId?: { videoId?: string };
+    thumbnails?: { medium?: { url?: string }; default?: { url?: string } };
+  };
+  contentDetails?: { videoId?: string };
+}
+
+interface ListResponse<T> {
+  items?: T[];
+  error?: {
+    code?: number;
+    message?: string;
+    errors?: Array<{ reason?: string }>;
   };
 }
 
-const CACHE_KEYS = {
-  STATS: 'youtube_stats_cache',
-  NOTIFICATIONS: 'youtube_notifications_cache'
+/** A typo in `fields=` degrades to missing data at runtime, not a compile error — so it is declared once, here. */
+const CHANNEL_FIELDS =
+  'items(id,snippet(title,description,thumbnails/default/url),' +
+  'statistics(subscriberCount,viewCount,videoCount,hiddenSubscriberCount),' +
+  'contentDetails/relatedPlaylists/uploads)';
+const PLAYLIST_FIELDS =
+  'items(snippet(title,publishedAt,description,resourceId/videoId,' +
+  'thumbnails(medium(url),default(url))),contentDetails/videoId)';
+
+const CACHE_PREFIX = {
+  STATS: 'chatvobs:yt:stats',
+  NOTIFICATIONS: 'chatvobs:yt:uploads',
+  BACKOFF: 'chatvobs:yt:backoff',
 };
 
-const CACHE_TTL = 15 * 60 * 1000; // 15 minutes cache expiration
+const CACHE_TTL = 15 * 60 * 1000;
+/** How long every poll loop stays asleep after a non-recoverable API response. */
+const BACKOFF_MS = 5 * 60 * 1000;
+const REQUEST_TIMEOUT_MS = 10 * 1000;
+const MAX_NOTIFICATIONS = 50;
+
+/**
+ * Handles are case-insensitive and IDs are not, so each kind gets its own cache-key
+ * namespace. Rejecting odd characters here also keeps them out of localStorage keys.
+ */
+function normalizeIdentifier(identifier: string): { key: string; queryName: string; queryValue: string } | null {
+  const trimmed = identifier.trim().replace(/^@/, '');
+  if (!/^[A-Za-z0-9._-]{2,40}$/.test(trimmed)) return null;
+
+  if (/^UC[A-Za-z0-9_-]{22}$/.test(trimmed)) {
+    return { key: `id:${trimmed}`, queryName: 'id', queryValue: trimmed };
+  }
+  return { key: `handle:${trimmed.toLowerCase()}`, queryName: 'forHandle', queryValue: `@${trimmed}` };
+}
 
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
 }
 
-function getFromCache<T>(key: string, ignoreExpiry = false): T | null {
+function readCache<T>(key: string, guard: (value: unknown) => boolean, ignoreExpiry = false): T | null {
   try {
     const cached = localStorage.getItem(key);
     if (!cached) return null;
-    const entry: CacheEntry<T> = JSON.parse(cached);
-    if (!ignoreExpiry && Date.now() - entry.timestamp > CACHE_TTL) {
+    const entry: unknown = JSON.parse(cached);
+    if (
+      typeof entry !== 'object' ||
+      entry === null ||
+      typeof (entry as CacheEntry<T>).timestamp !== 'number'
+    ) {
       return null;
     }
-    return entry.data;
+    const { data, timestamp } = entry as CacheEntry<T>;
+    if (!ignoreExpiry && Date.now() - timestamp > CACHE_TTL) return null;
+    // A cached entry written by an older build has the previous shape.
+    return guard(data) ? (data as T) : null;
   } catch {
     return null;
   }
 }
 
-function setToCache<T>(key: string, data: T): void {
+function writeCache<T>(key: string, data: T): void {
   try {
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: Date.now()
-    };
+    const entry: CacheEntry<T> = { data, timestamp: Date.now() };
     localStorage.setItem(key, JSON.stringify(entry));
   } catch (error) {
     console.error('Error saving to local storage cache:', error);
   }
 }
 
+const isStatsCache = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false;
+  const stats = value as Partial<YouTubeStats>;
+  return (
+    typeof stats.id === 'string' &&
+    typeof stats.subscriberCount === 'number' &&
+    typeof stats.viewCount === 'number'
+  );
+};
+
+const isNotificationListCache = (value: unknown): boolean =>
+  Array.isArray(value) &&
+  value.every((item) => typeof (item as YouTubeNotification)?.videoId === 'string');
+
 /**
- * Fetches YouTube channel statistics using a handle (e.g., @YatoKenji)
+ * Errors that retrying cannot fix — a bad key, a dead key, a quota wall — park every
+ * overlay poll loop until `BACKOFF_MS` has passed.
  */
-export async function getChannelStats(identifier: string, bypassCache = false): Promise<YouTubeStats | null> {
-  // Check active cache
+function startBackoff(): void {
+  try {
+    localStorage.setItem(CACHE_PREFIX.BACKOFF, String(Date.now() + BACKOFF_MS));
+  } catch {
+    /* storage unavailable; poll loops just keep trying */
+  }
+}
+
+function isBackingOff(): boolean {
+  try {
+    const until = Number(localStorage.getItem(CACHE_PREFIX.BACKOFF));
+    return Number.isFinite(until) && until > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+async function requestYouTube<T>(
+  path: string,
+  params: Record<string, string>,
+): Promise<ListResponse<T>> {
+  if (!API_KEY) {
+    throw new YouTubeApiError('no_api_key', 'YouTube API key is not configured');
+  }
+
+  // `URLSearchParams` encodes every value, so a crafted `?handle=` cannot inject
+  // extra query parameters or leak past the intended one.
+  const url = new URL(`${BASE_URL.replace(/\/+$/, '')}/${path}`);
+  for (const [name, value] of Object.entries(params)) {
+    url.searchParams.set(name, value);
+  }
+  url.searchParams.set('key', API_KEY);
+
+  // Explicit controller rather than AbortSignal.timeout(): OBS ships older CEF builds.
+  // The timeout is the only canceller on purpose — callers share one in-flight request
+  // per channel, so letting one of them unmount must not cancel it for the others.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) {
+      let reason = '';
+      try {
+        const body = (await response.json()) as ListResponse<T>;
+        reason = body.error?.errors?.[0]?.reason ?? '';
+      } catch {
+        /* non-JSON error body; status alone is enough to classify */
+      }
+      const quotaBlocked =
+        response.status === 429 ||
+        (response.status === 403 &&
+          ['quotaExceeded', 'rateLimitExceeded', 'userRateLimitExceeded'].includes(reason));
+
+      if (quotaBlocked) {
+        startBackoff();
+        throw new YouTubeApiError('quota_exceeded', 'YouTube API quota exhausted', response.status);
+      }
+      if (response.status === 404 || reason === 'notFound') {
+        startBackoff();
+        throw new YouTubeApiError('not_found', 'YouTube channel or playlist not found', response.status);
+      }
+      if (response.status === 403 || response.status === 400) {
+        startBackoff();
+        throw new YouTubeApiError('http', `YouTube API rejected the request: ${response.status} ${reason}`, response.status);
+      }
+      throw new YouTubeApiError('http', `YouTube API error: ${response.status}`, response.status);
+    }
+
+    return (await response.json()) as ListResponse<T>;
+  } catch (error) {
+    if (error instanceof YouTubeApiError) throw error;
+    throw new YouTubeApiError('network', 'YouTube request failed or timed out');
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Pages such as the combined overlay mount several consumers of the same channel at
+ * once. Quota is billed per API key, so identical in-flight calls collapse into one.
+ */
+function dedupe<T>(
+  cache: Map<string, Promise<T>>,
+  key: string,
+  task: () => Promise<T>,
+): Promise<T> {
+  const pending = cache.get(key);
+  if (pending) return pending;
+
+  const created = task().finally(() => cache.delete(key));
+  cache.set(key, created);
+  return created;
+}
+
+const statsInFlight = new Map<string, Promise<YouTubeStats | null>>();
+const notificationsInFlight = new Map<string, Promise<YouTubeNotification[]>>();
+
+/**
+ * Fetches channel statistics by handle (e.g. `@YatoKenji`) or channel ID (`UC…`).
+ * Resolves to `null` when nothing usable is known — callers show a placeholder and
+ * must never substitute invented numbers.
+ */
+export async function getChannelStats(
+  identifier: string,
+  opts: { bypassCache?: boolean } = {},
+): Promise<YouTubeStats | null> {
+  const normalized = normalizeIdentifier(identifier);
+  if (!normalized) {
+    console.warn('Ignoring invalid YouTube channel identifier');
+    return null;
+  }
+
+  const cacheKey = `${CACHE_PREFIX.STATS}:${normalized.key}`;
+  const { bypassCache = false } = opts;
+
   if (!bypassCache) {
-    const cached = getFromCache<YouTubeStats>(CACHE_KEYS.STATS);
+    const cached = readCache<YouTubeStats>(cacheKey, isStatsCache);
     if (cached) return cached;
   }
+  // An exhausted quota or a dead key does not heal within one poll tick, so a bypassCache
+  // poll must not hammer it either. Stale data on screen beats an empty card, but never
+  // invents a number.
+  if (isBackingOff()) return readCache<YouTubeStats>(cacheKey, isStatsCache, true);
 
-  try {
-    let url = '';
-    if (identifier.startsWith('UC')) {
-      url = `${BASE_URL}/channels?part=statistics,snippet&id=${identifier}&key=${API_KEY}`;
-    } else {
-      const formattedHandle = identifier.startsWith('@') ? identifier : `@${identifier}`;
-      url = `${BASE_URL}/channels?part=statistics,snippet&forHandle=${formattedHandle}&key=${API_KEY}`;
-    }
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
-    const data = await response.json();
-    
-    if (data.items && data.items.length > 0) {
-      const channel = data.items[0];
-      const stats = {
+  return dedupe(statsInFlight, cacheKey, async () => {
+    try {
+      const data = await requestYouTube<ChannelItem>(
+        'channels',
+        {
+          part: 'snippet,statistics,contentDetails',
+          [normalized.queryName]: normalized.queryValue,
+          fields: CHANNEL_FIELDS,
+        },
+      );
+
+      const channel = data.items?.[0];
+      if (!channel?.id) return null;
+
+      const stats: YouTubeStats = {
         id: channel.id,
-        subscriberCount: channel.statistics.subscriberCount,
-        viewCount: channel.statistics.viewCount,
-        videoCount: channel.statistics.videoCount,
-        thumbnailUrl: channel.snippet.thumbnails.default?.url || '',
-        title: channel.snippet.title,
-        description: channel.snippet.description
+        subscriberCount: toCount(channel.statistics?.subscriberCount),
+        viewCount: toCount(channel.statistics?.viewCount),
+        videoCount: toCount(channel.statistics?.videoCount),
+        hiddenSubscriberCount: channel.statistics?.hiddenSubscriberCount === true,
+        uploadsPlaylistId: channel.contentDetails?.relatedPlaylists?.uploads ?? '',
+        thumbnailUrl: channel.snippet?.thumbnails?.default?.url ?? '',
+        title: channel.snippet?.title ?? '',
+        description: channel.snippet?.description ?? '',
       };
-      setToCache(CACHE_KEYS.STATS, stats);
+      writeCache(cacheKey, stats);
       return stats;
+    } catch (error) {
+      console.error('Error fetching YouTube stats:', error);
+      return readCache<YouTubeStats>(cacheKey, isStatsCache, true);
     }
-    return null;
-  } catch (error) {
-    console.error('Error fetching YouTube stats:', error);
-    // Fall back to expired cache if available to prevent showing blank interface
-    const fallback = getFromCache<YouTubeStats>(CACHE_KEYS.STATS, true);
-    if (fallback) return fallback;
-    return null;
-  }
+  });
+}
+
+function toCount(raw: string | undefined): number {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
 /**
- * Fetches the latest videos or streams from the channel as notifications
- * Optimized: Uses playlistItems of the default uploads playlist (1 quota unit instead of 100)
+ * Latest uploads, for the notification panel. Uses the uploads playlist reported by
+ * `channels` (1 quota unit) instead of searching the channel (100 units).
  */
-export async function getLatestNotifications(channelId: string, maxResults: number = 5): Promise<YouTubeNotification[]> {
-  const cacheKey = `${CACHE_KEYS.NOTIFICATIONS}_list_${channelId}_${maxResults}`;
-  const cached = getFromCache<YouTubeNotification[]>(cacheKey);
-  if (cached) return cached;
+export async function getLatestNotifications(
+  uploadsPlaylistId: string,
+  maxResults = 5,
+  opts: { bypassCache?: boolean } = {},
+): Promise<YouTubeNotification[]> {
+  const playlistId = uploadsPlaylistId.trim();
+  if (!/^UU[A-Za-z0-9_-]{22}$/.test(playlistId)) {
+    console.warn('Ignoring invalid YouTube uploads playlist id');
+    return [];
+  }
 
-  try {
-    if (!channelId.startsWith('UC')) {
-      throw new Error(`Invalid channel ID: ${channelId}`);
-    }
-    // Uploads playlist ID is derived by changing UC to UU in the channel ID
-    const playlistId = 'UU' + channelId.substring(2);
-    
-    const response = await fetch(
-      `${BASE_URL}/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${maxResults}&key=${API_KEY}`
-    );
-    if (!response.ok) throw new Error(`YouTube API error: ${response.status}`);
-    const data = await response.json();
-    
-    if (data.items && data.items.length > 0) {
-      const list = data.items.map((item: YouTubePlaylistItem) => ({
-        title: item.snippet.title || '',
-        videoId: item.snippet.resourceId?.videoId || '',
-        publishedAt: item.snippet.publishedAt || '',
-        description: item.snippet.description || '',
-        thumbnailUrl: item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || '',
-        tags: []
-      }));
-      setToCache(cacheKey, list);
+  const limit = Math.min(Math.max(Math.trunc(maxResults) || 1, 1), MAX_NOTIFICATIONS);
+  const cacheKey = `${CACHE_PREFIX.NOTIFICATIONS}:${playlistId}:${limit}`;
+  const { bypassCache = false } = opts;
+
+  if (!bypassCache) {
+    const cached = readCache<YouTubeNotification[]>(cacheKey, isNotificationListCache);
+    if (cached) return cached;
+  }
+  if (isBackingOff()) return readCache<YouTubeNotification[]>(cacheKey, isNotificationListCache, true) ?? [];
+
+  return dedupe(notificationsInFlight, cacheKey, async () => {
+    try {
+      const data = await requestYouTube<PlaylistItem>(
+        'playlistItems',
+        {
+          part: 'snippet,contentDetails',
+          playlistId,
+          maxResults: String(limit),
+          fields: PLAYLIST_FIELDS,
+        },
+      );
+
+      const list = (data.items ?? [])
+        .map((item) => ({
+          title: item.snippet?.title ?? '',
+          // `contentDetails` is authoritative; `snippet.resourceId` is kept as the older fallback.
+          videoId: item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId ?? '',
+          publishedAt: item.snippet?.publishedAt ?? '',
+          description: item.snippet?.description ?? '',
+          thumbnailUrl: item.snippet?.thumbnails?.medium?.url ?? item.snippet?.thumbnails?.default?.url ?? '',
+        }))
+        .filter((item) => item.videoId !== '');
+
+      if (list.length > 0) writeCache(cacheKey, list);
       return list;
+    } catch (error) {
+      console.error('Error fetching YouTube notifications:', error);
+      return readCache<YouTubeNotification[]>(cacheKey, isNotificationListCache, true) ?? [];
     }
-    return [];
-  } catch (error) {
-    console.error('Error fetching YouTube notifications:', error);
-    const fallback = getFromCache<YouTubeNotification[]>(cacheKey, true);
-    if (fallback) return fallback;
-    return [];
-  }
-}
-
-/**
- * Formats numbers to a shorter string (e.g., 12530 -> 12.53K)
- */
-export function formatCompactNumber(numberStr: string): string {
-  const number = parseInt(numberStr, 10);
-  if (isNaN(number)) return '0';
-  
-  return Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 2
-  }).format(number);
+  });
 }

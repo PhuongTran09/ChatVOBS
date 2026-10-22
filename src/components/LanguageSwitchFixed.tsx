@@ -4,7 +4,7 @@ import { CyberButtonSwitch } from './CyberButtonSwitch';
 import './LanguageSwitchFixed.css';
 
 export const LanguageSwitchFixed = () => {
-  const { locale, toggleLocale } = useI18n();
+  const { locale, toggleLocale, t } = useI18n();
   const [isOpen, setIsOpen] = useState(true);
 
   // Swipe gesture handling for mobile
@@ -45,7 +45,7 @@ export const LanguageSwitchFixed = () => {
       <button 
         className="toggle-collapse-btn" 
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Hide language switch" : "Show language switch"}
+        aria-label={isOpen ? t('a11y.langSwitch.hide') : t('a11y.langSwitch.show')}
       >
         <svg 
           width="15" 

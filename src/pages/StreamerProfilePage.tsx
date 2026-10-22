@@ -267,7 +267,7 @@ export function StreamerProfilePage({
             <div className="panel-scanline" />
             <div className="panel-corner-tl" />
             <div className="panel-corner-br" />
-            <h1 className="glitch-text" data-text="COMING SOON">COMING SOON</h1>
+            <h1 className="glitch-text" data-text={t('profile.comingSoon')}>{t('profile.comingSoon')}</h1>
             <p className="sys-text" style={{ color: 'var(--cyan)' }}>&gt; ACCESSING_DEVELOPER_PORTAL.log</p>
             <p className="sys-text blink-text" style={{ color: 'var(--magenta)' }}>&gt; UNDER_CONSTRUCTION_... [SYSTEM_STANDBY]</p>
           </div>

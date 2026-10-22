@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Metric } from './Metric';
 import './Hero.css';
 import { useI18n } from '../i18n';
-import { getChannelStats, getLatestNotifications, formatCompactNumber, type YouTubeStats, type YouTubeNotification } from '../services';
+import { getChannelStats, getLatestNotifications, type YouTubeStats, type YouTubeNotification } from '../services';
 import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE, CHANNEL_URL } from '../constants/branding';
 
 interface HeroProps {
@@ -11,20 +11,25 @@ interface HeroProps {
 }
 
 export function Hero({ profileMode }: HeroProps) {
-  const { t } = useI18n();
+  const { t, fmt } = useI18n();
   const [stats, setStats] = useState<YouTubeStats | null>(null);
   const [notifications, setNotifications] = useState<YouTubeNotification[]>([]);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function loadStats() {
       const data = await getChannelStats(CHANNEL_HANDLE);
-      if (data) {
-        setStats(data);
-        const notifs = await getLatestNotifications(data.id, 5);
-        setNotifications(notifs);
-      }
+      if (!data || cancelled) return;
+      setStats(data);
+      const notifs = await getLatestNotifications(data.uploadsPlaylistId, 5);
+      if (!cancelled) setNotifications(notifs);
     }
     loadStats();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -45,13 +50,13 @@ export function Hero({ profileMode }: HeroProps) {
         <div className="platform-tags">
           <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="channel-profile-tag" title="Visit YouTube Channel">
             <div className="click-indicator">
-              <span>CLICK</span>
+              <span>{t('overlay.hero.click')}</span>
             </div>
             <img src={stats?.thumbnailUrl || "/icon.png"} alt="Channel Avatar" className="channel-avatar" />
             <div className="channel-info-hero">
               <span className="channel-name-hero">{stats?.title ? stats.title.toUpperCase() : CHANNEL_DISPLAY_NAME}</span>
               <span className="channel-platform-hero" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textTransform: 'none', lineHeight: 1.4, marginTop: '4px' }}>
-                {stats?.description || 'YOUTUBE PARTNER'}
+                {stats?.description || t('overlay.hero.youtubePartner')}
               </span>
             </div>
           </a>
@@ -59,10 +64,10 @@ export function Hero({ profileMode }: HeroProps) {
 
 
 
-        <div className="cyber-metrics" aria-label="Channel metrics">
-          <Metric label={t('metrics.subscribers.label')} value={stats ? formatCompactNumber(stats.subscriberCount) : t('metrics.subscribers.value')} />
-          <Metric label={t('metrics.views.label')} value={stats ? formatCompactNumber(stats.viewCount) : '...'} />
-          <Metric label={t('metrics.videos.label')} value={stats ? formatCompactNumber(stats.videoCount) : t('metrics.videos.value')} />
+        <div className="cyber-metrics" aria-label={t('overlay.hero.metricsLabel')}>
+          <Metric label={t('metrics.subscribers.label')} value={stats ? fmt.compact(stats.subscriberCount) : t('common.placeholder')} />
+          <Metric label={t('metrics.views.label')} value={stats ? fmt.compact(stats.viewCount) : t('common.placeholder')} />
+          <Metric label={t('metrics.videos.label')} value={stats ? fmt.compact(stats.videoCount) : t('common.placeholder')} />
         </div>
       </div>
 
@@ -103,21 +108,14 @@ export function Hero({ profileMode }: HeroProps) {
                         )}
                         {notification.publishedAt && (
                           <span className="notification-date">
-                            {new Date(notification.publishedAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.')}
+                            {fmt.date(notification.publishedAt, '.')}
                           </span>
                         )}
                       </div>
                     </div>
-                  {notification.tags && notification.tags.length > 0 && (
-                    <div className="tech-tags" style={{ marginTop: '2px' }}>
-                      {notification.tags.slice(0, 3).map((tag, i) => (
-                        <span key={i}>#{tag.replace(/\s+/g, '')}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })}
           </div>
           ) : (
             <>

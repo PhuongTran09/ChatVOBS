@@ -4,12 +4,15 @@ import { getOverlayParams } from '../constants/overlay';
 import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
 import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
 import { OverlayDecor } from '../components/OverlayDecor';
+import { useI18n } from '../i18n';
+import { formatUtcOffset } from '../utils/format';
 
 export function ClockOverlayPage() {
   const [time, setTime] = useState(new Date());
   const [format24h, setFormat24h] = useState(true);
   const [showSeconds, setShowSeconds] = useState(true);
   const { theme, accentColor } = useOverlayTheme();
+  const { t, fmt } = useI18n();
 
   useOverlayMode();
 
@@ -56,11 +59,8 @@ export function ClockOverlayPage() {
     const year = time.getFullYear();
     const month = String(time.getMonth() + 1).padStart(2, '0');
     const date = String(time.getDate()).padStart(2, '0');
-    
-    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    const dayName = days[time.getDay()];
 
-    return `${dayName} | ${year}.${month}.${date}`;
+    return `${fmt.weekday(time)} | ${year}.${month}.${date}`;
   };
 
   const { hours, minutes, seconds, ampm } = getFormattedTime();
@@ -79,16 +79,16 @@ export function ClockOverlayPage() {
         <OverlayDecor />
         <div className="scanline-overlay" />
         <div className="cyber-grid-overlay" />
-        <div className="side-vertical-label-clock">LIKE & SUB!</div>
+        <div className="side-vertical-label-clock">{t('overlay.clock.likeSub')}</div>
 
         {/* Header */}
         <div className="clock-header">
           <div className="header-label-left">
             <span className="dot-blink" />
-            SYSTEM TIME
+            {t('overlay.clock.systemTime')}
           </div>
           <div className="header-label-right">
-            TZ: UTC+7
+            {t('overlay.clock.timezone')}: {formatUtcOffset(time)}
           </div>
         </div>
 

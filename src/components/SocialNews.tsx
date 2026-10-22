@@ -12,7 +12,7 @@ interface CategoryItem {
 }
 
 export function SocialNews() {
-  const { t } = useI18n();
+  const { t, fmt } = useI18n();
   const [filter, setFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNews, setSelectedNews] = useState<CombinedNewsArticle | null>(null);
@@ -109,19 +109,6 @@ export function SocialNews() {
       return icon as 'system' | 'youtube' | 'discord' | 'github';
     }
     return 'system';
-  };
-
-  const formatDate = (dateStr: string): string => {
-    try {
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return dateStr;
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    } catch {
-      return dateStr;
-    }
   };
 
   const getCategoryDisplayName = (article: CombinedNewsArticle): string => {
@@ -278,7 +265,7 @@ export function SocialNews() {
                       <span className="badge-pulse" />
                       {getCategoryDisplayName(item)}
                     </span>
-                    <span className="news-date">{formatDate(item.publishedAt)}</span>
+                    <span className="news-date">{fmt.date(item.publishedAt, '.')}</span>
                   </div>
 
                   {/* Title & Platform */}
@@ -337,7 +324,7 @@ export function SocialNews() {
               <span className={`modal-badge badge-${getArticleType(selectedNews)}`}>
                 {getCategoryDisplayName(selectedNews)}
               </span>
-              <span className="modal-date">{formatDate(selectedNews.publishedAt)}</span>
+              <span className="modal-date">{fmt.date(selectedNews.publishedAt, '.')}</span>
             </div>
 
             <div className="modal-header">

@@ -6,8 +6,10 @@ import { getOverlayParams } from '../constants/overlay';
 import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
 import { useOverlayMode } from '../hooks/useOverlayShell';
 import { OverlayDecor } from '../components/OverlayDecor';
+import { useI18n } from '../i18n';
 
 export function QROverlayPage() {
+  const { t } = useI18n();
   const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [methodParam, setMethodParam] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export function QROverlayPage() {
           </div>
           <div className="status-indicator">
             <span className="pulse-dot" />
-            LIVE
+            {t('overlay.qr.live')}
           </div>
         </div>
 
@@ -109,7 +111,7 @@ export function QROverlayPage() {
 
         <div className="overlay-footer">
           <div className="donation-name-badge">
-            <span className="badge-prefix">DONATE</span>
+            <span className="badge-prefix">{t('overlay.qr.donate')}</span>
             <span className="badge-name">{activeDonate.name}</span>
           </div>
           <span className="footer-deco-line" />

@@ -3,6 +3,7 @@ import '../styles/SocialOverlayPage.css';
 import { getOverlayParams } from '../constants/overlay';
 import { CHANNEL_HASHTAG } from '../constants/branding';
 import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
+import { useI18n } from '../i18n';
 
 const POCHACCO_GIFS = [
   'https://media.tenor.com/hcqMKPFXVNsAAAAj/cute-funny.gif',
@@ -15,9 +16,10 @@ const POCHACCO_GIFS = [
 
 export function SocialOverlayPage() {
   const { theme, accentColor } = useOverlayTheme();
+  const { t } = useI18n();
   const [activeGifIdx, setActiveGifIdx] = useState(0);
   const [gifTransition, setGifTransition] = useState<'in' | 'out'>('in');
-  const [followText, setFollowText] = useState('FOLLOW FOR UPDATES');
+  const [followText, setFollowText] = useState<string | null>(null);
 
 
   useOverlayMode();
@@ -53,13 +55,13 @@ export function SocialOverlayPage() {
         <div className="social-content-container">
           {/* Brand Header */}
           <div className="social-platform-label" style={{ color: '#ff0000' }}>
-            HASHTAG
+            {t('overlay.social.hashtag')}
           </div>
 
           {/* Account Details */}
           <div className="social-details">
             <div className="social-handle">{CHANNEL_HASHTAG}</div>
-            <div className="social-action-txt">{followText}</div>
+            <div className="social-action-txt">{followText ?? t('overlay.social.followDefault')}</div>
           </div>
 
           {/* Puppy Dance GIF */}
