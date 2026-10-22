@@ -1,4 +1,4 @@
-import type { RecordTranslations } from '../translations'
+import type { RecordTranslations } from '../types'
 
 export const vi = {
   'nav.brand': 'VOS-YA',
@@ -67,10 +67,11 @@ export const vi = {
   'discord.btn': 'THAM GIA NGAY',
   'gallery.badge': 'ẢNH CHỤP',
   'social.news.badge': 'BẢNG TIN',
+  'social.news.title': 'TIN_TỨC',
   'badge.stream_overlays': 'GIAO DIỆN CHAT',
   'badge.social_hub': 'LỊCH TRÌNH & TIN TỨC',
-    'news.search.placeholder': 'TÌM_KIẾM...',
-    'social.news.filter.all': 'TẤT CẢ',
+  'news.search.placeholder': 'TÌM_KIẾM...',
+  'social.news.filter.all': 'TẤT CẢ',
   'social.news.filter.announcement': 'THÔNG BÁO',
   'social.news.filter.milestone': 'CỘT MỐC',
   'social.news.filter.media': 'MEDIA',
@@ -92,11 +93,15 @@ export const vi = {
   'music.play': 'PHÁT',
   'music.pause': 'TẠM DỪNG',
   'music.vol': 'ÂM LƯỢNG',
+  'music.no_song': 'KHÔNG_CÓ_BÀI_HÁT',
   'system.booting': 'ĐANG_KHỞI_ĐỘNG_HỆ_THỐNG...',
   'system.rebooting': 'ĐANG_KHỞI_ĐỘNG_LẠI...',
   'system.initializing': '> ĐANG KHỞI TẠO CORE...',
   'system.loading_overlays': '> ĐANG TẢI OVERLAYS...',
   'system.establishing': '> ĐANG THIẾT LẬP KẾT NỐI...',
+  'system.loading_kernel': '> ĐANG TẢI KERNEL...',
+  'system.mounting': '> ĐANG GẮN HỆ THỐNG TỆP...',
+  'system.starting_core': '> ĐANG KHỞI ĐỘNG CORE...',
   'system.ready': '> HỆ THỐNG ĐÃ SẴN SÀNG.',
   'system.click_to_unlock': 'CLICK ĐỂ MỞ',
   'customizer.title': 'Trình chỉnh Chat Live',
@@ -216,6 +221,7 @@ export const vi = {
   'field.animation-out-time.label': 'Thời gian ẩn (ms)',
   'field.animation-out.label': 'Hiệu ứng biến mất',
   'field.animation-slide.label': 'Trượt',
+  'field.animation-reverse.label': 'Đảo chiều trượt',
   'example.new_sponsor': 'HỘI VIÊN MỚI!',
   'example.welcome': 'Chào mừng {name}!',
   'example.donation': '{amount} từ {name}!',

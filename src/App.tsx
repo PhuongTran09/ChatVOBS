@@ -1,6 +1,7 @@
 import './App.css'
+import './styles/overlay.css'
 import { useState, useEffect } from 'react'
-import { StreamerProfilePage } from './pages/HomePage'
+import { StreamerProfilePage } from './pages/StreamerProfilePage'
 import { ChatCustomizerPage } from './pages/ChatCustomizerPage'
 import { QROverlayPage } from './pages/QROverlayPage'
 import { ClockOverlayPage } from './pages/ClockOverlayPage'
@@ -10,6 +11,7 @@ import { SocialOverlayPage } from './pages/SocialOverlayPage'
 import { CombinedOverlayPage } from './pages/CombinedOverlayPage'
 import { LanguageSwitchFixed } from './components/LanguageSwitchFixed'
 import { MiniMusicController } from './components/MiniMusicController'
+import { getOverlayParams } from './constants/overlay'
 
 function App() {
   const [screen, setScreen] = useState<'home' | 'chat'>('home')
@@ -17,7 +19,7 @@ function App() {
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = getOverlayParams();
     const overlay = params.get('overlay');
     if (overlay === 'qr') {
       setOverlayType('qr');

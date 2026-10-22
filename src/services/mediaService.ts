@@ -1,4 +1,4 @@
-import { collection, query, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface MediaDoc {
@@ -43,28 +43,4 @@ export function subscribeToMedia(
     },
     onError
   );
-}
-
-/**
- * Fetches all media items from Firestore once.
- */
-export async function fetchMedia(): Promise<MediaDoc[]> {
-  const mediaQuery = query(collection(db, 'media'));
-  const snap = await getDocs(mediaQuery);
-  const list: MediaDoc[] = [];
-  
-  snap.forEach((doc) => {
-    const data = doc.data();
-    list.push({
-      id: doc.id,
-      name: data.name || '',
-      resolution: data.resolution || '',
-      size: data.size || '',
-      uploadedDate: data.uploadedDate || '',
-      url: data.url || '',
-    });
-  });
-
-  list.sort((a, b) => b.uploadedDate.localeCompare(a.uploadedDate));
-  return list;
 }

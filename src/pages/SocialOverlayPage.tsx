@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import '../styles/SocialOverlayPage.css';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_HASHTAG } from '../constants/branding';
+import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
 
 const POCHACCO_GIFS = [
   'https://media.tenor.com/hcqMKPFXVNsAAAAj/cute-funny.gif',
@@ -11,31 +14,18 @@ const POCHACCO_GIFS = [
 ];
 
 export function SocialOverlayPage() {
-  const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber'>('cyan');
+  const { theme, accentColor } = useOverlayTheme();
   const [activeGifIdx, setActiveGifIdx] = useState(0);
   const [gifTransition, setGifTransition] = useState<'in' | 'out'>('in');
   const [followText, setFollowText] = useState('FOLLOW FOR UPDATES');
 
 
+  useOverlayMode();
+
   useEffect(() => {
-    // Add overlay mode to body for transparency
-    document.body.classList.add('overlay-mode');
+    const followParam = getOverlayParams().get('follow');
 
-    // Parse options from URL query params
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get('theme')?.toLowerCase();
-    const followParam = params.get('follow');
-    // const handleParam = params.get('handle') || params.get('channelId');
-
-    if (themeParam === 'magenta') setTheme('magenta');
-    if (themeParam === 'amber') setTheme('amber');
-    
     if (followParam) setFollowText(followParam);
-    // if (handleParam) setYoutubeHandle(handleParam.startsWith('@') ? handleParam : `@${handleParam}`);
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-    };
   }, []);
 
   // Rotate through Pochacco GIFs with transition effect
@@ -51,18 +41,10 @@ export function SocialOverlayPage() {
     return () => clearInterval(gifInterval);
   }, []);
 
-  // Accent color mapping based on theme choice
-  const accentColors = {
-    cyan: '#00f0ff',
-    magenta: '#ff0055',
-    amber: '#ffaa00'
-  };
-  const activeColor = accentColors[theme];
-
   return (
     <div className="social-overlay-wrapper">
       {/* Holographic Social Card */}
-      <div className={`holo-social-card theme-${theme}`} style={{ '--accent-color': activeColor } as React.CSSProperties}>
+      <div className={`holo-social-card theme-${theme}`} style={{ '--accent-color': accentColor } as React.CSSProperties}>
         <div className="holo-frame-corner top-left" />
         <div className="holo-frame-corner top-right" />
         <div className="holo-frame-corner bottom-left" />
@@ -76,7 +58,7 @@ export function SocialOverlayPage() {
 
           {/* Account Details */}
           <div className="social-details">
-            <div className="social-handle">#yatokenji</div>
+            <div className="social-handle">{CHANNEL_HASHTAG}</div>
             <div className="social-action-txt">{followText}</div>
           </div>
 

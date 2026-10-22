@@ -1,4 +1,4 @@
-import type { TranslationKey } from "../i18n/types";
+import type { TranslationKey } from "../i18n";
 
 export const getExampleMarkup = (t: (key: TranslationKey, params?: Record<string, string | number>) => string) => [
   "<yt-live-chat-renderer>",

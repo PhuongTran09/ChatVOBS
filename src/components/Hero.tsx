@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Metric } from './Metric';
 import './Hero.css';
 import { useI18n } from '../i18n';
-import { getChannelStats, getLatestNotifications, formatCompactNumber, type YouTubeStats, type YouTubeNotification } from '../services/youtubeService';
+import { getChannelStats, getLatestNotifications, formatCompactNumber, type YouTubeStats, type YouTubeNotification } from '../services';
+import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE, CHANNEL_URL } from '../constants/branding';
 
 interface HeroProps {
   profileMode: 'streamer' | 'developer';
@@ -16,7 +17,7 @@ export function Hero({ profileMode }: HeroProps) {
 
   useEffect(() => {
     async function loadStats() {
-      const data = await getChannelStats('@YatoKenji');
+      const data = await getChannelStats(CHANNEL_HANDLE);
       if (data) {
         setStats(data);
         const notifs = await getLatestNotifications(data.id, 5);
@@ -42,13 +43,13 @@ export function Hero({ profileMode }: HeroProps) {
         </p>
 
         <div className="platform-tags">
-          <a href="https://youtube.com/@YatoKenji" target="_blank" rel="noopener noreferrer" className="channel-profile-tag" title="Visit YouTube Channel">
+          <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="channel-profile-tag" title="Visit YouTube Channel">
             <div className="click-indicator">
               <span>CLICK</span>
             </div>
             <img src={stats?.thumbnailUrl || "/icon.png"} alt="Channel Avatar" className="channel-avatar" />
             <div className="channel-info-hero">
-              <span className="channel-name-hero">{stats?.title ? stats.title.toUpperCase() : 'YATO KENJI'}</span>
+              <span className="channel-name-hero">{stats?.title ? stats.title.toUpperCase() : CHANNEL_DISPLAY_NAME}</span>
               <span className="channel-platform-hero" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textTransform: 'none', lineHeight: 1.4, marginTop: '4px' }}>
                 {stats?.description || 'YOUTUBE PARTNER'}
               </span>

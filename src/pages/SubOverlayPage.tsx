@@ -1,38 +1,30 @@
 import { useEffect, useState } from 'react';
 import '../styles/SubOverlayPage.css';
-import { getChannelStats, formatCompactNumber } from '../services/youtubeService';
-
-interface YouTubeStats {
-  id: string;
-  subscriberCount: string;
-  viewCount: string;
-  videoCount: string;
-  title: string;
-}
+import { getChannelStats, formatCompactNumber } from '../services';
+import type { YouTubeStats } from '../services';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_HANDLE } from '../constants/branding';
+import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
 
 export function SubOverlayPage() {
-  const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber'>('cyan');
+  const { theme, accentColor } = useOverlayTheme();
   const [ytStats, setYtStats] = useState<YouTubeStats | null>(null);
   
   // Custom overrides from URL parameters
   const [customSubs, setCustomSubs] = useState<number | null>(null);
   const [customViews, setCustomViews] = useState<number | null>(null);
   const [customVideos, setCustomVideos] = useState<number | null>(null);
-  const [handle, setHandle] = useState<string>('@YatoKenji');
+  const [handle, setHandle] = useState<string>(CHANNEL_HANDLE);
+
+  useOverlayMode();
 
   useEffect(() => {
-    document.body.classList.add('overlay-mode');
-
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get('theme')?.toLowerCase();
+    const params = getOverlayParams();
     const subsParam = params.get('subs');
     const viewsParam = params.get('views');
     const videosParam = params.get('videos');
     const handleParam = params.get('handle') || params.get('channelId');
 
-    if (themeParam === 'magenta') setTheme('magenta');
-    if (themeParam === 'amber') setTheme('amber');
-    
     if (subsParam) {
       const parsedSubs = parseInt(subsParam, 10);
       if (!isNaN(parsedSubs) && parsedSubs >= 0) setCustomSubs(parsedSubs);
@@ -48,10 +40,6 @@ export function SubOverlayPage() {
     if (handleParam) {
       setHandle(handleParam);
     }
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-    };
   }, []);
 
   useEffect(() => {
@@ -63,7 +51,7 @@ export function SubOverlayPage() {
       try {
         const statsData = await getChannelStats(handle, false);
         if (statsData) {
-          setYtStats(statsData as YouTubeStats);
+          setYtStats(statsData);
         }
       } catch (err) {
         console.error('Error fetching stats:', err);
@@ -93,18 +81,11 @@ export function SubOverlayPage() {
     ? customVideos.toString() 
     : (ytStats ? ytStats.videoCount : '142');
 
-  const accentColors = {
-    cyan: '#00f0ff',
-    magenta: '#ff0055',
-    amber: '#ffaa00'
-  };
-  const activeColor = accentColors[theme];
-
   return (
     <div className="sub-overlay-wrapper">
       <div 
         className={`sub-stats-card-container theme-${theme}`}
-        style={{ '--accent-color': activeColor } as React.CSSProperties}
+        style={{ '--accent-color': accentColor } as React.CSSProperties}
       >
         {/* Cyberpunk decorative elements */}
         <div className="sub-corner-decor sub-top-left" />

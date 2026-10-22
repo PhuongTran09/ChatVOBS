@@ -1,5 +1,3 @@
-import type { RecordTranslations } from '../translations'
-
 export const en = {
   'nav.brand': 'VOS-YA',
   'nav.tagline': 'YATO KENJI - STREAMER & DEVELOPER',
@@ -67,6 +65,7 @@ export const en = {
   'discord.btn': 'JOIN NOW',
   'gallery.badge': 'SNAPSHOTS',
   'social.news.badge': 'SOCIAL FEED',
+  'social.news.title': 'NEWS_FEED',
   'badge.stream_overlays': 'STREAM OVERLAYS',
   'badge.social_hub': 'SCHEDULE & NEWS',
   'news.search.placeholder': 'SEARCH...',
@@ -92,11 +91,15 @@ export const en = {
   'music.play': 'PLAY',
   'music.pause': 'PAUSE',
   'music.vol': 'VOL',
+  'music.no_song': 'NO_SONG_PLAYING',
   'system.booting': 'BOOTING_SYSTEM...',
   'system.rebooting': 'SYSTEM_REBOOTING...',
   'system.initializing': '> INITIALIZING CORE...',
   'system.loading_overlays': '> LOADING OVERLAYS...',
   'system.establishing': '> ESTABLISHING CONNECTION...',
+  'system.loading_kernel': '> LOADING KERNEL...',
+  'system.mounting': '> MOUNTING FILESYSTEM...',
+  'system.starting_core': '> STARTING CORE...',
   'system.ready': '> SYSTEM READY.',
   'system.click_to_unlock': 'CLICK TO UNLOCK',
   'customizer.title': 'Chat Live Customizer',
@@ -216,6 +219,7 @@ export const en = {
   'field.animation-out-time.label': 'Fade out time (milliseconds)',
   'field.animation-out.label': 'Animate out (remove old messages)',
   'field.animation-slide.label': 'Slide',
+  'field.animation-reverse.label': 'Reverse slide',
   'example.new_sponsor': 'NEW SPONSOR!',
   'example.welcome': 'Welcome {name}!',
   'example.donation': '{amount} from {name}!',
@@ -234,4 +238,4 @@ export const en = {
   'mock.chat.msg7': 'Oh, it loops automatically haha',
   'mock.chat.msg8': "It's running the demo animation",
   'mock.chat.msg9': "Awesome, I'll try installing it right now.",
-} satisfies RecordTranslations
+} satisfies Record<string, string>

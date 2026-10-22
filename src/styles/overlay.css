@@ -1,0 +1,9 @@
+/* Transparency contract for every OBS overlay route.
+   This used to live inside QROverlayPage.css, so the other four pages that
+   toggle .overlay-mode only stayed transparent because CombinedOverlayPage
+   happens to render QROverlayPage and pulls its CSS in through the JS module
+   graph. Imported once from App.tsx so it no longer depends on that. */
+body.overlay-mode {
+  background-color: transparent !important;
+  background: transparent !important;
+}

@@ -1,4 +1,4 @@
-import type { FC, Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Control } from "./Control";
 import { fields } from "../data/fields";
 import type { CustomizerValues } from "../types/customizer";
@@ -11,12 +11,12 @@ interface ControlPanelProps {
   setAnimationTick: Dispatch<SetStateAction<number>>;
 }
 
-export const ControlPanel: FC<ControlPanelProps> = ({
+export const ControlPanel = ({
   values,
   setValue,
   setAnimationTick,
-}) => {
-  const { t } = useI18n();
+}: ControlPanelProps) => {
+  const { t, tDynamic } = useI18n();
 
   return (
     <aside className="customizer-panel glass-card slide-right">
@@ -29,7 +29,7 @@ export const ControlPanel: FC<ControlPanelProps> = ({
         {fields.map((group) => (
           <section className="control-group" key={group.title}>
             <div className="group-heading">
-              <h3>{t(`field.group.${group.title.toLowerCase().replace(/\s+/g, "").split("/")[0]}`)}</h3>
+              <h3>{tDynamic(`field.group.${group.title.toLowerCase().replace(/\s+/g, "").split("/")[0]}`)}</h3>
             </div>
             {group.colors && (
               <div className="color-group fade-in-up">

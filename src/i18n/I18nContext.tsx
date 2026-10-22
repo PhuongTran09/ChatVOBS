@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { getTranslation } from './translations'
+import { getTranslation, translate } from './translations'
 import type { Locale, TranslationKey } from './types'
 
 const STORAGE_KEY = 'chatvobs-locale'
@@ -9,6 +9,7 @@ type I18nContextValue = {
   setLocale: (locale: Locale) => void
   toggleLocale: () => void
   t: (key: TranslationKey, params?: Record<string, string | number>) => string
+  tDynamic: (key: string, params?: Record<string, string | number>) => string
 }
 
 const I18nContext = createContext<I18nContextValue | undefined>(undefined)
@@ -52,6 +53,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       setLocale,
       toggleLocale: () => setLocale((current) => (current === 'en' ? 'vi' : 'en')),
       t: (key, params) => formatMessage(getTranslation(locale, key), params),
+      tDynamic: (key, params) => formatMessage(translate(locale, key), params),
     }),
     [locale],
   )

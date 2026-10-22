@@ -1,16 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import '../styles/TransitionOverlayPage.css';
-import { getChannelStats } from '../services/youtubeService';
-
-interface YouTubeStats {
-  id: string;
-  subscriberCount: string;
-  viewCount: string;
-  videoCount: string;
-  thumbnailUrl: string;
-  title: string;
-  description: string;
-}
+import { getChannelStats } from '../services';
+import type { YouTubeStats } from '../services';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE } from '../constants/branding';
+import { useOverlayMode } from '../hooks/useOverlayShell';
+import { OverlayDecor } from '../components/OverlayDecor';
 
 export function TransitionOverlayPage() {
   const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber' | 'rainbow'>('cyan');
@@ -21,7 +16,7 @@ export function TransitionOverlayPage() {
   
   // URL configurations
   const [customSubs, setCustomSubs] = useState<number | null>(null);
-  const [handle, setHandle] = useState<string>('@YatoKenji');
+  const [handle, setHandle] = useState<string>(CHANNEL_HANDLE);
   const [customName, setCustomName] = useState<string | null>(null);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
   
@@ -37,11 +32,11 @@ export function TransitionOverlayPage() {
 
   const prevSubsRef = useRef<number>(0);
 
-  useEffect(() => {
-    document.body.classList.add('overlay-mode');
+  useOverlayMode();
 
+  useEffect(() => {
     // Parse search parameters
-    const params = new URLSearchParams(window.location.search);
+    const params = getOverlayParams();
     const themeParam = params.get('theme')?.toLowerCase();
     const subsParam = params.get('subs');
     const handleParam = params.get('handle') || params.get('channelId');
@@ -94,7 +89,6 @@ export function TransitionOverlayPage() {
     const clickLikeTimer = clickLikeTimerRef.current;
 
     return () => {
-      document.body.classList.remove('overlay-mode');
       if (clickSubTimer) clearTimeout(clickSubTimer);
       if (clickBellTimer) clearTimeout(clickBellTimer);
       if (stopBellTimer) clearTimeout(stopBellTimer);
@@ -236,7 +230,7 @@ export function TransitionOverlayPage() {
     return () => clearInterval(intervalId);
   }, [loop, loopTime]);
 
-  const displayName = customName || ytStats?.title || 'YATO KENJI';
+  const displayName = customName || ytStats?.title || CHANNEL_DISPLAY_NAME;
   const displayAvatar = customAvatar || ytStats?.thumbnailUrl || '/assets/images/obs-mockup.png';
 
   const themeColors = {
@@ -261,10 +255,7 @@ export function TransitionOverlayPage() {
         <div className="cyber-grid-overlay" />
 
         {/* Decorative corner elements */}
-        <div className="corner-decor top-left" />
-        <div className="corner-decor top-right" />
-        <div className="corner-decor bottom-left" />
-        <div className="corner-decor bottom-right" />
+        <OverlayDecor />
 
         {/* Profile / Greeting Block */}
         <div className="badge-side">

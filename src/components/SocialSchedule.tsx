@@ -15,7 +15,7 @@ interface DiscordWidgetData {
 }
 
 export function SocialSchedule() {
-  const { t } = useI18n();
+  const { t, tDynamic } = useI18n();
   const [weeksList, setWeeksList] = useState<WeekDoc[]>([]);
   const [currentWeekIndex, setCurrentWeekIndex] = useState<number>(-1);
   const [discordData, setDiscordData] = useState<DiscordWidgetData | null>(null);
@@ -135,8 +135,8 @@ export function SocialSchedule() {
       (fetchedTasks) => {
         if (fetchedTasks) {
           const translatedTasks = fetchedTasks.map((task) => ({
-            title: task.titleKey ? t(task.titleKey) : (task.title || t('schedule.time.offline')),
-            description: task.descriptionKey ? t(task.descriptionKey) : (task.description || ''),
+            title: task.titleKey ? tDynamic(task.titleKey) : (task.title || t('schedule.time.offline')),
+            description: task.descriptionKey ? tDynamic(task.descriptionKey) : (task.description || ''),
             time: task.time || '',
             highlight: task.highlight
           }));
@@ -165,7 +165,7 @@ export function SocialSchedule() {
       }
     );
     return () => unsubscribe();
-  }, [activeWeek, t]);
+  }, [activeWeek, t, tDynamic]);
 
   const handlePrevWeek = () => {
     if (currentWeekIndex > 0) {
@@ -203,7 +203,7 @@ export function SocialSchedule() {
   }, [activeWeek, todayCal]);
 
   const todayStr = useMemo(() => today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }), [today]);
-  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
   // Hàm format ngày DD/MM
   const formatDate = (date: Date) => {

@@ -86,14 +86,18 @@ export function MiniMusicController() {
     pointerStartRef.current = null;
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch (err) {}
+    } catch {
+      // Already released (e.g. pointercancel raced ahead) — nothing to free.
+    }
   };
 
   const handlePointerCancel = (e: React.PointerEvent) => {
     pointerStartRef.current = null;
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch (err) {}
+    } catch {
+      // Already released (e.g. pointercancel raced ahead) — nothing to free.
+    }
   };
 
   return (
@@ -113,7 +117,7 @@ export function MiniMusicController() {
           <div className="song-details">
             <div className="song-title-marquee">
               <span className={isPlaying ? 'marquee-scroll' : ''}>
-                {currentSong ? currentSong.name : t('music.no_song') || 'No Song Playing'}
+                {currentSong ? currentSong.name : t('music.no_song')}
               </span>
             </div>
             <div className="song-artist">

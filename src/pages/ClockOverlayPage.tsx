@@ -1,25 +1,23 @@
 import { useEffect, useState } from 'react';
 import '../styles/ClockOverlayPage.css';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
+import { useOverlayMode, useOverlayTheme } from '../hooks/useOverlayShell';
+import { OverlayDecor } from '../components/OverlayDecor';
 
 export function ClockOverlayPage() {
   const [time, setTime] = useState(new Date());
   const [format24h, setFormat24h] = useState(true);
   const [showSeconds, setShowSeconds] = useState(true);
-  const [theme, setTheme] = useState<'cyan' | 'magenta' | 'amber'>('cyan');
+  const { theme, accentColor } = useOverlayTheme();
+
+  useOverlayMode();
 
   useEffect(() => {
-    // Add overlay mode to body for transparency
-    document.body.classList.add('overlay-mode');
-
-    // Parse options from URL query params
-    const params = new URLSearchParams(window.location.search);
-    const themeParam = params.get('theme')?.toLowerCase();
+    const params = getOverlayParams();
     const formatParam = params.get('format')?.toLowerCase();
     const secondsParam = params.get('seconds')?.toLowerCase();
 
-    if (themeParam === 'magenta') setTheme('magenta');
-    if (themeParam === 'amber') setTheme('amber');
-    
     if (formatParam === '12h') setFormat24h(false);
     if (secondsParam === 'false') setShowSeconds(false);
 
@@ -28,10 +26,7 @@ export function ClockOverlayPage() {
       setTime(new Date());
     }, 1000);
 
-    return () => {
-      document.body.classList.remove('overlay-mode');
-      clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, []);
 
   // Format Date and Time details
@@ -74,25 +69,14 @@ export function ClockOverlayPage() {
   // Progress of the current minute (for the cyberpunk progress bar)
   const minuteProgress = (time.getSeconds() / 60) * 100;
 
-  // Accent color mapping based on theme choice
-  const accentColors = {
-    cyan: '#00f0ff',
-    magenta: '#ff0055',
-    amber: '#ffaa00'
-  };
-  const activeColor = accentColors[theme];
-
   return (
     <div className="clock-overlay-wrapper">
       <div 
         className={`clock-overlay-card theme-${theme}`}
-        style={{ '--accent-color': activeColor } as React.CSSProperties}
+        style={{ '--accent-color': accentColor } as React.CSSProperties}
       >
         {/* Cyberpunk decorative elements */}
-        <div className="corner-decor top-left" />
-        <div className="corner-decor top-right" />
-        <div className="corner-decor bottom-left" />
-        <div className="corner-decor bottom-right" />
+        <OverlayDecor />
         <div className="scanline-overlay" />
         <div className="cyber-grid-overlay" />
         <div className="side-vertical-label-clock">LIKE & SUB!</div>
@@ -136,7 +120,7 @@ export function ClockOverlayPage() {
         {/* Footer info band */}
         <div className="clock-footer">
           <span className="footer-deco-square" />
-          <span className="footer-status-text">YATO KENJI</span>
+          <span className="footer-status-text">{CHANNEL_DISPLAY_NAME}</span>
           <span className="footer-deco-square" />
         </div>
       </div>

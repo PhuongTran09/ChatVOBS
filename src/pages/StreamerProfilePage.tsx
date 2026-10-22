@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import '../styles/HomePage.css'
+import '../styles/StreamerProfilePage.css'
 import { subscribeToActiveDonates, subscribeToMedia, subscribeToActiveSongs, type MediaDoc, type DonateMethod } from '../services'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
@@ -23,7 +23,6 @@ export function StreamerProfilePage({
   isInitialLoading,
   setIsInitialLoading,
 }: {
-  onOpenFonts?: () => void
   onOpenChat?: () => void
   isInitialLoading: boolean
   setIsInitialLoading: (val: boolean) => void
@@ -42,7 +41,7 @@ export function StreamerProfilePage({
   const {
     terminals,
     activeTerminal,
-    dragging,
+    draggingId,
     isRebooting,
     isAnyTerminalClosed,
     bringToFront,
@@ -230,7 +229,7 @@ export function StreamerProfilePage({
             <TerminalsBand
               terminals={terminals}
               activeTerminal={activeTerminal}
-              draggingId={dragging?.id}
+              draggingId={draggingId}
               bringToFront={bringToFront}
               handleMouseDown={handleMouseDown}
               handleTouchDown={handleTouchDown}

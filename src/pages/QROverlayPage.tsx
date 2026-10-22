@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 import '../styles/QROverlayPage.css';
 import { subscribeToActiveDonates } from '../services';
-
-interface DonateMethod {
-  id: string;
-  name: string;
-  url: string;
-  color: string;
-  qrImage?: string;
-  description?: string;
-}
+import type { DonateMethod } from '../services';
+import { getOverlayParams } from '../constants/overlay';
+import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
+import { useOverlayMode } from '../hooks/useOverlayShell';
+import { OverlayDecor } from '../components/OverlayDecor';
 
 export function QROverlayPage() {
   const [donateMethods, setDonateMethods] = useState<DonateMethod[]>([]);
@@ -18,21 +14,16 @@ export function QROverlayPage() {
   const [intervalParam, setIntervalParam] = useState<number>(40); // Default 40s as requested
   const [isAnimating, setIsAnimating] = useState(false);
 
+  useOverlayMode();
+
   useEffect(() => {
-    document.body.classList.add('overlay-mode');
-    
-    const params = new URLSearchParams(window.location.search);
-    const cycleTime = params.get('interval');
+    const cycleTime = getOverlayParams().get('interval');
     if (cycleTime) {
       const parsed = parseInt(cycleTime, 10);
       if (!isNaN(parsed) && parsed > 0) {
         setIntervalParam(parsed);
       }
     }
-
-    return () => {
-      document.body.classList.remove('overlay-mode');
-    };
   }, []);
 
   // Fetch active donate methods from Firebase
@@ -41,7 +32,7 @@ export function QROverlayPage() {
       (list) => {
         setDonateMethods(list);
         
-        const params = new URLSearchParams(window.location.search);
+        const params = getOverlayParams();
         const method = params.get('method')?.toLowerCase();
         
         if (method && list.some(m => m.id === method)) {
@@ -89,13 +80,10 @@ export function QROverlayPage() {
         style={{ '--accent-color': activeDonate.color } as React.CSSProperties}
       >
         {/* Cyberpunk decorative elements */}
-        <div className="corner-decor top-left" />
-        <div className="corner-decor top-right" />
-        <div className="corner-decor bottom-left" />
-        <div className="corner-decor bottom-right" />
+        <OverlayDecor />
         <div className="scanline-overlay" />
         <div className="cyber-grid-overlay" />
-        <div className="side-vertical-label">YATO KENJI</div>
+        <div className="side-vertical-label">{CHANNEL_DISPLAY_NAME}</div>
 
         <div className="overlay-header">
           <div className="method-glow-title">

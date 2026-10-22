@@ -62,7 +62,8 @@ if (typeof window !== 'undefined') {
 const initAnalyser = (audio: HTMLAudioElement) => {
   if (globalAudioCtx) return;
 
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+  const webkitWindow = window as Window & { webkitAudioContext?: typeof AudioContext };
+  const AudioContextClass = window.AudioContext || webkitWindow.webkitAudioContext;
   if (!AudioContextClass) return;
 
   try {
@@ -77,9 +78,6 @@ const initAnalyser = (audio: HTMLAudioElement) => {
 
     globalAudioCtx = ctx;
     globalAnalyser = analyser;
-    
-    // Set on window so other components can access it if needed
-    (window as any).globalAudioCtx = ctx;
   } catch (e) {
     console.warn("Audio Context initialization failed or source already connected:", e);
   }
@@ -93,7 +91,6 @@ const ensureAudioInitialized = () => {
   audio.crossOrigin = "anonymous";
   audio.volume = globalVolume / 100;
   globalAudio = audio;
-  (window as any).globalAudio = audio;
 
   audio.addEventListener('timeupdate', () => {
     globalCurrentTime = audio.currentTime;
@@ -249,11 +246,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-interface MusicPlayerBodyProps {
-  isOpen?: boolean;
-}
-
-export function MusicPlayerBody(_props: MusicPlayerBodyProps) {
+export function MusicPlayerBody() {
   const { t } = useI18n();
   const [activeSongIdx, setActiveSongIdx] = useState(globalActiveSongIdx);
   const [volume, setVolume] = useState(globalVolume);

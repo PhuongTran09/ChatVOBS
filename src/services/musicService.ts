@@ -1,4 +1,4 @@
-import { collection, query, where, onSnapshot, getDocs } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface SongDoc {
@@ -46,33 +46,4 @@ export function subscribeToActiveSongs(
     },
     onError
   );
-}
-
-/**
- * Fetches all active songs from Firestore once.
- */
-export async function fetchActiveSongs(): Promise<SongDoc[]> {
-  const songsQuery = query(
-    collection(db, 'songs'),
-    where('status', '==', 'active')
-  );
-
-  const snap = await getDocs(songsQuery);
-  const list: SongDoc[] = [];
-  
-  snap.forEach((doc) => {
-    const data = doc.data();
-    list.push({
-      id: doc.id,
-      artist: data.artist || '',
-      duration: data.duration || '',
-      fileName: data.fileName || '',
-      sourceType: data.sourceType || '',
-      status: data.status || '',
-      title: data.title || '',
-      url: data.url || '',
-    });
-  });
-  
-  return list;
 }

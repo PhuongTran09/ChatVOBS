@@ -199,7 +199,7 @@ export function SocialNews() {
 
   const getCategoryNameDisplay = (catName: string): string => {
     const nameLower = catName.toLowerCase().trim();
-    let type = '';
+    let type: '' | 'announcement' | 'milestone' | 'media' = '';
     if (nameLower === 'thông báo' || nameLower === 'announcement' || nameLower === 'announcements') {
       type = 'announcement';
     } else if (nameLower === 'cột mốc' || nameLower === 'milestone' || nameLower === 'milestones') {
