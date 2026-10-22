@@ -17,6 +17,8 @@ export function Header({ profileMode, setProfileMode }: HeaderProps) {
       ? ['overview', 'dev-skills', 'dev-projects', 'dev-tools']
       : ['overview', 'overlays-activity', 'donate', 'social-hub'];
 
+    setActiveSection('overview');
+
     const observerOptions = {
       root: null,
       rootMargin: '-30% 0px -55% 0px',

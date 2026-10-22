@@ -9,8 +9,6 @@
   border-radius: 0;
   padding: 8px 16px;
   background: rgba(0, 255, 0, 0.03);
-  backdrop-filter: blur(2px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -18,6 +16,12 @@
   min-width: 120px;
 }
 
+/*
+ * backdrop-filter and the two transitions are gone on purpose. Nothing changes a tile's
+ * properties any more (their hover rules were removed), but a blur of whatever sits behind
+ * a tile has to be re-sampled whenever that region repaints — and in developer mode a
+ * sheen sweeps across every tile continuously.
+ */
 .cyber-metric::before {
   content: '';
   position: absolute;
@@ -25,7 +29,6 @@
   width: 50%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
   transform: skewX(-20deg);
-  transition: all 0.5s ease;
 }
 
 /* Hover effects removed */

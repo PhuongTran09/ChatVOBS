@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/TransitionOverlayPage.css';
-import { getChannelStats } from '../services';
-import type { YouTubeStats } from '../services';
+import { getChannelStats } from '../services/youtubeService';
+import type { YouTubeStats } from '../services/youtubeService';
 import { getOverlayParams } from '../constants/overlay';
 import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE } from '../constants/branding';
 import { useOverlayMode, useTransitionTheme } from '../hooks/useOverlayShell';

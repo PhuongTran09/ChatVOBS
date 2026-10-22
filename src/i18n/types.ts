@@ -11,3 +11,6 @@ export type Locale = 'en' | 'vi'
 export type TranslationKey = keyof typeof en
 
 export type RecordTranslations = Record<TranslationKey, string>
+
+/** Lets a data module build translated copy without importing React. */
+export type TranslateFn = (key: TranslationKey, params?: Record<string, string | number>) => string

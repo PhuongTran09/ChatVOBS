@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../styles/QROverlayPage.css';
-import { subscribeToActiveDonates } from '../services';
-import type { DonateMethod } from '../services';
+import { subscribeToActiveDonates } from '../services/donateService';
+import type { DonateMethod } from '../services/donateService';
 import { getOverlayParams } from '../constants/overlay';
 import { CHANNEL_DISPLAY_NAME } from '../constants/branding';
 import { useOverlayMode } from '../hooks/useOverlayShell';

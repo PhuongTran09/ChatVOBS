@@ -1,6 +1,8 @@
 .cyber-terminal {
+  /* No backdrop-filter: the 768px block below already disabled it as "severe lag", and a
+     detached terminal is position:fixed dragged with translate3d, which re-samples the blur
+     on every frame. At 0.9 alpha the background was nearly opaque already. */
   background: rgba(5, 5, 8, 0.9);
-  backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 
     0 10px 40px rgba(0, 0, 0, 0.8),
@@ -355,7 +357,6 @@
 /* MOBILE PERFORMANCE OPTIMIZATIONS */
 @media (max-width: 768px) {
   .cyber-terminal {
-    backdrop-filter: none; /* Causes severe lag on mobile */
     background: rgba(10, 10, 15, 0.98); /* Solidify background */
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.9); /* Simplify shadow */
   }

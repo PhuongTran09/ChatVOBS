@@ -41,3 +41,105 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 255, 255, 0.25) #050508;
 }
+
+/* Every glow, scan and flicker on this site runs forever, so a page left open as an OBS
+   browser source repaints for the whole stream. The guard lives in the entry stylesheet
+   rather than animations.css because the routes are now split into their own chunks, and
+   animations.css only reaches the home one. 0.01ms keeps entrance animations resolving to
+   their end state instead of stranding elements at their first keyframe. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================
+   SHARED LABEL PILLS
+   These lived in ChatCustomizerPage.css, which once reached every route through a static
+   import in App.tsx. The routes are split into their own chunks now, so the profile page
+   and the music panel were rendering `.badge` / `.glass-card` with no geometry at all and
+   reading --neon-* / --glass-* from a stylesheet they never load. Entry CSS is the only
+   file guaranteed on every route, so the tokens and the pill shape belong here.
+========================================= */
+:root {
+  --neon-cyan: #0ff;
+  --neon-magenta: #f0f;
+  --glass-bg: rgba(10, 15, 25, 0.85);
+  --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 255, 255, 0.05);
+  --pill-tracking: 0.1em;
+}
+
+/* One scale for every uppercase label pill: same border, same air around the text, same
+   height. Component files still set their own colour and, for the two denser pills, their
+   own size — those rules load after this one, so equal specificity is enough. */
+.badge,
+.cyber-badge,
+.donate-method-tag,
+.modal-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: var(--pill-tracking);
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  /* Tracking puts a space after the last glyph too, so the right side is narrowed by exactly
+     that amount; symmetric padding is what makes an uppercase pill look off-centre. */
+  padding: 4px calc(10px - var(--pill-tracking)) 4px 10px;
+  width: fit-content;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+  position: relative;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 20px;
+  height: 20px;
+  border-top: 2px solid var(--neon-cyan);
+  border-left: 2px solid var(--neon-cyan);
+  pointer-events: none;
+}
+
+.badge-primary {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+
+.badge-secondary {
+  background: rgba(255, 0, 255, 0.1);
+  color: var(--neon-magenta);
+  border-color: var(--neon-magenta);
+}
+
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 10px;
+  }
+
+  .badge,
+  .cyber-badge,
+  .donate-method-tag {
+    font-size: 0.65rem;
+    padding: 2px calc(8px - var(--pill-tracking)) 2px 8px;
+  }
+}

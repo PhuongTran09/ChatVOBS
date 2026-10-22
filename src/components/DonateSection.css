@@ -56,13 +56,8 @@
   margin-bottom: 20px;
 }
 
-.donate-method-tag {
-  padding: 4px 12px;
-  border: 1px solid;
-  font-size: 0.8rem;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
+/* .donate-method-tag is sized by the shared pill scale in App.css; its border and text
+   colour arrive as an inline style from the donate method itself. */
 
 .method-status {
   font-size: 0.75rem;
@@ -208,9 +203,5 @@
   .donate-info .sys-text {
     font-size: 0.85rem;
     margin-bottom: 15px;
-  }
-  
-  .donate-method-tag {
-    font-size: 0.7rem;
   }
 }

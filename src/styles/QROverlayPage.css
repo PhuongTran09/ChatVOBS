@@ -249,7 +249,7 @@
 }
 
 .badge-name {
-  padding: 4px 8px;
+  padding: 4px calc(8px - 1px) 4px 8px;
   color: var(--accent-color);
   font-weight: 800;
   transition: color 0.8s ease;

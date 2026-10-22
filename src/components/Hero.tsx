@@ -4,13 +4,13 @@ import './Hero.css';
 import { useI18n } from '../i18n';
 import { getChannelStats, getLatestNotifications, type YouTubeStats, type YouTubeNotification } from '../services';
 import { CHANNEL_DISPLAY_NAME, CHANNEL_HANDLE, CHANNEL_URL } from '../constants/branding';
+import { DeveloperHero } from './DeveloperHero';
 
 interface HeroProps {
   profileMode: 'streamer' | 'developer';
-  onOpenChat?: () => void;
 }
 
-export function Hero({ profileMode }: HeroProps) {
+function StreamerHero() {
   const { t, fmt } = useI18n();
   const [stats, setStats] = useState<YouTubeStats | null>(null);
   const [notifications, setNotifications] = useState<YouTubeNotification[]>([]);
@@ -36,16 +36,12 @@ export function Hero({ profileMode }: HeroProps) {
     <div className="hero-top-grid">
       <div className="hero-content">
         <div className="badge-wrapper">
-          <span className="cyber-badge">{t(`mode.${profileMode}` as Parameters<typeof t>[0])} {t('hero.badge')} </span>
+          <span className="cyber-badge">{t('mode.streamer')} {t('hero.badge')} </span>
         </div>
         <h1 className="glitch-text" data-text={t('hero.title')}>
           {t('hero.title')}
         </h1>
-        <p className="hero-lead">
-          {profileMode === 'streamer'
-            ? t('hero.description.streamer')
-            : t('hero.description.developer')}
-        </p>
+        <p className="hero-lead">{t('hero.description.streamer')}</p>
 
         <div className="platform-tags">
           <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="channel-profile-tag" title="Visit YouTube Channel">
@@ -133,4 +129,9 @@ export function Hero({ profileMode }: HeroProps) {
       </aside>
     </div>
   );
+}
+
+/** Split so the channel request never happens in developer mode, not just hidden. */
+export function Hero({ profileMode }: HeroProps) {
+  return profileMode === 'developer' ? <DeveloperHero /> : <StreamerHero />;
 }

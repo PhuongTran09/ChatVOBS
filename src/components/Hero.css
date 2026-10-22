@@ -47,13 +47,11 @@
 }
 
 .cyber-badge {
-  display: inline-block;
+  /* Size, border and padding come from the shared pill scale in App.css; only the hue and
+     the flicker are the hero's own. */
   color: var(--green);
-  border: 1px solid var(--green);
-  padding: 4px 10px;
-  font-size: 0.8rem;
+  border-color: var(--green);
   margin-bottom: 15px;
-  border-radius: 0;
   box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
   animation: neonFlicker 5s infinite;
   transition: all 0.3s;

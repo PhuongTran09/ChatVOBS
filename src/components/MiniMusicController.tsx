@@ -52,6 +52,9 @@ export function MiniMusicController() {
   };
 
   const handleVolumeChange = (v: number) => {
+    // Set locally as well as dispatching: the slider is controlled, and waiting on the
+    // broadcast round trip makes the thumb stutter on fast drags.
+    setVolume(v);
     window.dispatchEvent(new CustomEvent('music-control-set-volume', { detail: v }));
   };
 
@@ -166,6 +169,7 @@ export function MiniMusicController() {
               className="mini-volume-slider" 
               value={volume}
               onChange={(e) => handleVolumeChange(Number(e.target.value))}
+              style={{ '--vol-percent': `${volume}%` } as React.CSSProperties}
             />
           </div>
 

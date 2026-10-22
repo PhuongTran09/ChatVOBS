@@ -1,6 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -16,17 +14,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Analytics conditionally (only runs in supported environments/browsers)
-export let analytics: Analytics | undefined;
-
-isSupported().then((supported) => {
-  if (supported) {
-    analytics = getAnalytics(app);
-  }
-});
-
-// Initialize other Firebase services
-export const auth = getAuth(app);
+// Analytics and Auth were initialised here and exported, with no consumer in the repo —
+// both pulled their own SDK into every chunk that imports a service and opened a network
+// connection on load. Firestore is the only backend this site actually reads.
 export const db = getFirestore(app);
 
 export default app;

@@ -100,7 +100,7 @@ button {
   width: 25px;
   height: 25px;
   border: 3px solid var(--cyan);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.4s;
   pointer-events: none;
 }
 
@@ -125,6 +125,82 @@ button {
   width: 45px;
   height: 45px;
 }
+
+/* One hue per streamer section, taken from the same four the developer mode cycles
+   through, so the two modes still read as one product. Section ids are the anchors the
+   header navigates to, which makes them a stable contract — and an id outranks the
+   per-component colours without !important or a bet on how Vite merged the CSS.
+   #overlays-activity keeps cyan because its terminals are already colour-coded
+   (music green / OBS cyan) and a section hue must not flatten that signal. */
+.mode-streamer #overlays-activity {
+  --sec-accent: #00f0ff;
+  --sec-soft: rgba(0, 240, 255, 0.24);
+  --sec-veil: rgba(0, 240, 255, 0.05);
+}
+
+.mode-streamer #social-hub {
+  --sec-accent: #00ff9d;
+  --sec-soft: rgba(0, 255, 157, 0.24);
+  --sec-veil: rgba(0, 255, 157, 0.05);
+}
+
+.mode-streamer #donate {
+  --sec-accent: #ffaa00;
+  --sec-soft: rgba(255, 170, 0, 0.24);
+  --sec-veil: rgba(255, 170, 0, 0.05);
+}
+
+.mode-streamer .cyber-section {
+  border-color: var(--sec-soft, rgba(0, 255, 255, 0.15));
+  border-left: 4px solid var(--sec-accent, var(--cyan));
+}
+
+.mode-streamer .cyber-section:hover {
+  border-color: var(--sec-accent, var(--cyan));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 26px var(--sec-soft, rgba(0, 255, 255, 0.1));
+}
+
+/* The corner brackets take the section hue; no drop-shadow glow, because they also grow
+   on hover and a blur filter re-runs for every frame of that size change. */
+.mode-streamer .cyber-section::before,
+.mode-streamer .cyber-section::after {
+  border-color: var(--sec-accent, var(--cyan));
+}
+
+.mode-streamer .cyber-section .badge {
+  /* Border width and padding are the shared pill scale's job (App.css); a section only
+     supplies its own hue. */
+  color: var(--sec-accent, var(--text-main));
+  border-color: var(--sec-soft, currentColor);
+  background: var(--sec-veil, transparent);
+}
+
+.mode-streamer #social-hub h2 {
+  color: var(--sec-accent);
+  text-shadow: 0 0 12px var(--sec-soft);
+}
+
+.mode-streamer #social-hub .news-header {
+  border-bottom-color: var(--sec-soft);
+}
+
+/* The three containers of the social hub take the section hue as their frame, while the
+   content-level colours inside them (news type bars, calendar and community icons, the
+   magenta thumbnail borders) stay put — a section reads as one accent with variety in it,
+   the same way the developer cards do. */
+.mode-streamer #social-hub .social-news-container,
+.mode-streamer #social-hub .gallery-container,
+.mode-streamer #social-hub .schedule-panel {
+  border-color: var(--sec-soft);
+}
+
+.mode-streamer #social-hub .panel-head {
+  color: var(--sec-accent);
+  border-bottom-color: var(--sec-soft);
+}
+
+/* Donate needs nothing beyond the frame and badge above: its carousel already wears the
+   colour the operator configured, the only data-driven hue on the page. */
 
 [id]:target {
   animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -241,37 +317,6 @@ button {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--cyan);
-}
-
-/* COMING SOON */
-.coming-soon-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-.coming-soon-container {
-  border: 1px solid var(--magenta);
-  background: rgba(5, 5, 8, 0.9);
-  padding: 50px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  max-width: 600px;
-  width: 100%;
-}
-
-.coming-soon-container .glitch-text {
-  font-size: 3rem;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
-.coming-soon-container p {
-  font-family: var(--font-mono);
-  margin: 8px 0;
-  letter-spacing: 1.5px;
 }
 
 .blink-text {

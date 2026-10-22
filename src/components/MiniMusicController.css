@@ -50,7 +50,6 @@
   width: 2px;
   height: 100%;
   background: var(--neon-magenta, #f0f);
-  box-shadow: 0 0 8px var(--neon-magenta, #f0f);
   opacity: 0.85;
   left: -2px;
   animation: scanLineRight 3s linear infinite;
@@ -188,35 +187,51 @@
   flex-shrink: 0;
 }
 
+/*
+ * The box is 16px tall while the groove is drawn 3px: a range input is only grabbable
+ * inside its own box, so a 3px-tall control was impossible to catch on touch. The two
+ * gradients are the unfilled track and the filled part, both centred in that box.
+ */
 .mini-volume-slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 50px;
-  height: 3px;
-  background: #1e293b;
+  width: 64px;
+  height: 16px;
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--neon-cyan, #0ff), var(--neon-cyan, #0ff)),
+    linear-gradient(#1e293b, #1e293b);
+  background-position: left center, left center;
+  background-size: var(--vol-percent, 80%) 3px, 100% 3px;
+  background-repeat: no-repeat, no-repeat;
   outline: none;
-  border-radius: 1px;
 }
 
 .mini-volume-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 8px;
-  height: 12px;
+  width: 10px;
+  height: 16px;
   background: var(--neon-cyan, #0ff);
   cursor: pointer;
-  border-radius: 1px;
-  box-shadow: 0 0 5px var(--neon-cyan, #0ff);
+  border-radius: 2px;
+}
+
+/* Firefox draws its own native track and progress over the element background; making
+   them transparent leaves the single gradient fill above as the only paint. */
+.mini-volume-slider::-moz-range-track,
+.mini-volume-slider::-moz-range-progress {
+  background: transparent;
+  border: none;
 }
 
 .mini-volume-slider::-moz-range-thumb {
-  width: 8px;
-  height: 12px;
+  width: 10px;
+  height: 16px;
   border: none;
   background: var(--neon-cyan, #0ff);
   cursor: pointer;
-  border-radius: 1px;
-  box-shadow: 0 0 5px var(--neon-cyan, #0ff);
+  border-radius: 2px;
 }
 
 /* Collapse Button on Panel */
@@ -300,7 +315,7 @@
   }
 
   .mini-volume-slider {
-    width: 35px;
+    width: 46px;
   }
 
   .btn-mini-control {

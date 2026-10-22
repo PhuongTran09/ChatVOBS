@@ -16,6 +16,9 @@ import { TerminalsBand } from '../components/TerminalsBand'
 import { useTerminals } from '../hooks/useTerminals'
 import { ChatEditorSection } from '../components/ChatEditorSection'
 import { Footer } from '../components/Footer'
+import { DeveloperGroups } from '../components/DeveloperGroups'
+import { DeveloperProjects } from '../components/DeveloperProjects'
+import { DEV_SKILL_GROUPS, DEV_TOOL_GROUPS } from '../data/developerProfile'
 import { useI18n } from '../i18n'
 
 export function StreamerProfilePage({
@@ -69,6 +72,9 @@ export function StreamerProfilePage({
 
   // Smoothly interpolate the progress counter to match targetProgress
   useEffect(() => {
+    // Nothing left to animate once the boot screen is gone: the interval used to outlive
+    // the overlay and keep ticking for the rest of the session.
+    if (!isInitialLoading) return
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= targetProgress) {
@@ -83,7 +89,7 @@ export function StreamerProfilePage({
     }, 25);
 
     return () => clearInterval(interval);
-  }, [targetProgress]);
+  }, [targetProgress, isInitialLoading]);
 
   // Lock body scroll when loading or when any terminal is maximized and open
   useEffect(() => {
@@ -117,6 +123,10 @@ export function StreamerProfilePage({
   const [activeDonateIdx, setActiveDonateIdx] = useState(0)
 
   useEffect(() => {
+    // Donates, media and songs only feed streamer sections, but the listeners stayed open in
+    // developer mode too, and every snapshot re-rendered the whole page tree. Boot always
+    // starts in streamer mode, so the loading progress still gets its three data streams.
+    if (profileMode !== 'streamer') return
     const unsubscribe = subscribeToActiveDonates(
       (list) => {
         setDonateMethods(list)
@@ -129,7 +139,7 @@ export function StreamerProfilePage({
       }
     )
     return () => unsubscribe()
-  }, [])
+  }, [profileMode])
 
   const nextDonate = () => {
     if (donateMethods.length === 0) return
@@ -158,6 +168,7 @@ export function StreamerProfilePage({
   const [mediaItems, setMediaItems] = useState<MediaDoc[]>([])
 
   useEffect(() => {
+    if (profileMode !== 'streamer') return
     const unsubscribe = subscribeToMedia(
       (list) => {
         setMediaItems(list)
@@ -169,10 +180,11 @@ export function StreamerProfilePage({
       }
     );
     return () => unsubscribe();
-  }, [])
+  }, [profileMode])
 
   // Subscribe to active songs for loading status
   useEffect(() => {
+    if (profileMode !== 'streamer') return
     const unsubscribe = subscribeToActiveSongs(
       () => {
         setDataLoaded((prev) => ({ ...prev, songs: true }));
@@ -183,7 +195,7 @@ export function StreamerProfilePage({
       }
     );
     return () => unsubscribe();
-  }, []);
+  }, [profileMode]);
 
   const galleryItems = useMemo(() => {
     return mediaItems.map(item => ({
@@ -202,16 +214,11 @@ export function StreamerProfilePage({
         setProfileMode={setProfileMode}
       />
 
-      {profileMode === 'streamer' && (
-        <section className="cyber-hero" id="overview">
-          <Hero
-            profileMode={profileMode}
-            onOpenChat={onOpenChat}
-          />
+      <section className="cyber-hero" id="overview">
+        <Hero profileMode={profileMode} />
 
-          <FeatureCards />
-        </section>
-      )}
+        {profileMode === 'streamer' && <FeatureCards />}
+      </section>
 
       <InitialLoadingOverlay
         isInitialLoading={isInitialLoading}
@@ -262,16 +269,19 @@ export function StreamerProfilePage({
           </section>
         </>
       ) : (
-        <section className="cyber-section coming-soon-section">
-          <div className="coming-soon-container">
-            <div className="panel-scanline" />
-            <div className="panel-corner-tl" />
-            <div className="panel-corner-br" />
-            <h1 className="glitch-text" data-text={t('profile.comingSoon')}>{t('profile.comingSoon')}</h1>
-            <p className="sys-text" style={{ color: 'var(--cyan)' }}>&gt; ACCESSING_DEVELOPER_PORTAL.log</p>
-            <p className="sys-text blink-text" style={{ color: 'var(--magenta)' }}>&gt; UNDER_CONSTRUCTION_... [SYSTEM_STANDBY]</p>
-          </div>
-        </section>
+        <>
+          <section className="cyber-section" id="dev-skills">
+            <DeveloperGroups titleKey="dev.skills.title" noteKey="dev.skills.note" groups={DEV_SKILL_GROUPS} />
+          </section>
+
+          <section className="cyber-section" id="dev-projects">
+            <DeveloperProjects />
+          </section>
+
+          <section className="cyber-section" id="dev-tools">
+            <DeveloperGroups titleKey="dev.tools.title" groups={DEV_TOOL_GROUPS} />
+          </section>
+        </>
       )}
 
       <ImageModal
